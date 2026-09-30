@@ -208,8 +208,7 @@ button.store[aria-pressed="true"]{border:2px solid var(--red);box-shadow:inset 0
 </style>
 
 <div class="app" id="app">
-  <div class="banner" id="demo-banner" hidden>VERSION DE DÉMONSTRATION — serveur d'estimation non configuré : résultats fictifs</div>
-  <div class="banner red" id="ai-banner" hidden>L'estimation IA n'est pas disponible dans cette vue.</div>
+  <div class="banner red" id="ai-banner" hidden>Le service d'estimation n'est pas configuré dans cette version.</div>
   <header class="top">
     <button class="back" id="back" hidden>‹ Retour</button>
     <img id="top-logo" src="data:image/png;base64,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" alt="Affair's — Achetez malin, vendez cash" width="94" height="46">
@@ -538,8 +537,8 @@ function renderMag(){
 renderMag();
 
 /* ================= Moteur d'estimation =================
-   3 modes : "server" (application publiée → ton serveur), "claude" (aperçu dans Claude), "demo" (résultats fictifs) */
-let MODE = API_BASE ? "server" : "demo", sample = null, sampleLimits = null, db = null, PARAMS = structuredClone(DEFAULT_PARAMS);
+   "server" : application publiée → serveur d'estimation (IA + recherche web) ; "claude" : aperçu en ligne dans Claude ; "none" : non configuré */
+let MODE = API_BASE ? "server" : "none", sample = null, sampleLimits = null, db = null, PARAMS = structuredClone(DEFAULT_PARAMS);
 const READY = (async () => {
   if (!API_BASE && window.claude) {
     try {
@@ -549,7 +548,7 @@ const READY = (async () => {
       if (db) { try { const snap = await db.doc("config/params").get(); if (snap.exists) PARAMS = Object.assign(structuredClone(DEFAULT_PARAMS), snap.data()); } catch {} }
     } catch {}
   }
-  $("#demo-banner").hidden = MODE !== "demo";
+  $("#ai-banner").hidden = MODE !== "none";
 })();
 
 let S = newState();
@@ -648,8 +647,6 @@ function computeOffer(i, rmin, rmax){
   const one = r => { const b=r*(1-pr); return { revente:r, marge:+(b*m).toFixed(2), sav:+(b*sav).toFixed(2), remise:rf, brut:+(b*(1-m-sav)-rf).toFixed(2) }; };
   const lo = one(rmin), hi = one(rmax); return { lo, hi, low:roundDown(lo.brut), high:roundDown(hi.brut), margePct:m*100, savPct:PARAMS.savPct };
 }
-const MOCK = { telephone:{marque:"Apple",modele:"iPhone 17 Pro Max",variante:"256 Go · Orange cosmique",annee:2025,etat:"tres_bon",confiance:"haute",rmin:1049,rmax:1099,indices:["Plateau photo pleine largeur avec trois objectifs","Logo Apple","Port USB-C"],observations:["Modèle identifié","Écran en bon état"]},
-  console:{marque:"Microsoft",modele:"Xbox Series X",variante:"1 To",annee:2020,etat:"bon",confiance:"haute",rmin:300,rmax:340,indices:["Tour noire rectangulaire","Dessus perforé à reflet vert","Logo Xbox"],observations:["Modèle identifié"]} };
 
 async function post(path, body){
   try { const r = await fetch(API_BASE.replace(/\/$/,"") + path, { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(body) }); return await r.json(); }
@@ -657,7 +654,7 @@ async function post(path, body){
 }
 // Étape A : identification
 async function backendIdentify(photos, acc){
-  if (MODE === "demo"){ await wait(2500); const m = MOCK[S.cat] || { marque:"Produit", modele:"de démonstration", variante:"", annee:2022, etat:"bon", confiance:"moyenne", indices:["Démo : pas d'analyse réelle"], observations:["Démo"] }; return { ok:true, ident:normIdent({ ...m, cat:S.cat }, acc) }; }
+  if (MODE === "none") return { ok:false, code:"not_configured" };
   const blobs = await Promise.all(photos.slice(0,MAXP).map(async p => toBlob(await toCanvas(p.url, 1600), 0.88)));
   if (MODE === "server"){
     const images = await Promise.all(blobs.map(b => new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok({ media_type:"image/jpeg", data:String(fr.result).split(",")[1] }); fr.readAsDataURL(b); })));
@@ -687,8 +684,8 @@ async function backendPrice(corr){
     return { ok:true, low:r.reprise.min, high:r.reprise.max };
   }
   let d;
-  if (MODE === "demo"){ await wait(2000); const m = Object.values(MOCK).find(x=>x.modele===i.modele) || { rmin:200, rmax:240 }; d = { rmin:m.rmin, rmax:m.rmax, annee:m.annee || i.annee }; }
-  else { try { d = await sample.json(promptPrice(i), { modelTier:"default", cache:false }); } catch (e) { return aiErr(e); } }
+  if (MODE === "none") return { ok:false, code:"not_configured" };
+  { try { d = await sample.json(promptPrice(i), { modelTier:"default", cache:false }); } catch (e) { return aiErr(e); } }
   let rmin = Number(d.rmin)||0, rmax = Number(d.rmax)||rmin; if (rmax<rmin) [rmin,rmax] = [rmax,rmin];
   if (!rmin) return { ok:false, code:"no_price" };
   if (!i.annee && Number(d.annee)) i.annee = Number(d.annee);
@@ -789,7 +786,6 @@ function showResult(){
     <div class="buy"><small>🏪 Estimation de reprise Affair's</small><strong>${range(o.low,o.high)}</strong><span class="cash">Payé cash en magasin</span>
       <p>Estimation indicative — le prix définitif sera confirmé en magasin après contrôle du produit.</p></div>
     ${obs?`<div class="block"><h4>Ce que notre IA a relevé</h4><ul class="obs">${obs}</ul></div>`:""}
-    ${MODE==="demo"?`<div class="tip" style="margin-top:10px"><span>⚠️</span><span><b>Démonstration :</b> résultat fictif.</span></div>`:""}
     <p class="disc">L'estimation réalisée par notre IA est indicative. Le prix définitif dépendra de l'état réel du produit, de son fonctionnement, de son authenticité et des vérifications effectuées en magasin.</p>
     <div style="display:grid;gap:8px;margin-top:14px"><button class="btn btn-cash" id="go-store">📍 Choisir mon magasin</button><button class="btn btn-ghost" id="again">🔄 Estimer un autre article</button></div>`;
   $("#go-store").onclick = () => { renderStores(); show("v-store",4); };
@@ -845,6 +841,10 @@ function showError(r){
     photo_format:["Photo non lisible","Sur iPhone : Réglages › Appareil photo › Formats › « Le plus compatible », ou envoyez une capture d'écran de la photo."],
     need_model:["Indiquez le modèle","Vos photos ne peuvent pas être analysées ici : indiquez le modèle et l'état de votre article."],
     ai_off:["Estimation indisponible","L'IA n'est pas disponible pour le moment."],
+    not_configured:["Service indisponible","Le service d'estimation n'est pas joignable pour le moment. Réessayez plus tard ou appelez le 04 76 49 42 03."],
+    ai_key:["Service indisponible","Le service d'estimation est momentanément indisponible. Réessayez plus tard."],
+    ai_credit:["Service indisponible","Le service d'estimation est momentanément indisponible. Réessayez plus tard."],
+    ai_network:["Service indisponible","Le service d'estimation est momentanément indisponible. Réessayez dans un instant."],
     ai_busy:["IA très sollicitée","Patientez quelques secondes puis réessayez."],
     offline:["Pas de connexion","Vérifiez votre connexion Internet puis réessayez."],
     rate:["Trop de demandes","Réessayez dans une heure."], expired:["Estimation expirée","Recommencez l'estimation."]

@@ -1,0 +1,37 @@
+PONER EN LÍNEA EL SERVIDOR DE ESTIMACIÓN (IA real, 24 h/24)
+=====================================================================
+La app de clientes y Affairs Dirigeants se conectan a este servidor. Él hace el
+trabajo de la IA: reconoce el producto en las fotos (Claude Opus), busca los precios
+actuales en Internet en Francia (Claude Sonnet + búsqueda web) y calcula la recompra.
+
+1) CLAVE DE IA (Anthropic)
+   - https://console.anthropic.com › crear cuenta
+   - Billing › añadir tarjeta y crédito (10–20 € para empezar)
+   - Settings › Limits: pon un límite de gasto mensual
+   - API Keys › Create Key › copia la clave (empieza por sk-ant-)
+
+2) SERVIDOR EN UN CLIC (Render)
+   - Abre: https://render.com/deploy?repo=https://github.com/wassimichoua16-ui/affairs-app
+   - Regístrate con « GitHub ».
+   - Rellena:
+       ANTHROPIC_API_KEY = tu clave sk-ant-…
+       GERANT_PASSWORD   = la contraseña de dirección (app Dirigeants)
+   - « Apply » / « Deploy ». Espera a que aparezca « Live ».
+   - Copia la dirección del servicio, p. ej. https://affairs-estimation.onrender.com
+   - Comprobación: abre https://TU-DIRECCIÓN/api/statut → debe decir "mode":"ia"
+   Coste Render: plan de pago básico + disco de 1 GB (ver render.com/pricing).
+   El disco guarda las estimaciones aunque el servidor se reinicie.
+
+3) CONECTAR LAS APPS
+   - GitHub › repositorio affairs-app › Settings › Secrets and variables ›
+     Actions › pestaña « Variables » › New repository variable
+       Name  : AFFAIRS_API
+       Value : https://affairs-estimation.onrender.com   (tu dirección, sin / al final)
+   - Pestaña « Actions » › « Construire l'APK Android » › Run workflow
+     y lo mismo para « Construire l'APK Affairs Dirigeants ».
+   - En 5 minutos, las APK conectadas están en:
+       https://github.com/wassimichoua16-ui/affairs-app/releases/download/app/Affairs.apk
+       https://github.com/wassimichoua16-ui/affairs-app/releases/download/dirigeants/Affairs-Dirigeants.apk
+
+A partir de ahí: un cliente estima con la app → la estimación aparece en directo en
+Affairs Dirigeants y en https://TU-DIRECCIÓN/gerant

@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   apk:
+    # Ne construit l'APK que si l'adresse du serveur est configurée (jamais de version sans IA)
+    if: ${{ vars.AFFAIRS_API != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,11 +43,15 @@ jobs:
       - name: Construire l'application
         run: python3 build.py
 
-      - name: Adresse du serveur d'estimation (facultatif)
-        # Variable du dépôt AFFAIRS_API (Settings › Secrets and variables › Actions › Variables).
-        # Vide = version de démonstration.
-        if: ${{ vars.AFFAIRS_API != '' }}
-        run: echo "window.AFFAIRS_API = \"${{ vars.AFFAIRS_API }}\";" > www/config.js
+      - name: Adresse du serveur d'estimation (obligatoire)
+        # Variable du dépôt AFFAIRS_API (Settings › Secrets and variables › Actions › Variables),
+        # ex. https://affairs-estimation.onrender.com — voir DEPLOIEMENT.txt
+        run: |
+          if [ -z "${{ vars.AFFAIRS_API }}" ]; then
+            echo "::error::Variable AFFAIRS_API manquante : mettez d'abord le serveur en ligne (DEPLOIEMENT.txt)."
+            exit 1
+          fi
+          echo "window.AFFAIRS_API = \"${{ vars.AFFAIRS_API }}\";" > www/config.js
 
       - name: Préparer le projet Android
         run: |
@@ -60,12 +66,12 @@ jobs:
           ./gradlew assembleDebug --no-daemon
 
       - name: Renommer
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk Affairs-demo.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Affairs.apk
 
       - uses: actions/upload-artifact@v4
         with:
           name: Affairs-APK
-          path: Affairs-demo.apk
+          path: Affairs.apk
 
       - name: Publier le lien de téléchargement direct
         if: github.ref == 'refs/heads/main'
@@ -73,4 +79,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete demo --yes --cleanup-tag || true
-          gh release create demo Affairs-demo.apk --title "Application Affair's – version de test" --notes "APK de démonstration. Ouvrez ce lien sur votre téléphone Android pour l'installer." --latest
+          gh release delete app --yes --cleanup-tag || true
+          gh release create app Affairs.apk --title "Application Affair's – version de test" --notes "Version complète connectée au serveur d'estimation (IA + recherche de prix). Ouvrez ce lien sur votre téléphone Android pour l'installer." --latest

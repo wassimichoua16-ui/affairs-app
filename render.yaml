@@ -1,0 +1,24 @@
+# Déploiement en un clic du serveur d'estimation Affair's sur Render
+# Bouton : https://render.com/deploy?repo=https://github.com/wassimichoua16-ui/affairs-app
+services:
+  - type: web
+    name: affairs-estimation
+    runtime: node
+    rootDir: serveur
+    buildCommand: echo "Aucune dépendance à installer"
+    startCommand: node server.js
+    plan: 0.5c-512mb
+    region: frankfurt
+    healthCheckPath: /api/statut
+    autoDeploy: true
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GERANT_PASSWORD
+        sync: false
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: donnees-estimations
+      mountPath: /var/data
+      sizeGB: 1

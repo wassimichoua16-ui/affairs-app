@@ -11,7 +11,7 @@ const os = require("os");
 
 const ROOT = __dirname;
 const PUB = path.join(ROOT, "public");
-const DATA = path.join(ROOT, "data");
+const DATA = process.env.DATA_DIR || path.join(ROOT, "data");
 fs.mkdirSync(DATA, { recursive: true });
 
 const readTxt = f => { try { return fs.readFileSync(path.join(ROOT, f), "utf8").trim(); } catch { return ""; } };
@@ -22,7 +22,8 @@ const MODEL_ID = process.env.MODELE_IDENTIFICATION || "claude-opus-5-5";   // id
 const MODEL_PRICE = process.env.MODELE_PRIX || "claude-sonnet-5-5";        // recherche des prix (rapide)
 const PORT = Number(process.env.PORT) || 3000;
 const GERANT_PWD = process.env.GERANT_PASSWORD || readTxt("mot-de-passe-gerant.txt") || "affairs2026";
-const MODE_TEST = process.env.MODE_TEST === "1" || !API_KEY.startsWith("sk-");
+const MODE_TEST = process.env.MODE_TEST === "1";   // résultats fictifs uniquement si demandé explicitement
+const KEY_OK = API_KEY.startsWith("sk-");
 let WEB_SEARCH = process.env.RECHERCHE_WEB !== "0";
 
 const STORES = JSON.parse(fs.readFileSync(path.join(PUB, "magasins.json"), "utf8"));
@@ -70,6 +71,7 @@ function parseJSON(t){
 
 /* ---------- Appel à l'API Claude ---------- */
 async function callClaude({ model, content, tools, maxTokens = 2500 }){
+  if (!KEY_OK) throw Object.assign(new Error("Clé API Anthropic absente ou invalide sur le serveur"), { code:"ai_key" });
   const messages = [{ role:"user", content }];
   let last;
   for (let round = 0; round < 4; round++){
@@ -280,7 +282,7 @@ const server = http.createServer(async (req, res) => {
     if (!p.startsWith("/api/")) return serveStatic(req, res);
 
     if (p === "/api/statut" && req.method === "GET")
-      return send(res, 200, { mode: MODE_TEST ? "test" : "ia", recherche_web: WEB_SEARCH });
+      return send(res, 200, { mode: MODE_TEST ? "test" : KEY_OK ? "ia" : "sans_cle", recherche_web: WEB_SEARCH });
 
     if (p === "/api/identifier" && req.method === "POST"){
       if (rateLimited(ip)) return send(res, 429, { ok:false, code:"rate", message:"Trop d'estimations depuis cet appareil. Réessayez dans une heure." });
@@ -331,7 +333,8 @@ server.listen(PORT, "0.0.0.0", () => {
   console.log(`  Sur cet ordinateur :   http://localhost:${PORT}`);
   if (lan) console.log(`  Sur votre téléphone :  http://${lan}:${PORT}   (même Wi-Fi)`);
   console.log(`  Espace gérant :        http://localhost:${PORT}/gerant`);
-  console.log(MODE_TEST ? "\n  ⚠  MODE TEST : aucune clé API trouvée → résultats fictifs.\n     Collez votre clé dans le fichier cle-api.txt puis relancez."
+  console.log(MODE_TEST ? "\n  ⚠  MODE TEST (MODE_TEST=1) : résultats fictifs."
+            : !KEY_OK ? "\n  ✗ AUCUNE CLÉ API : les estimations renverront une erreur.\n     Renseignez ANTHROPIC_API_KEY (ou le fichier cle-api.txt) puis relancez."
                         : `\n  ✓ IA active (identification : ${MODEL_ID}, prix : ${MODEL_PRICE}, recherche web : ${WEB_SEARCH ? "oui" : "non"})`);
   if (GERANT_PWD === "affairs2026") console.log("  ⚠  Mot de passe gérant par défaut : affairs2026 (changez-le dans mot-de-passe-gerant.txt)");
   console.log("\n  Laissez cette fenêtre ouverte pendant l'utilisation.\n");

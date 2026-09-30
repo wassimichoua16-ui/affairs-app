@@ -174,8 +174,8 @@ function renderMag(){
 renderMag();
 
 /* ================= Moteur d'estimation =================
-   3 modes : "server" (application publiée → ton serveur), "claude" (aperçu dans Claude), "demo" (résultats fictifs) */
-let MODE = API_BASE ? "server" : "demo", sample = null, sampleLimits = null, db = null, PARAMS = structuredClone(DEFAULT_PARAMS);
+   "server" : application publiée → serveur d'estimation (IA + recherche web) ; "claude" : aperçu en ligne dans Claude ; "none" : non configuré */
+let MODE = API_BASE ? "server" : "none", sample = null, sampleLimits = null, db = null, PARAMS = structuredClone(DEFAULT_PARAMS);
 const READY = (async () => {
   if (!API_BASE && window.claude) {
     try {
@@ -185,7 +185,7 @@ const READY = (async () => {
       if (db) { try { const snap = await db.doc("config/params").get(); if (snap.exists) PARAMS = Object.assign(structuredClone(DEFAULT_PARAMS), snap.data()); } catch {} }
     } catch {}
   }
-  $("#demo-banner").hidden = MODE !== "demo";
+  $("#ai-banner").hidden = MODE !== "none";
 })();
 
 let S = newState();
@@ -284,8 +284,6 @@ function computeOffer(i, rmin, rmax){
   const one = r => { const b=r*(1-pr); return { revente:r, marge:+(b*m).toFixed(2), sav:+(b*sav).toFixed(2), remise:rf, brut:+(b*(1-m-sav)-rf).toFixed(2) }; };
   const lo = one(rmin), hi = one(rmax); return { lo, hi, low:roundDown(lo.brut), high:roundDown(hi.brut), margePct:m*100, savPct:PARAMS.savPct };
 }
-const MOCK = { telephone:{marque:"Apple",modele:"iPhone 17 Pro Max",variante:"256 Go · Orange cosmique",annee:2025,etat:"tres_bon",confiance:"haute",rmin:1049,rmax:1099,indices:["Plateau photo pleine largeur avec trois objectifs","Logo Apple","Port USB-C"],observations:["Modèle identifié","Écran en bon état"]},
-  console:{marque:"Microsoft",modele:"Xbox Series X",variante:"1 To",annee:2020,etat:"bon",confiance:"haute",rmin:300,rmax:340,indices:["Tour noire rectangulaire","Dessus perforé à reflet vert","Logo Xbox"],observations:["Modèle identifié"]} };
 
 async function post(path, body){
   try { const r = await fetch(API_BASE.replace(/\/$/,"") + path, { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(body) }); return await r.json(); }
@@ -293,7 +291,7 @@ async function post(path, body){
 }
 // Étape A : identification
 async function backendIdentify(photos, acc){
-  if (MODE === "demo"){ await wait(2500); const m = MOCK[S.cat] || { marque:"Produit", modele:"de démonstration", variante:"", annee:2022, etat:"bon", confiance:"moyenne", indices:["Démo : pas d'analyse réelle"], observations:["Démo"] }; return { ok:true, ident:normIdent({ ...m, cat:S.cat }, acc) }; }
+  if (MODE === "none") return { ok:false, code:"not_configured" };
   const blobs = await Promise.all(photos.slice(0,MAXP).map(async p => toBlob(await toCanvas(p.url, 1600), 0.88)));
   if (MODE === "server"){
     const images = await Promise.all(blobs.map(b => new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok({ media_type:"image/jpeg", data:String(fr.result).split(",")[1] }); fr.readAsDataURL(b); })));
@@ -323,8 +321,8 @@ async function backendPrice(corr){
     return { ok:true, low:r.reprise.min, high:r.reprise.max };
   }
   let d;
-  if (MODE === "demo"){ await wait(2000); const m = Object.values(MOCK).find(x=>x.modele===i.modele) || { rmin:200, rmax:240 }; d = { rmin:m.rmin, rmax:m.rmax, annee:m.annee || i.annee }; }
-  else { try { d = await sample.json(promptPrice(i), { modelTier:"default", cache:false }); } catch (e) { return aiErr(e); } }
+  if (MODE === "none") return { ok:false, code:"not_configured" };
+  { try { d = await sample.json(promptPrice(i), { modelTier:"default", cache:false }); } catch (e) { return aiErr(e); } }
   let rmin = Number(d.rmin)||0, rmax = Number(d.rmax)||rmin; if (rmax<rmin) [rmin,rmax] = [rmax,rmin];
   if (!rmin) return { ok:false, code:"no_price" };
   if (!i.annee && Number(d.annee)) i.annee = Number(d.annee);
@@ -425,7 +423,6 @@ function showResult(){
     <div class="buy"><small>🏪 Estimation de reprise Affair's</small><strong>${range(o.low,o.high)}</strong><span class="cash">Payé cash en magasin</span>
       <p>Estimation indicative — le prix définitif sera confirmé en magasin après contrôle du produit.</p></div>
     ${obs?`<div class="block"><h4>Ce que notre IA a relevé</h4><ul class="obs">${obs}</ul></div>`:""}
-    ${MODE==="demo"?`<div class="tip" style="margin-top:10px"><span>⚠️</span><span><b>Démonstration :</b> résultat fictif.</span></div>`:""}
     <p class="disc">L'estimation réalisée par notre IA est indicative. Le prix définitif dépendra de l'état réel du produit, de son fonctionnement, de son authenticité et des vérifications effectuées en magasin.</p>
     <div style="display:grid;gap:8px;margin-top:14px"><button class="btn btn-cash" id="go-store">📍 Choisir mon magasin</button><button class="btn btn-ghost" id="again">🔄 Estimer un autre article</button></div>`;
   $("#go-store").onclick = () => { renderStores(); show("v-store",4); };
@@ -481,6 +478,10 @@ function showError(r){
     photo_format:["Photo non lisible","Sur iPhone : Réglages › Appareil photo › Formats › « Le plus compatible », ou envoyez une capture d'écran de la photo."],
     need_model:["Indiquez le modèle","Vos photos ne peuvent pas être analysées ici : indiquez le modèle et l'état de votre article."],
     ai_off:["Estimation indisponible","L'IA n'est pas disponible pour le moment."],
+    not_configured:["Service indisponible","Le service d'estimation n'est pas joignable pour le moment. Réessayez plus tard ou appelez le 04 76 49 42 03."],
+    ai_key:["Service indisponible","Le service d'estimation est momentanément indisponible. Réessayez plus tard."],
+    ai_credit:["Service indisponible","Le service d'estimation est momentanément indisponible. Réessayez plus tard."],
+    ai_network:["Service indisponible","Le service d'estimation est momentanément indisponible. Réessayez dans un instant."],
     ai_busy:["IA très sollicitée","Patientez quelques secondes puis réessayez."],
     offline:["Pas de connexion","Vérifiez votre connexion Internet puis réessayez."],
     rate:["Trop de demandes","Réessayez dans une heure."], expired:["Estimation expirée","Recommencez l'estimation."]
