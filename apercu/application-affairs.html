@@ -743,7 +743,7 @@ async function runIdentify(){
   if (r.ident.trop_ancien || isOld(r.ident)) return showOld();
   showConfirm();
 }
-const identName = i => [i.marque, i.modele].filter(Boolean).join(" ").trim() || "Article";
+const identName = i => { const mo = i.modele||"", ma = i.marque||""; return (ma && mo.toLowerCase().startsWith(ma.toLowerCase()) ? mo : [ma,mo].filter(Boolean).join(" ")).trim() || "Article"; };
 function showOld(){ const i = S.ident; $("#old-model").textContent = `Article identifié : ${identName(i)}${i.annee?` (sorti en ${i.annee})`:""}.`; show("v-old",3); }
 function showConfirm(){
   const d = S.ident, conf = {haute:["good","Identification fiable"], moyenne:["warn","Identification probable"], faible:["bad","Identification incertaine"]}[d.confiance];

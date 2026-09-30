@@ -1,0 +1,7 @@
+{
+  "appId": "fr.affairs.dirigeants",
+  "appName": "Affairs Dirigeants",
+  "webDir": "www",
+  "backgroundColor": "#141414",
+  "plugins": { "SplashScreen": { "launchShowDuration": 1000, "backgroundColor": "#141414", "showSpinner": false } }
+}

@@ -197,7 +197,10 @@ Réponds uniquement avec ce JSON :
   const calc = computeOffer(ident, rmin, rmax);
   if (calc.high <= 0) return { ok:false, code:"too_low" };
   pend.priced = { rmin, rmax, calc, marche:{ prix_neuf:Number(d.prix_neuf)||null, prix_reconditionne:Number(d.prix_reconditionne)||null, particuliers:clean(d.prix_occasion_particuliers,80), demande:clean(d.demande,20), commentaire:clean(d.commentaire,400) }, sources, t:Date.now() };
-  return { ok:true, ident:publicIdent(ident), revente:{ min:rmin, max:rmax }, reprise:{ min:calc.low, max:calc.high } };
+  const out = { ok:true, ident:publicIdent(ident), revente:{ min:rmin, max:rmax }, reprise:{ min:calc.low, max:calc.high } };
+  // Détail interne réservé aux dirigeants authentifiés (app Affairs Dirigeants)
+  if (p._gerant) out.interne = { calc, marche: pend.priced.marche, sources, remise: ident.remise || 0, confiance: ident.confiance };
+  return out;
 }
 function publicIdent(i){ const { remise, ...rest } = i; return rest; }
 
@@ -283,7 +286,7 @@ const server = http.createServer(async (req, res) => {
       if (rateLimited(ip)) return send(res, 429, { ok:false, code:"rate", message:"Trop d'estimations depuis cet appareil. Réessayez dans une heure." });
       return send(res, 200, await identify(await readBody(req)));
     }
-    if (p === "/api/prix" && req.method === "POST") return send(res, 200, await price(await readBody(req, 1e5)));
+    if (p === "/api/prix" && req.method === "POST"){ const b = await readBody(req, 1e5); b._gerant = !!isGerant(req); return send(res, 200, await price(b)); }
     if (p === "/api/enregistrer" && req.method === "POST") return send(res, 200, saveEstimate(await readBody(req, 2e5)));
 
     if (p === "/api/gerant/connexion" && req.method === "POST"){

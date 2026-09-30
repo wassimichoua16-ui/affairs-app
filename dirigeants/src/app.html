@@ -1,0 +1,585 @@
+<style>
+/* Affairs Dirigeants — tableau de bord mobile privé. Noir + rouge Affair's, jaune pour ce qui demande une action. */
+:root{
+  --red:#e30613; --yellow:#fdc300; --black:#141414; --ink:#1f1f1f; --muted:#6b6b6b; --line:#e3e3e3; --bg:#f2f2f2; --card:#fff;
+  --good:#1e9e4a; --good-bg:#e6f5eb; --warn:#b77400; --warn-bg:#fff4d6; --bad:#e30613; --bad-bg:#fde6e7; --grey-bg:#ececec;
+  --font:"Open Sans",Arial,Helvetica,sans-serif; --tab-h:62px; color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--font)}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.wrap{max-width:640px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 12px)}
+.banner{background:var(--yellow);color:var(--black);text-align:center;font-weight:700;font-size:12px;padding:5px 10px}
+.top{position:sticky;top:0;z-index:20;background:var(--black);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;display:flex;align-items:center;gap:10px}
+.top img{height:36px;width:auto}
+.top .t{display:flex;flex-direction:column;line-height:1.1}
+.top .t b{font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+.top .t span{font-size:11.5px;color:#bbb}
+.top .live{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:#bbb;background:none;border:0;cursor:pointer}
+.top .live i{width:9px;height:9px;border-radius:50%;background:#4ccf86;box-shadow:0 0 0 0 rgba(76,207,134,.6);animation:pulse 2s infinite}
+.top .live.off i{background:#888;animation:none}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(76,207,134,0)}100%{box-shadow:0 0 0 0 rgba(76,207,134,0)}}
+.scr{padding:14px 14px 20px}
+.scr[hidden]{display:none}
+.h2{font-size:13px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.05em;margin:18px 2px 8px}
+.small{font-size:12.5px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:0;font-weight:700;text-transform:uppercase;text-decoration:none;cursor:pointer;padding:11px 16px;font-size:14px;min-height:46px}
+.btn-y{background:var(--yellow);color:var(--black)} .btn-r{background:var(--red);color:#fff} .btn-k{background:var(--black);color:#fff}
+.btn-g{background:#fff;border:1px solid #c9c9c9;color:var(--ink)} .btn-full{width:100%} .btn[disabled]{opacity:.4}
+.card{background:var(--card);padding:14px;margin-bottom:10px}
+
+/* Connexion */
+.login{min-height:100vh;background:var(--black);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:32px 24px calc(env(safe-area-inset-bottom,0px) + 32px);max-width:640px;margin:0 auto}
+.login img{width:180px;margin:0 auto 10px;display:block}
+.login h1{text-align:center;font-size:22px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.login p{text-align:center;color:#bbb;margin:0 0 26px;font-size:14px}
+.login label{font-size:13px;font-weight:700;color:#ddd;display:block;margin-bottom:6px}
+.login input{width:100%;padding:13px;border:0;background:#2a2a2a;color:#fff;font-size:17px;margin-bottom:14px}
+.login .err{color:#ff7a82;font-weight:600;font-size:14px;min-height:1.4em;margin-bottom:8px}
+
+/* Indicateurs */
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.kpi{background:var(--card);padding:12px}
+.kpi small{display:block;font-size:11.5px;font-weight:700;text-transform:uppercase;color:var(--muted)}
+.kpi b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.kpi.hl{background:var(--red);color:#fff} .kpi.hl small{color:#ffd9dc}
+.period{display:flex;gap:6px;margin-bottom:10px}
+.period button,.chips button{border:1px solid #c9c9c9;background:#fff;padding:7px 12px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
+.period button[aria-pressed="true"],.chips button[aria-pressed="true"]{background:var(--black);color:#fff;border-color:var(--black)}
+.chips{display:flex;gap:6px;overflow-x:auto;margin:0 -14px 10px;padding:0 14px}
+.search{width:100%;padding:11px 12px;border:1px solid #c9c9c9;background:#fff;font-size:16px;margin-bottom:10px}
+
+/* Liste des estimations */
+.est{display:flex;gap:10px;background:var(--card);padding:12px;margin-bottom:8px;cursor:pointer;border-left:5px solid transparent;width:100%;text-align:left;border-top:0;border-right:0;border-bottom:0}
+.est.new{border-left-color:var(--yellow);animation:flash 1.6s ease-out 2}
+@keyframes flash{0%{background:#fff4c2}100%{background:#fff}}
+.est img,.est .ph{width:58px;height:58px;object-fit:cover;flex:none;background:var(--grey-bg);display:grid;place-items:center;font-size:24px}
+.est .m{flex:1;min-width:0}
+.est .l1{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.est .ref{font-weight:800;color:var(--ink);letter-spacing:.02em}
+.est .name{font-weight:700;font-size:15px;margin:2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.est .l3{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:13px}
+.est .amt{font-weight:800;color:var(--red);white-space:nowrap;font-variant-numeric:tabular-nums}
+.st{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.st.nouvelle{background:var(--warn-bg);color:var(--warn)} .st.achetee{background:var(--good-bg);color:var(--good)}
+.st.refusee{background:var(--bad-bg);color:var(--bad)} .st.sans_suite{background:var(--grey-bg);color:#666}
+.empty{text-align:center;color:var(--muted);padding:40px 16px}
+
+/* Détail */
+.dhead{display:flex;gap:12px;align-items:flex-start}
+.dhead img{width:96px;height:96px;object-fit:cover;background:var(--grey-bg);flex:none}
+.dhead h2{font-size:20px;line-height:1.2}
+.big{background:var(--red);color:#fff;padding:14px;margin:10px 0;border-bottom:6px solid var(--yellow)}
+.big small{font-size:12px;font-weight:700;text-transform:uppercase}
+.big b{display:block;font-size:32px;font-weight:800;font-variant-numeric:tabular-nums}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.dl dt{color:var(--muted)} .dl dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.calc{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.calc td{padding:6px 0;border-bottom:1px solid var(--line)}
+.calc td+td{text-align:right}
+.calc tr.tot td{font-weight:800;color:var(--red);border-bottom:0}
+.calc tr.hd td{font-size:12px;color:var(--muted);font-weight:700}
+ul.clean{margin:0;padding-left:18px;font-size:14px;display:grid;gap:3px}
+.actions{display:grid;gap:8px}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.seg button{border:1px solid #c9c9c9;background:#fff;padding:9px 4px;font-size:12.5px;font-weight:700;cursor:pointer}
+.seg button[aria-pressed="true"].nouvelle{background:var(--warn);color:#fff;border-color:var(--warn)}
+.seg button[aria-pressed="true"].achetee{background:var(--good);color:#fff;border-color:var(--good)}
+.seg button[aria-pressed="true"].refusee{background:var(--red);color:#fff;border-color:var(--red)}
+.seg button[aria-pressed="true"].sans_suite{background:#666;color:#fff;border-color:#666}
+.fld{display:grid;gap:4px;margin-top:8px}
+.fld label{font-size:13px;font-weight:700}
+.fld input,.fld textarea,.fld select{width:100%;padding:10px;border:1px solid #c9c9c9;background:#fff;font-size:16px}
+.saved{color:var(--good);font-weight:700;font-size:14px}
+.backbar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.backbar button{background:none;border:0;color:var(--red);font-weight:700;font-size:15px;padding:6px 0;cursor:pointer}
+
+/* Magasins */
+.srow{background:var(--card);padding:12px 14px;margin-bottom:8px}
+.srow .n{display:flex;justify-content:space-between;font-weight:700}
+.bar{height:8px;background:var(--grey-bg);margin:8px 0 6px}
+.bar i{display:block;height:100%;background:var(--red)}
+.srow .g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-size:12px;color:var(--muted)}
+.srow .g b{display:block;font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Estimer (copilote) */
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cat{border:1px solid var(--line);background:#fff;padding:10px 4px;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.cat span{font-size:22px}
+.cat[aria-pressed="true"]{border-color:var(--red);box-shadow:inset 0 -4px 0 var(--yellow)}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.thumbs div{position:relative}
+.thumbs img{width:70px;height:70px;object-fit:cover}
+.thumbs button{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:50%;border:0;background:var(--red);color:#fff;font-size:13px}
+.verdict{padding:14px;color:#fff;margin:10px 0}
+.verdict.go{background:var(--good)} .verdict.mid{background:var(--warn)} .verdict.no{background:var(--red)}
+.verdict b{display:block;font-size:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mini{background:var(--card);padding:10px}
+.mini small{display:block;font-size:11px;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.mini b{font-size:19px;font-variant-numeric:tabular-nums}
+.spin{width:36px;height:36px;border:4px solid #ddd;border-top-color:var(--red);border-radius:50%;animation:rot .8s linear infinite;margin:20px auto}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* Réglages */
+.prow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.prow input{width:80px;padding:7px;border:1px solid #c9c9c9;text-align:right;font-size:16px}
+
+/* Onglets */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--black);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);height:var(--tab-h)}
+.tabs button{background:none;border:0;color:#aaa;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;text-transform:uppercase;cursor:pointer;position:relative}
+.tabs svg{width:23px;height:23px}
+.tabs button[aria-current="page"]{color:var(--yellow)}
+.tabs .badge{position:absolute;top:6px;left:calc(50% + 6px);background:var(--red);color:#fff;font-size:10.5px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 5px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 12px);width:min(92vw,600px);background:var(--black);color:#fff;padding:12px 14px;border-left:6px solid var(--yellow);z-index:40;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer}
+.toast b{color:var(--yellow)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+
+<!-- CONNEXION -->
+<section class="login" id="login">
+  <img src="LOGO_SRC" alt="Affair's">
+  <h1>Dirigeants</h1>
+  <p>Espace privé réservé à la direction Affair's</p>
+  <form id="login-form">
+    <label for="pwd">Mot de passe</label>
+    <input type="password" id="pwd" autocomplete="current-password" required>
+    <div class="err" id="login-err"></div>
+    <button class="btn btn-y btn-full">Se connecter</button>
+  </form>
+  <p class="small" id="login-mode" style="margin-top:18px;color:#999"></p>
+</section>
+
+<!-- APPLICATION -->
+<div class="wrap" id="app" hidden>
+  <div class="banner" id="demo-banner" hidden>MODE DÉMO — estimations simulées (une nouvelle arrive toutes les 40 s environ)</div>
+  <header class="top">
+    <img src="LOGO_SRC" alt="Affair's">
+    <div class="t"><b>Dirigeants</b><span id="last-sync">Connexion…</span></div>
+    <button class="live" id="live" title="Actualiser"><i></i><span>En direct</span></button>
+  </header>
+
+  <!-- EN DIRECT -->
+  <section class="scr" data-screen="direct">
+    <div class="period" id="period">
+      <button data-p="jour" aria-pressed="true">Aujourd'hui</button><button data-p="7j">7 jours</button><button data-p="30j">30 jours</button><button data-p="tout">Tout</button>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <h3 class="h2">Estimations clients</h3>
+    <input type="search" class="search" id="q" placeholder="N° EST-…, modèle, prénom, téléphone…" autocomplete="off">
+    <div class="chips" id="f-store"></div>
+    <div class="chips" id="f-st"></div>
+    <div id="list"></div>
+  </section>
+
+  <!-- DÉTAIL -->
+  <section class="scr" data-screen="detail" hidden><div id="detail"></div></section>
+
+  <!-- MAGASINS -->
+  <section class="scr" data-screen="magasins" hidden>
+    <div class="period" id="period2"></div>
+    <div id="stores"></div>
+  </section>
+
+  <!-- ESTIMER (copilote interne) -->
+  <section class="scr" data-screen="estimer" hidden><div id="estimer"></div></section>
+
+  <!-- RÉGLAGES -->
+  <section class="scr" data-screen="reglages" hidden><div id="reglages"></div></section>
+
+  <nav class="tabs"><div class="in">
+    <button data-tab="direct" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Direct<span class="badge" id="badge" hidden>0</span></button>
+    <button data-tab="magasins"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Magasins</button>
+    <button data-tab="estimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Estimer</button>
+    <button data-tab="reglages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Réglages</button>
+  </div></nav>
+  <div class="toast" id="toast" hidden></div>
+</div>
+
+<script>
+/* ================= Configuration ================= */
+const API = (window.AFFAIRS_API || "").replace(/\/$/, "");
+const MODE = API ? "server" : "demo";
+const STORES = STORES_JSON;
+const CATN = { telephone:"Téléphone", ordinateur:"Ordinateur", console:"Console", tv:"TV", photo:"Photo", audio:"Audio", montre:"Montre", drone:"Drone", tablette:"Tablette", jeux:"Jeux vidéo", autre:"Autre" };
+const CATI = { telephone:"📱", ordinateur:"💻", console:"🎮", tv:"📺", photo:"📷", audio:"🎧", montre:"⌚", drone:"🚁", tablette:"📱", jeux:"🎮", autre:"👜" };
+const ETN = { tres_bon:"Très bon état", bon:"Bon état", correct:"État correct", abime:"Abîmé" };
+const STN = { nouvelle:"Nouvelle", achetee:"Achetée", refusee:"Refusée", sans_suite:"Sans suite" };
+const POLL_MS = 15000;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const eur = n => n==null || isNaN(n) ? "—" : Math.round(n).toLocaleString("fr-FR") + " €";
+const rng = (a,b) => a===b ? eur(a) : `${eur(a)} – ${eur(b)}`;
+const nm = (a, withVar) => { const mo = a?.modele||"", ma = a?.marque||""; const base = ma && mo.toLowerCase().startsWith(ma.toLowerCase()) ? mo : [ma,mo].filter(Boolean).join(" "); return withVar && a?.variante ? base + " " + a.variante : base; };
+const storeName = id => STORES.find(s=>s.id===id)?.n || id;
+const ls = { get:k=>{ try { return localStorage.getItem(k); } catch { return null; } }, set:(k,v)=>{ try { localStorage.setItem(k,v); } catch {} }, del:k=>{ try { localStorage.removeItem(k); } catch {} } };
+function fmtDate(iso){ const d = new Date(iso), now = new Date(); const t = d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  if (d.toDateString() === now.toDateString()) return "Aujourd'hui " + t;
+  const y = new Date(now); y.setDate(now.getDate()-1); if (d.toDateString() === y.toDateString()) return "Hier " + t;
+  return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"}) + " " + t; }
+
+/* ================= Mode démo : serveur simulé ================= */
+const DEMO_ITEMS = [
+  ["telephone","Apple","iPhone 15 Pro","256 Go · Titane naturel","tres_bon",760,820],["telephone","Samsung","Galaxy S24","128 Go · Noir","bon",430,480],
+  ["console","Sony","PlayStation 5 Slim","1 To · Édition standard","tres_bon",330,360],["console","Microsoft","Xbox Series X","1 To","bon",300,340],
+  ["console","Nintendo","Switch OLED","64 Go · Blanc","bon",190,215],["ordinateur","Apple","MacBook Air M2","8 Go · 256 Go","bon",620,680],
+  ["tablette","Apple","iPad 10e génération","64 Go Wi-Fi","tres_bon",240,270],["montre","Apple","Apple Watch Series 9","45 mm GPS","bon",220,250],
+  ["drone","DJI","Mini 4 Pro","Drone + radiocommande","tres_bon",560,620],["audio","JBL","Charge 5","Enceinte Bluetooth","tres_bon",85,100],
+  ["telephone","Apple","iPhone 13","128 Go · Minuit","correct",270,310],["photo","Sony","Alpha 7 III","Boîtier nu","bon",850,950],
+  ["tv","Samsung","QE55Q60C","55\" QLED 4K","bon",330,380],["telephone","Xiaomi","Redmi Note 13","128 Go","bon",110,130]];
+const NAMES = ["Karim","Sophie","Mehdi","Julie","Thomas","Inès","Lucas","Sarah","Yanis","Camille","Nadia","Hugo","Léa","Rayan"];
+const DPAR = { savPct:3, oldYear:2017, lowConfidenceCut:10, refurb:{ tres_bon:0, bon:10, correct:30, abime:60 }, margins:{ telephone:20, ordinateur:25, console:20, tv:30, photo:25, audio:30, montre:25, drone:25, tablette:22, jeux:40, autre:35 } };
+let DEMO = null;
+function rd(a){ return a[Math.floor(Math.random()*a.length)]; }
+function demoCalc(cat, etat, rmin, rmax, par){
+  const m=(par.margins[cat]??35)/100, sav=par.savPct/100, rf=par.refurb[etat]||0, rd10=v=>Math.floor(v/10)*10;
+  const one=r=>({ revente:r, decote:0, marge:+(r*m).toFixed(2), sav:+(r*sav).toFixed(2), remise:rf, brut:+(r*(1-m-sav)-rf).toFixed(2) });
+  const lo=one(rmin), hi=one(rmax); return { lo, hi, low:rd10(lo.brut), high:rd10(hi.brut), margePct:m*100, savPct:par.savPct };
+}
+function demoEst(date){
+  const it = rd(DEMO_ITEMS), st = rd(STORES), now = date || new Date();
+  const ref = "EST-" + String(now.getDate()).padStart(2,"0") + String(now.getMonth()+1).padStart(2,"0") + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
+  const calc = demoCalc(it[0], it[4], it[5], it[6], DEMO.par);
+  return { ref, date:now.toISOString(), valide_jusqu_au:new Date(now.getTime()+7*864e5).toISOString(), magasin:st.id, statut:"nouvelle", prix_paye:null, note:"",
+    article:{ cat:it[0], marque:it[1], modele:it[2], variante:it[3], etat:it[4], confiance:rd(["haute","haute","moyenne"]), corrige:Math.random()<.15,
+      indices:["Logo "+it[1]+" visible","Forme et finitions du modèle "+it[2]], observations:["Modèle identifié","Pas de casse visible"], defauts:Math.random()<.3?["Micro-rayures sur la coque"]:[], accessoires:Math.random()<.5?["boîte","chargeur / câbles"]:[] },
+    revente:{ min:it[5], max:it[6] }, reprise:{ min:calc.low, max:calc.high }, calcul:calc,
+    marche:{ prix_neuf:Math.round(it[6]*1.6), prix_reconditionne:Math.round(it[6]*1.15), demande:rd(["forte","moyenne"]), commentaire:"Données de démonstration." },
+    sources:[], client:{ prenom:rd(NAMES), telephone:Math.random()<.6?"06 "+String(Math.floor(Math.random()*1e8)).padStart(8,"0").replace(/(\d{2})(?=\d)/g,"$1 "):"" }, miniature:null };
+}
+function demoInit(){
+  if (DEMO) return; DEMO = { par: structuredClone(DPAR), list: [] };
+  for (let i = 0; i < 26; i++){ const d = new Date(Date.now() - Math.random()*20*864e5 - (i<6 ? 0 : 864e5)); if (i < 6) d.setTime(Date.now() - Math.random()*6*3600e3);
+    const e = demoEst(d); const r = Math.random(); if (i >= 6) e.statut = r<.45 ? "achetee" : r<.65 ? "refusee" : r<.8 ? "sans_suite" : "nouvelle";
+    if (e.statut==="achetee") e.prix_paye = e.reprise.min + Math.round(Math.random()*(e.reprise.max-e.reprise.min)/10)*10; DEMO.list.push(e); }
+  DEMO.list.sort((a,b)=>b.date.localeCompare(a.date));
+  setInterval(() => { if (DEMO) DEMO.list.unshift(demoEst()); }, 40000);
+}
+async function demoApi(method, path, body){
+  await new Promise(r=>setTimeout(r,250)); demoInit();
+  if (path==="/api/gerant/connexion") return { ok:true, jeton:"demo" };
+  if (path==="/api/statut") return { mode:"demo", recherche_web:false };
+  if (path==="/api/gerant/estimations") return { ok:true, estimations: structuredClone(DEMO.list), magasins: STORES };
+  if (path==="/api/gerant/parametres" && method==="GET") return { ok:true, parametres:structuredClone(DEMO.par), defauts:DPAR, mode:"demo", recherche_web:false, modeles:{ identification:"démo", prix:"démo" } };
+  if (path==="/api/gerant/parametres" && method==="PUT"){ DEMO.par = body; return { ok:true, parametres:body }; }
+  const m = path.match(/^\/api\/gerant\/estimations\/(.+)$/);
+  if (m && method==="PATCH"){ const e = DEMO.list.find(x=>x.ref===m[1]); Object.assign(e, { statut:body.statut, prix_paye:body.prix_paye===""?null:Number(body.prix_paye), note:body.note }); return { ok:true, estimation:structuredClone(e) }; }
+  if (path==="/api/identifier"){ await new Promise(r=>setTimeout(r,1800)); const it = DEMO_ITEMS.find(x=>x[0]===body.cat) || DEMO_ITEMS[0];
+    return { ok:true, id:"demo-"+Date.now(), ident:{ cat:it[0], marque:it[1], modele:it[2], variante:it[3], annee:2023, etat:body.etat_declare||it[4], confiance:"haute", indices:["Démo : identification simulée"], alternatives:[], observations:["Modèle identifié"], defauts:[], photo_utile:"", accessoires:body.accessoires||[] }, _demo:it }; }
+  if (path==="/api/prix"){ await new Promise(r=>setTimeout(r,1500)); const it = DEMO_ITEMS.find(x=>x[2]===body._modele) || DEMO_ITEMS[0];
+    const calc = demoCalc(it[0], body._etat||it[4], it[5], it[6], DEMO.par);
+    return { ok:true, revente:{ min:it[5], max:it[6] }, reprise:{ min:calc.low, max:calc.high }, interne:{ calc, marche:{ prix_neuf:Math.round(it[6]*1.6), prix_reconditionne:Math.round(it[6]*1.15), particuliers:`${it[5]-40} – ${it[6]-20} €`, demande:"forte", commentaire:"Démo : prix simulés." }, sources:[], confiance:"haute" } }; }
+  return { ok:false, message:"Introuvable" };
+}
+
+/* ================= Accès serveur ================= */
+let TOKEN = ls.get("dir-token") || "";
+async function api(method, path, body){
+  if (MODE === "demo") return demoApi(method, path, body);
+  let r;
+  try { r = await fetch(API + path, { method, headers:{ "content-type":"application/json", authorization:"Bearer " + TOKEN }, body: body ? JSON.stringify(body) : undefined }); }
+  catch { return { ok:false, code:"offline", message:"Pas de connexion au serveur" }; }
+  const j = await r.json().catch(() => ({ ok:false }));
+  if (r.status === 401 && path !== "/api/gerant/connexion"){ logout("Session expirée : reconnectez-vous."); return { ok:false, code:"session" }; }
+  return j;
+}
+
+/* ================= Connexion ================= */
+$("#login-mode").textContent = MODE === "demo" ? "Mode démo : n'importe quel mot de passe fonctionne." : "Serveur : " + API;
+$("#login-form").onsubmit = async e => {
+  e.preventDefault(); $("#login-err").textContent = "";
+  const j = await api("POST", "/api/gerant/connexion", { mot_de_passe: $("#pwd").value });
+  if (!j.ok){ $("#login-err").textContent = j.message || "Connexion impossible"; return; }
+  TOKEN = j.jeton; ls.set("dir-token", TOKEN); $("#pwd").value = ""; start();
+};
+function logout(msg){ TOKEN = ""; ls.del("dir-token"); stopPolling(); $("#app").hidden = true; $("#login").hidden = false; $("#login-err").textContent = msg || ""; }
+
+/* ================= Données + temps réel ================= */
+let EST = [], KNOWN = null, UNSEEN = new Set(), PAR = null, DEFPAR = null, STATUS = null, timer = null;
+let period = "jour", fStore = "", fSt = "", view = "direct", openRef = null;
+async function refresh(){
+  const j = await api("GET", "/api/gerant/estimations");
+  if (!j.ok){ $("#last-sync").textContent = j.code==="offline" ? "Hors ligne — nouvel essai…" : "Erreur de lecture"; $("#live").classList.add("off"); return; }
+  $("#live").classList.remove("off");
+  const list = j.estimations || [];
+  if (KNOWN){
+    const fresh = list.filter(e => !KNOWN.has(e.ref));
+    fresh.forEach(e => UNSEEN.add(e.ref));
+    if (fresh.length) notify(fresh);
+  }
+  KNOWN = new Set(list.map(e=>e.ref)); EST = list;
+  $("#last-sync").textContent = "Mis à jour à " + new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  updateBadge();
+  if (view === "direct") renderDirect(); else if (view === "magasins") renderStores(); else if (view === "detail" && openRef){ const e = EST.find(x=>x.ref===openRef); if (e && !document.activeElement?.closest?.("#detail")) renderDetail(e); }
+}
+function startPolling(){ stopPolling(); timer = setInterval(() => { if (!document.hidden) refresh(); }, POLL_MS); }
+function stopPolling(){ if (timer) clearInterval(timer); timer = null; }
+document.addEventListener("visibilitychange", () => { if (!document.hidden && TOKEN) refresh(); });
+window.Capacitor?.Plugins?.App?.addListener?.("appStateChange", s => { if (s.isActive && TOKEN) refresh(); });
+$("#live").onclick = refresh;
+function updateBadge(){ const b = $("#badge"); b.hidden = !UNSEEN.size; b.textContent = UNSEEN.size; }
+function notify(fresh){
+  const e = fresh[0], a = e.article;
+  const t = $("#toast");
+  t.innerHTML = `<b>${fresh.length > 1 ? fresh.length + " nouvelles estimations" : "Nouvelle estimation"}</b><br>${esc(e.ref)} · ${esc(storeName(e.magasin))}<br>${esc(nm(a))} — <b>${rng(e.reprise.min,e.reprise.max)}</b>`;
+  t.hidden = false; t.onclick = () => { t.hidden = true; openDetail(e.ref); };
+  clearTimeout(notify.h); notify.h = setTimeout(() => t.hidden = true, 7000);
+  try { navigator.vibrate?.(200); } catch {}
+}
+
+/* ================= Navigation ================= */
+function go(name){
+  view = name;
+  document.querySelectorAll("[data-screen]").forEach(s => s.hidden = s.dataset.screen !== name);
+  document.querySelectorAll("[data-tab]").forEach(t => { if (t.dataset.tab === name || (name==="detail" && t.dataset.tab==="direct")) t.setAttribute("aria-current","page"); else t.removeAttribute("aria-current"); });
+  window.scrollTo({ top:0 });
+  if (name === "direct") renderDirect(); if (name === "magasins") renderStores(); if (name === "estimer") renderEstimer(); if (name === "reglages") renderReglages();
+}
+document.querySelectorAll("[data-tab]").forEach(t => t.onclick = () => go(t.dataset.tab));
+window.Capacitor?.Plugins?.App?.addListener?.("backButton", () => { if (view === "detail") return go("direct"); if (view !== "direct") return go("direct"); window.Capacitor.Plugins.App.minimizeApp?.(); });
+
+/* ================= En direct ================= */
+function inPeriod(e, p){
+  const d = new Date(e.date), now = new Date();
+  if (p === "jour") return d.toDateString() === now.toDateString();
+  if (p === "7j") return now - d < 7*864e5; if (p === "30j") return now - d < 30*864e5; return true;
+}
+function stats(list){
+  const bought = list.filter(e=>e.statut==="achetee"), decided = list.filter(e=>e.statut==="achetee"||e.statut==="refusee"||e.statut==="sans_suite");
+  return { n:list.length, nouvelles:list.filter(e=>e.statut==="nouvelle").length, achetees:bought.length,
+    taux: decided.length ? Math.round(bought.length/decided.length*100) : null,
+    paye: bought.reduce((a,e)=>a+(e.prix_paye||0),0), potentiel: list.filter(e=>e.statut==="nouvelle").reduce((a,e)=>a+(e.reprise?.max||0),0),
+    margeEst: bought.reduce((a,e)=>a+((e.revente?.min||0)-(e.prix_paye||0)-(e.calcul?.lo?.remise||0)),0) };
+}
+function periodButtons(el){
+  el.innerHTML = [["jour","Aujourd'hui"],["7j","7 jours"],["30j","30 jours"],["tout","Tout"]].map(([k,l])=>`<button data-p="${k}" aria-pressed="${k===period}">${l}</button>`).join("");
+  el.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { period = b.dataset.p; view==="magasins" ? renderStores() : renderDirect(); });
+}
+function renderDirect(){
+  periodButtons($("#period"));
+  const pl = EST.filter(e=>inPeriod(e,period)), s = stats(pl);
+  $("#kpis").innerHTML = `
+    <div class="kpi hl"><small>Estimations</small><b>${s.n}</b></div>
+    <div class="kpi"><small>En attente client</small><b>${s.nouvelles}</b></div>
+    <div class="kpi"><small>Achetées</small><b>${s.achetees}</b></div>
+    <div class="kpi"><small>Taux d'achat</small><b>${s.taux==null?"—":s.taux+" %"}</b></div>
+    <div class="kpi"><small>Potentiel en attente</small><b>${eur(s.potentiel)}</b></div>
+    <div class="kpi"><small>Total payé</small><b>${eur(s.paye)}</b></div>`;
+  $("#f-store").innerHTML = `<button data-s="" aria-pressed="${!fStore}">Tous magasins</button>` + STORES.map(x=>`<button data-s="${x.id}" aria-pressed="${fStore===x.id}">${esc(x.n)}</button>`).join("");
+  $("#f-st").innerHTML = `<button data-t="" aria-pressed="${!fSt}">Tous statuts</button>` + Object.entries(STN).map(([k,v])=>`<button data-t="${k}" aria-pressed="${fSt===k}">${v}</button>`).join("");
+  $("#f-store").querySelectorAll("[data-s]").forEach(b => b.onclick = () => { fStore = b.dataset.s; renderDirect(); });
+  $("#f-st").querySelectorAll("[data-t]").forEach(b => b.onclick = () => { fSt = b.dataset.t; renderDirect(); });
+  renderList();
+}
+function renderList(){
+  const q = $("#q").value.trim().toLowerCase();
+  const list = EST.filter(e => inPeriod(e,period) && (!fStore || e.magasin===fStore) && (!fSt || e.statut===fSt) &&
+    (!q || [e.ref, e.article?.marque, e.article?.modele, e.article?.variante, e.client?.prenom, e.client?.telephone].join(" ").toLowerCase().includes(q)));
+  if (!list.length){ $("#list").innerHTML = `<div class="empty">Aucune estimation ${period==="jour"?"aujourd'hui":"sur cette période"}${fStore||fSt||q?" avec ces filtres":""}.<br><span class="small">Les estimations des clients apparaissent ici en direct.</span></div>`; return; }
+  $("#list").innerHTML = list.map(e => { const a = e.article || {};
+    return `<button class="est ${UNSEEN.has(e.ref)?"new":""}" data-ref="${e.ref}">
+      ${e.miniature ? `<img src="${e.miniature}" alt="">` : `<span class="ph">${CATI[a.cat]||"📦"}</span>`}
+      <span class="m"><span class="l1"><span class="ref">${esc(e.ref)}</span><span>${fmtDate(e.date)}</span></span>
+        <span class="name">${esc(nm(a,true))}</span>
+        <span class="l3"><span>📍 ${esc(storeName(e.magasin))} · ${esc(e.client?.prenom||"—")}</span><span class="amt">${rng(e.reprise.min,e.reprise.max)}</span></span>
+        <span class="l3" style="margin-top:4px"><span class="small">${ETN[a.etat]||""}</span><span class="st ${e.statut}">${STN[e.statut]}${e.prix_paye!=null?" · "+eur(e.prix_paye):""}</span></span></span></button>`; }).join("");
+  $("#list").querySelectorAll("[data-ref]").forEach(b => b.onclick = () => openDetail(b.dataset.ref));
+}
+$("#q").addEventListener("input", renderList);
+
+/* ================= Détail d'une estimation ================= */
+function openDetail(ref){ openRef = ref; UNSEEN.delete(ref); updateBadge(); const e = EST.find(x=>x.ref===ref); if (!e) return; go("detail"); renderDetail(e); }
+function renderDetail(e){
+  const a = e.article || {}, c = e.calcul, m = e.marche || {}, st = STORES.find(s=>s.id===e.magasin);
+  const line = (l,x,y,cls="") => `<tr class="${cls}"><td>${l}</td><td>${x}</td><td>${y}</td></tr>`;
+  const margeLo = c ? c.lo.revente - (e.prix_paye ?? c.high) - c.lo.remise : null;
+  $("#detail").innerHTML = `
+    <div class="backbar"><button id="d-back">‹ Estimations</button></div>
+    <div class="card">
+      <div class="dhead">${e.miniature?`<img src="${e.miniature}" alt="">`:`<span class="ph" style="width:96px;height:96px;display:grid;place-items:center;font-size:40px;background:var(--grey-bg)">${CATI[a.cat]||"📦"}</span>`}
+        <div><div class="small"><b style="color:var(--ink);font-size:15px">${esc(e.ref)}</b> · ${fmtDate(e.date)}</div>
+          <h2>${esc(nm(a))}</h2><div class="small" style="font-weight:600">${esc(a.variante||"")}</div>
+          <div style="margin-top:6px"><span class="st ${e.statut}">${STN[e.statut]}</span> <span class="small">${ETN[a.etat]||""} · confiance IA ${esc(a.confiance||"")}${a.corrige?" · modèle corrigé par le client":""}</span></div></div></div>
+      <div class="big"><small>Reprise proposée au client</small><b>${rng(e.reprise.min,e.reprise.max)}</b></div>
+      <dl class="dl">
+        <dt>Client</dt><dd>${esc(e.client?.prenom||"—")}${e.client?.telephone?` · <a href="tel:${esc(e.client.telephone.replace(/\s/g,""))}">${esc(e.client.telephone)}</a>`:""}</dd>
+        <dt>Magasin</dt><dd>Affair's ${esc(st?.n||e.magasin)}${st?`<br><span style="font-weight:400">${esc(st.tel)}</span>`:""}</dd>
+        <dt>Valable</dt><dd>jusqu'au ${new Date(e.valide_jusqu_au).toLocaleDateString("fr-FR")}</dd>
+        <dt>Accessoires</dt><dd>${esc((a.accessoires||[]).join(", ")||"aucun déclaré")}</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h3 class="h2" style="margin-top:0">Suivi en magasin</h3>
+      <div class="seg" id="d-st">${Object.entries(STN).map(([k,v])=>`<button class="${k}" data-v="${k}" aria-pressed="${e.statut===k}">${v}</button>`).join("")}</div>
+      <div class="fld"><label for="d-px">Prix payé au client (€)</label><input id="d-px" type="number" inputmode="numeric" value="${e.prix_paye??""}" placeholder="${c?c.low:""}"></div>
+      <div class="fld"><label for="d-note">Note interne</label><textarea id="d-note" rows="2" placeholder="État réel, batterie, remarque…">${esc(e.note||"")}</textarea></div>
+      <button class="btn btn-y btn-full" id="d-save" style="margin-top:10px">Enregistrer</button> <span id="d-msg"></span>
+    </div>
+    ${c?`<div class="card"><h3 class="h2" style="margin-top:0">Calcul interne</h3>
+      <table class="calc">${line("","Bas","Haut","hd")}${line("Revente estimée",eur(c.lo.revente),eur(c.hi.revente))}${c.lo.decote?line("− Décote confiance faible",eur(c.lo.decote),eur(c.hi.decote)):""}
+      ${line(`− Marge (${Math.round(c.margePct)} %)`,eur(c.lo.marge),eur(c.hi.marge))}${line("− Remise en état",eur(c.lo.remise),eur(c.hi.remise))}
+      ${line(`− Risque SAV (${c.savPct} %)`,eur(c.lo.sav),eur(c.hi.sav))}${line("= Reprise proposée",eur(c.low),eur(c.high),"tot")}</table>
+      <p class="small" style="margin:10px 0 0">Marge brute ${e.prix_paye!=null?"réelle":"au pire cas"} (revente basse − ${e.prix_paye!=null?"prix payé":"reprise haute"} − remise) : <b style="color:var(--ink)">${eur(margeLo)}</b>${c.lo.revente?` (${Math.round(margeLo/c.lo.revente*100)} %)`:""}</p>
+      <p class="small">Neuf : ${eur(m.prix_neuf)} · Reconditionné : ${eur(m.prix_reconditionne)} · Demande : ${esc(m.demande||"—")}<br>${esc(m.commentaire||"")}</p>
+      ${(e.sources||[]).length?`<p class="small"><b>Sources :</b><br>${e.sources.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.titre).slice(0,60))}</a>`).join("<br>")}</p>`:""}</div>`:""}
+    <div class="card"><h3 class="h2" style="margin-top:0">Analyse IA</h3>
+      <ul class="clean">${[...(a.indices||[]),...(a.observations||[])].map(x=>`<li>${esc(x)}</li>`).join("")}${(a.defauts||[]).map(x=>`<li style="color:var(--warn)">⚠ ${esc(x)}</li>`).join("")}</ul></div>`;
+  $("#d-back").onclick = () => go("direct");
+  let chosen = e.statut;
+  $("#d-st").querySelectorAll("[data-v]").forEach(b => b.onclick = () => { chosen = b.dataset.v; $("#d-st").querySelectorAll("[data-v]").forEach(x=>x.setAttribute("aria-pressed", x===b)); });
+  $("#d-save").onclick = async () => {
+    $("#d-save").disabled = true;
+    const j = await api("PATCH", "/api/gerant/estimations/" + encodeURIComponent(e.ref), { statut:chosen, prix_paye:$("#d-px").value, note:$("#d-note").value });
+    $("#d-save").disabled = false;
+    if (j.ok){ const i = EST.findIndex(x=>x.ref===e.ref); EST[i] = j.estimation; renderDetail(j.estimation); $("#d-msg").innerHTML = `<span class="saved">✓ Enregistré</span>`; }
+    else $("#d-msg").innerHTML = `<span style="color:var(--red);font-weight:700">Échec : ${esc(j.message||"réessayez")}</span>`;
+  };
+}
+
+/* ================= Magasins ================= */
+function renderStores(){
+  periodButtons($("#period2"));
+  const pl = EST.filter(e=>inPeriod(e,period)), all = stats(pl);
+  const rows = STORES.map(s => ({ s, st: stats(pl.filter(e=>e.magasin===s.id)) })).sort((a,b)=>b.st.n-a.st.n);
+  const max = Math.max(1, ...rows.map(r=>r.st.n));
+  $("#stores").innerHTML = `<div class="kpis" style="margin-bottom:12px"><div class="kpi hl"><small>Estimations réseau</small><b>${all.n}</b></div><div class="kpi"><small>Total payé réseau</small><b>${eur(all.paye)}</b></div></div>` +
+    rows.map(({s,st}) => `<div class="srow"><div class="n"><span>Affair's ${esc(s.n)}</span><span>${st.n}</span></div><div class="bar"><i style="width:${st.n/max*100}%"></i></div>
+      <div class="g"><span><b>${st.nouvelles}</b>en attente</span><span><b>${st.achetees}</b>achetées</span><span><b>${st.taux==null?"—":st.taux+" %"}</b>taux</span><span><b>${eur(st.paye)}</b>payé</span></div></div>`).join("");
+}
+
+/* ================= Estimer (copilote interne) ================= */
+const EST_CATS = Object.keys(CATN);
+let E = { cat:"telephone", photos:[], ident:null, id:null, res:null, busy:false };
+function renderEstimer(){
+  if (E.busy) return;
+  if (E.res) return renderEstResult();
+  if (E.ident) return renderEstConfirm();
+  $("#estimer").innerHTML = `
+    <div class="card"><h3 class="h2" style="margin-top:0">Estimation interne par IA</h3>
+      <p class="small" style="margin-top:0">Pour vos acheteurs : l'IA identifie l'article et vous donne le prix de revente, la reprise conseillée, la marge et le risque. Rien n'est enregistré.</p>
+      <div class="cats">${EST_CATS.map(k=>`<button class="cat" data-c="${k}" aria-pressed="${E.cat===k}"><span>${CATI[k]}</span>${CATN[k]}</button>`).join("")}</div>
+      <div class="thumbs" id="e-th">${E.photos.map((p,i)=>`<div><img src="${p.url}" alt=""><button data-rm="${i}" aria-label="Retirer">×</button></div>`).join("")}</div>
+      <div class="grid2"><label class="btn btn-r" for="e-cam">📷 Photo</label><label class="btn btn-g" for="e-gal">🖼️ Galerie</label></div>
+      <input type="file" id="e-cam" accept="image/*" capture="environment" hidden><input type="file" id="e-gal" accept="image/*" multiple hidden>
+      <div class="fld"><label for="e-mod">Modèle (si connu)</label><input id="e-mod" placeholder="Ex. iPhone 14 Pro 256 Go" value="${esc(E.mod||"")}"></div>
+      <div class="fld"><label for="e-etat">État constaté</label><select id="e-etat"><option value="">Laisser l'IA juger</option>${Object.entries(ETN).map(([k,v])=>`<option value="${k}" ${E.etat===k?"selected":""}>${v}</option>`).join("")}</select></div>
+      <button class="btn btn-y btn-full" id="e-go" style="margin-top:12px" ${E.photos.length?"":"disabled"}>Analyser</button>
+      <p class="small" id="e-err" style="color:var(--red);font-weight:600"></p></div>`;
+  $("#estimer").querySelectorAll("[data-c]").forEach(b => b.onclick = () => { E.cat = b.dataset.c; renderEstimer(); });
+  $("#e-th").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { E.photos.splice(+b.dataset.rm,1); renderEstimer(); });
+  ["e-cam","e-gal"].forEach(id => $("#"+id).onchange = ev => { [...ev.target.files].slice(0, 6-E.photos.length).forEach(f => E.photos.push({ file:f, url:URL.createObjectURL(f) })); keep(); renderEstimer(); });
+  $("#e-mod").oninput = ev => E.mod = ev.target.value; $("#e-etat").onchange = ev => E.etat = ev.target.value;
+  $("#e-go").onclick = runIdentify;
+  function keep(){ E.mod = $("#e-mod").value; E.etat = $("#e-etat").value; }
+}
+function loadImg(u){ return new Promise((ok,ko)=>{ const i = new Image(); i.onload=()=>ok(i); i.onerror=ko; i.src=u; }); }
+async function jpeg64(u){ const im = await loadImg(u); const k = Math.min(1, 1568/Math.max(im.naturalWidth, im.naturalHeight));
+  const c = document.createElement("canvas"); c.width = Math.round(im.naturalWidth*k); c.height = Math.round(im.naturalHeight*k);
+  const g = c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height); return c.toDataURL("image/jpeg",0.85).split(",")[1]; }
+function busy(msg){ E.busy = true; $("#estimer").innerHTML = `<div class="card" style="text-align:center"><div class="spin"></div><b>${msg}</b><p class="small">20 à 60 secondes selon l'article.</p></div>`; }
+async function runIdentify(){
+  busy("L'IA identifie l'article…");
+  let images; try { images = await Promise.all(E.photos.map(async p => ({ media_type:"image/jpeg", data: await jpeg64(p.url) }))); }
+  catch { E.busy = false; renderEstimer(); $("#e-err").textContent = "Photo illisible : essayez une autre photo."; return; }
+  const j = await api("POST", "/api/identifier", { cat:E.cat, images, roles:images.map((_,i)=>"Photo "+(i+1)), modele_saisi:E.mod||"", etat_declare:E.etat||"", accessoires:[] });
+  E.busy = false;
+  if (!j.ok){ renderEstimer(); $("#e-err").textContent = j.message || "L'analyse n'a pas abouti."; return; }
+  E.id = j.id; E.ident = j.ident; E.demoItem = j._demo; renderEstConfirm();
+}
+function renderEstConfirm(){
+  const d = E.ident;
+  $("#estimer").innerHTML = `<div class="card"><div class="small">Article identifié · confiance ${esc(d.confiance)}${d.trop_ancien?" · ⚠ téléphone trop ancien":""}</div>
+    <h2 style="margin:4px 0">${esc(nm(d))}</h2><div class="small" style="font-weight:600">${esc(d.variante||"")} · ${ETN[d.etat]||""}</div>
+    <ul class="clean" style="margin-top:8px">${(d.indices||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+    <button class="btn btn-y btn-full" id="c-ok" style="margin-top:12px">Oui, calculer le prix</button>
+    ${(d.alternatives||[]).map((a,i)=>`<button class="btn btn-g btn-full" data-alt="${i}" style="margin-top:6px">C'est plutôt : ${esc(a)}</button>`).join("")}
+    <div class="fld"><label for="c-mod">Corriger le modèle</label><input id="c-mod" placeholder="Modèle exact"><input id="c-var" placeholder="Capacité / version" style="margin-top:6px"></div>
+    <button class="btn btn-k btn-full" id="c-fix" style="margin-top:8px">Corriger et calculer</button>
+    <button class="btn btn-g btn-full" id="c-new" style="margin-top:6px">Nouvelle estimation</button></div>`;
+  $("#c-ok").onclick = () => runPrice(null);
+  $("#estimer").querySelectorAll("[data-alt]").forEach(b => b.onclick = () => runPrice({ correction:d.alternatives[+b.dataset.alt] }));
+  $("#c-fix").onclick = () => { const v = $("#c-mod").value.trim(); if (v) runPrice({ correction:v, variante_corrigee:$("#c-var").value.trim() }); };
+  $("#c-new").onclick = resetEst;
+}
+async function runPrice(corr){
+  busy("Recherche des prix du marché…");
+  const j = await api("POST", "/api/prix", { id:E.id, ...(corr||{}), _modele:E.ident.modele, _etat:E.ident.etat });
+  E.busy = false;
+  if (!j.ok){ renderEstConfirm(); alertInline(j.code==="too_low" ? "Valeur trop faible pour une reprise." : j.code==="no_price" ? "Pas de prix de référence fiable." : (j.message||"Calcul impossible.")); return; }
+  if (j.trop_ancien){ E.res = { old:true, ident:j.ident }; return renderEstResult(); }
+  E.res = j; renderEstResult();
+}
+function alertInline(msg){ const p = document.createElement("p"); p.style.cssText = "color:var(--red);font-weight:700"; p.textContent = msg; $("#estimer .card").appendChild(p); }
+function renderEstResult(){
+  const r = E.res;
+  if (r.old){ $("#estimer").innerHTML = `<div class="verdict no"><b>Ne pas racheter</b>Téléphone sorti en ${esc(r.ident?.annee||"2017 ou avant")} : hors politique de rachat.</div><button class="btn btn-g btn-full" id="r-new">Nouvelle estimation</button>`; $("#r-new").onclick = resetEst; return; }
+  const d = r.ident || E.ident, i = r.interne || {}, c = i.calc, m = i.marche || {};
+  const rmin = r.revente.min, rmax = r.revente.max, buyMax = r.reprise.max, buyAdv = r.reprise.min, remise = c ? c.lo.remise : 0;
+  const margin = rmin - buyMax - remise, pct = rmin ? Math.round(margin/rmin*100) : 0;
+  const conf = i.confiance || d.confiance, dem = m.demande || "";
+  const risk = conf==="faible" || dem==="faible" ? "élevé" : conf==="moyenne" || dem==="moyenne" || d.etat==="abime" ? "moyen" : "faible";
+  const cls = risk==="faible" ? "go" : risk==="moyen" ? "mid" : "no";
+  $("#estimer").innerHTML = `
+    <div class="card"><h2 style="font-size:19px">${esc(nm(d))}</h2><div class="small" style="font-weight:600">${esc(d.variante||"")} · ${ETN[d.etat]||""}</div></div>
+    <div class="verdict ${cls}"><b>Risque ${risk}</b>${risk==="faible"?"Bonne opération si achat au prix conseillé.":risk==="moyen"?"À vérifier en magasin avant d'acheter.":"Prudence : identification ou demande incertaines."}</div>
+    <div class="grid2">
+      <div class="mini"><small>Achat conseillé</small><b>${eur(buyAdv)}</b></div>
+      <div class="mini"><small>Prix max à ne pas dépasser</small><b>${eur(buyMax)}</b></div>
+      <div class="mini"><small>Revente réaliste</small><b>${eur(rmax)}</b></div>
+      <div class="mini"><small>Vente rapide</small><b>${eur(rmin)}</b></div>
+      <div class="mini"><small>Marge brute (pire cas)</small><b>${eur(margin)}</b></div>
+      <div class="mini"><small>Marge %</small><b>${pct} %</b></div>
+    </div>
+    ${c?`<div class="card" style="margin-top:10px"><table class="calc"><tr class="hd"><td></td><td>Bas</td><td>Haut</td></tr>
+      <tr><td>Revente estimée</td><td>${eur(c.lo.revente)}</td><td>${eur(c.hi.revente)}</td></tr>
+      <tr><td>− Marge (${Math.round(c.margePct)} %)</td><td>${eur(c.lo.marge)}</td><td>${eur(c.hi.marge)}</td></tr>
+      <tr><td>− Remise en état</td><td>${eur(c.lo.remise)}</td><td>${eur(c.hi.remise)}</td></tr>
+      <tr><td>− Risque SAV (${c.savPct} %)</td><td>${eur(c.lo.sav)}</td><td>${eur(c.hi.sav)}</td></tr>
+      <tr class="tot"><td>= Reprise</td><td>${eur(c.low)}</td><td>${eur(c.high)}</td></tr></table>
+      <p class="small">Neuf : ${eur(m.prix_neuf)} · Reconditionné : ${eur(m.prix_reconditionne)}${m.particuliers?` · Particuliers : ${esc(m.particuliers)}`:""} · Demande : ${esc(dem||"—")}<br>${esc(m.commentaire||"")}</p>
+      ${(i.sources||[]).length?`<p class="small"><b>Sources :</b><br>${i.sources.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.titre).slice(0,60))}</a>`).join("<br>")}</p>`:""}</div>`:""}
+    <button class="btn btn-y btn-full" id="r-new">Nouvelle estimation</button>`;
+  $("#r-new").onclick = resetEst;
+}
+function resetEst(){ E.photos.forEach(p=>URL.revokeObjectURL(p.url)); E = { cat:E.cat, photos:[], ident:null, id:null, res:null, busy:false }; renderEstimer(); }
+
+/* ================= Réglages ================= */
+async function renderReglages(){
+  $("#reglages").innerHTML = `<div class="spin"></div>`;
+  const j = await api("GET", "/api/gerant/parametres");
+  if (!j.ok){ $("#reglages").innerHTML = `<div class="card">Paramètres indisponibles.</div>`; return; }
+  PAR = j.parametres; DEFPAR = j.defauts;
+  const n = (id,l,v,step=1) => `<div class="prow"><label for="${id}">${l}</label><input type="number" id="${id}" value="${v}" step="${step}" inputmode="decimal"></div>`;
+  $("#reglages").innerHTML = `
+    <div class="card"><h3 class="h2" style="margin-top:0">Connexion</h3>
+      <p style="margin:0">${MODE==="demo" ? "Mode démo (aucun serveur configuré)" : "Serveur : "+esc(API)}<br><span class="small">IA : ${j.mode==="ia"?"active":"mode test"} · Recherche web : ${j.recherche_web?"oui":"non"} · Actualisation toutes les ${POLL_MS/1000} s</span></p></div>
+    <div class="card"><h3 class="h2" style="margin-top:0">Calcul de reprise</h3>
+      ${n("savPct","Risque / SAV (%)",PAR.savPct,.5)}${n("oldYear","Téléphones refusés si sortis en ou avant",PAR.oldYear)}${n("lowConfidenceCut","Décote si confiance faible (%)",PAR.lowConfidenceCut)}
+      <h3 class="h2">Remise en état minimum (€)</h3>${Object.entries(ETN).map(([k,v])=>n("rf-"+k,v,PAR.refurb[k])).join("")}
+      <h3 class="h2">Marge cible par catégorie (%)</h3>${Object.entries(CATN).map(([k,v])=>n("mg-"+k,v,PAR.margins[k])).join("")}
+      <button class="btn btn-y btn-full" id="p-save" style="margin-top:12px">Enregistrer les paramètres</button>
+      <button class="btn btn-g btn-full" id="p-def" style="margin-top:6px">Valeurs par défaut</button><p id="p-msg" class="small"></p></div>
+    <button class="btn btn-k btn-full" id="logout">Se déconnecter</button>`;
+  $("#p-save").onclick = async () => {
+    const v = id => Math.max(0, Number($("#"+id).value)||0);
+    const body = { savPct:v("savPct"), oldYear:v("oldYear"), lowConfidenceCut:v("lowConfidenceCut"), refurb:Object.fromEntries(Object.keys(ETN).map(k=>[k,v("rf-"+k)])), margins:Object.fromEntries(Object.keys(CATN).map(k=>[k,v("mg-"+k)])) };
+    const r = await api("PUT", "/api/gerant/parametres", body);
+    $("#p-msg").innerHTML = r.ok ? `<span class="saved">✓ Appliqué aux prochaines estimations</span>` : "Échec de l'enregistrement";
+  };
+  $("#p-def").onclick = () => { Object.entries({savPct:DEFPAR.savPct,oldYear:DEFPAR.oldYear,lowConfidenceCut:DEFPAR.lowConfidenceCut}).forEach(([k,v])=>$("#"+k).value=v);
+    Object.entries(DEFPAR.refurb).forEach(([k,v])=>$("#rf-"+k).value=v); Object.entries(DEFPAR.margins).forEach(([k,v])=>$("#mg-"+k).value=v); $("#p-msg").textContent = "Cliquez sur Enregistrer pour appliquer."; };
+  $("#logout").onclick = () => logout();
+}
+
+/* ================= Démarrage ================= */
+async function start(){
+  $("#login").hidden = true; $("#app").hidden = false; $("#demo-banner").hidden = MODE !== "demo";
+  KNOWN = null; await refresh(); startPolling(); go("direct");
+}
+if (TOKEN || MODE === "demo" && ls.get("dir-token")) start();
+</script>

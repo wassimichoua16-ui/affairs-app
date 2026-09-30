@@ -1,9 +1,10 @@
-name: Construire l'APK Android
+name: Construire l'APK Affairs Dirigeants
 
 on:
   push:
-    paths-ignore:
+    paths:
       - 'dirigeants/**'
+      - '.github/workflows/apk-dirigeants.yml'
   workflow_dispatch:
 
 permissions:
@@ -12,6 +13,9 @@ permissions:
 jobs:
   apk:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dirigeants
     steps:
       - uses: actions/checkout@v4
 
@@ -28,15 +32,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Ranger les fichiers envoyés à plat
-        run: |
-          mkdir -p src assets
-          for f in app.part app.js.part logo.png magasins.json; do if [ -f "$f" ]; then mv "$f" src/; fi; done
-          for f in icon-only.png icon-foreground.png icon-background.png splash.png splash-dark.png; do if [ -f "$f" ]; then mv "$f" assets/; fi; done
-          ls src assets
-
       - name: Installer les dépendances
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Construire l'application
         run: python3 build.py
@@ -50,27 +47,27 @@ jobs:
       - name: Préparer le projet Android
         run: |
           if [ ! -d android ]; then npx cap add android; fi
-          npx @capacitor/assets generate --android --iconBackgroundColor '#e30613' --splashBackgroundColor '#ffffff'
+          npx @capacitor/assets generate --android --iconBackgroundColor '#141414' --splashBackgroundColor '#141414'
           npx cap sync android
 
       - name: Compiler l'APK
-        working-directory: android
+        working-directory: dirigeants/android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
       - name: Renommer
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk Affairs-demo.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Affairs-Dirigeants.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Affairs-APK
-          path: Affairs-demo.apk
+          name: Affairs-Dirigeants-APK
+          path: dirigeants/Affairs-Dirigeants.apk
 
       - name: Publier le lien de téléchargement direct
         if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete demo --yes --cleanup-tag || true
-          gh release create demo Affairs-demo.apk --title "Application Affair's – version de test" --notes "APK de démonstration. Ouvrez ce lien sur votre téléphone Android pour l'installer." --latest
+          gh release delete dirigeants --yes --cleanup-tag || true
+          gh release create dirigeants Affairs-Dirigeants.apk --title "Affairs Dirigeants – version de test" --notes "Application privée de la direction. Ouvrez ce lien sur votre téléphone Android pour l'installer." --latest=false
