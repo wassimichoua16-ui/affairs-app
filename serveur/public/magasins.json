@@ -1,0 +1,14 @@
+[
+  {"id":"echirolles","n":"Échirolles","dep":"Isère (38)","adr":"21 Avenue Salvador Allende","cp":"38130 Échirolles","tel":"04 76 33 87 27",
+   "hrs":"Lun 14h–19h · Mar–Ven 10h–12h / 14h–19h · Sam non-stop","achat":"Service achat : fermeture 30 min avant","url":"https://www.affairs.fr/affairs-echirolles,502.html"},
+  {"id":"smh","n":"Saint-Martin-d'Hères","dep":"Isère (38)","adr":"121 Avenue Gabriel Péri","cp":"38400 Saint-Martin-d'Hères","tel":"04 76 00 91 91",
+   "hrs":"Lun 14h–19h · Mar–Ven 10h–12h / 14h–19h · Sam journée continue","achat":"Service achat : fermeture 15 min avant, fermé le samedi 11h45–14h","url":"https://www.affairs.fr/affairs-saint-martin-heres,512.html"},
+  {"id":"tignieu","n":"Tignieu-Jameyzieu","dep":"Isère (38)","adr":"19 Rue des Ardennes","cp":"38230 Tignieu-Jameyzieu","tel":"04 78 31 61 94",
+   "hrs":"Lun 14h–19h · Mar–Sam 10h–12h / 14h–19h","achat":"Service achat : fermeture 30 min avant","url":"https://www.affairs.fr/affairs-tignieu,572.html"},
+  {"id":"vaulx","n":"Vaulx-en-Velin (Lyon)","dep":"Rhône (69)","adr":"10 Rue des Frères Lumière","cp":"69120 Vaulx-en-Velin","tel":"04 72 81 81 91",
+   "hrs":"Lun 14h–19h · Mar–Ven 10h–12h / 14h–19h · Sam 10h–19h non-stop","achat":"Service achat : fermeture 30 min avant","url":"https://www.affairs.fr/affairs-lyon,522.html"},
+  {"id":"albertville","n":"Albertville","dep":"Savoie (73)","adr":"141 Rue Louis Armand","cp":"73200 Albertville","tel":"04 79 37 93 08",
+   "hrs":"Lun 14h–19h · Mar–Sam 10h–12h / 14h–19h","achat":"Service achat : 10h–11h45 / 14h–18h45","url":"https://www.affairs.fr/affairs-albertville,562.html"},
+  {"id":"bassens","n":"Chambéry – Bassens","dep":"Savoie (73)","adr":"C.C. Les Portiques, 78 Rue de la Martinière","cp":"73230 Saint-Alban-Leysse","tel":"04 79 33 30 53",
+   "hrs":"Lun 14h15–19h · Mar–Sam 10h–12h / 14h–19h","achat":"Service achat : fermeture 15 min avant","url":"https://www.affairs.fr/affairs-chambery,532.html"}
+]

@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Estimation en ligne – Affair's</title>
+<meta name="description" content="Estimez gratuitement votre article en quelques photos grâce à l'IA Affair's, puis vendez-le cash en magasin.">
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="ribbon-test" id="test-ribbon" hidden>MODE TEST — aucune clé API configurée : les résultats sont fictifs. Voir le guide d'installation.</div>
+
+<header class="top">
+  <div class="wrap hrow">
+    <a class="logo" href="/" aria-label="Affair's, retour à l'accueil"><img src="/logo.png" alt="Affair's — Achetez malin, vendez cash" width="165" height="81"></a>
+    <div class="search" aria-hidden="true"><input type="text" placeholder="Rechercher" tabindex="-1"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><circle cx="14" cy="10" r="6"/><path d="M9.5 14.5 4 20"/></svg></span></div>
+    <div class="hbtns">
+      <a class="hb hb-buy" href="https://www.affairs.fr/acheter,21.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5"/><path d="M4 12h11M8 8l-4 4 4 4"/></svg>Acheter</a>
+      <a class="hb hb-sell" href="/" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5"/><path d="M9 12h11M16 8l4 4-4 4"/></svg>Vendre</a>
+      <div class="hicons" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" stroke="#151515" stroke-width="2.4"><circle cx="20" cy="13" r="7"/><path d="M7 35c0-8 6-12 13-12s13 4 13 12z"/></svg>
+        <svg viewBox="0 0 40 40" fill="none" stroke="#151515" stroke-width="2.4"><path d="M9 14h22l-2 21H11z"/><path d="M15 16v-5a5 5 0 0 1 10 0v5"/><text x="20" y="30" text-anchor="middle" font-size="10" font-family="Arial" fill="#151515" stroke="none" font-weight="700">0</text></svg>
+      </div>
+    </div>
+  </div>
+  <nav class="wrap catnav" aria-label="Catégories">
+    <ul>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2.5" width="10" height="19" rx="1.5"/><path d="M11 18.5h2"/></svg>Téléphonie</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7h12a4 4 0 0 1 4 4l-1 7a2 2 0 0 1-3.6 1L15 16H9l-2.4 3A2 2 0 0 1 3 18l-1-7a4 4 0 0 1 4-4z"/><path d="M7 11v3M5.5 12.5h3"/></svg>Jeux vidéos</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="11"/><path d="M2 19h20l-2-4H4z"/></svg>Informatique</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="13"/><path d="M8 21h8M12 17v4M8 9l4 3 4-4"/></svg>Multimédia</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h9l2 3H5zM8 7v4h4l1 10H9L8 11"/><path d="M16 5h3M17 3v4"/></svg>Loisir maison</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12l4 5-10 12L2 9z"/><path d="M2 9h20M9 4l3 17 3-17"/></svg>Bijoux mode</li>
+      <li class="or"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 19l3-6h7l3 6zM9 13l3-6h7l3 6"/><path d="M17 4l1-2M20 5l2-1"/></svg>Vendre mon or</li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap crumb">Accueil<span>›</span>Vendre<span>›</span>Estimation en ligne</div>
+
+  <section id="hero">
+    <div class="wrap ptitle">
+      <h1>Combien vaut votre article ?<small>Estimation immédiate par IA</small></h1>
+      <p>Envoyez-nous quelques photos et obtenez une estimation indicative grâce à notre IA. Venez ensuite en magasin : <b>paiement immédiat en CASH</b>.</p>
+      <button class="btn btn-cash big" id="start">📸 Estimer mon article</button>
+    </div>
+    <div class="wrap duo">
+      <div class="gblock">
+        <div class="ghead"><h2>Comment ça marche ?</h2></div>
+        <div class="gbody nums">
+          <div><div class="num">1</div><p>Photographiez votre article et envoyez vos photos.</p></div>
+          <div><div class="num">2</div><p>Notre IA identifie le modèle, analyse l'état et recherche les prix du marché.</p></div>
+          <div><div class="num">3</div><p>Choisissez votre magasin : nous confirmons l'offre et vous payons cash.</p></div>
+        </div>
+      </div>
+      <div class="gblock">
+        <div class="ghead"><h2>Exemple d'estimation</h2></div>
+        <div class="gbody">
+          <div class="sample">
+            <span class="tag">Exemple</span>
+            <h3>iPhone 17 Pro Max</h3>
+            <div class="spec">256 Go · Orange cosmique</div>
+            <div class="meta"><span class="pill good">Très bon état</span></div>
+            <div class="offer"><small>Estimation de reprise Affair's</small><strong>800 € – 840 €</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="flow" id="flow" hidden>
+    <div class="wrap">
+      <div class="ptitle" style="padding-bottom:26px"><h1>Estimer mon article</h1></div>
+      <div class="panel" id="panel">
+        <div class="pbody" style="border-radius:10px">
+        <ol class="steps" id="steps">
+          <li><span>Catégorie</span></li><li><span>Photos</span></li><li><span>Analyse</span></li><li><span>Estimation</span></li><li><span>Magasin</span></li>
+        </ol>
+
+        <div id="v-cat" hidden>
+          <h2>Quel type de produit souhaitez-vous vendre ?</h2>
+          <p class="sub">Choisissez la catégorie la plus proche. Notre IA vérifiera ensuite sur les photos.</p>
+          <div class="cats" id="cats"></div>
+        </div>
+
+        <div id="v-photos" hidden>
+          <div class="chosen" id="chosen"></div>
+          <h2>Envoyez vos photos</h2>
+          <p class="sub">Photographiez votre article à la lumière du jour, sur un fond simple.</p>
+          <div class="tip"><span>💡</span><span><b>Plus vous envoyez de photos, plus l'estimation pourra être précise.</b> L'étiquette ou la référence aide beaucoup à identifier le modèle exact.</span></div>
+          <div class="slots" id="slots"></div>
+          <div class="upl-actions">
+            <label class="btn btn-brand" for="in-camera">📷 Prendre une photo</label>
+            <label class="btn btn-ghost" for="in-multi">🖼️ Choisir des photos</label>
+          </div>
+          <input type="file" id="in-camera" accept="image/*" capture="environment" hidden>
+          <input type="file" id="in-multi" accept="image/*" multiple hidden>
+          <input type="file" id="in-slot" accept="image/*" hidden>
+          <div class="counter" id="counter"></div>
+          <div class="extra">
+            <div class="field">
+              <label for="f-model">Modèle, si vous le connaissez <span class="small">(facultatif)</span></label>
+              <input type="text" id="f-model" placeholder="Ex. iPhone 15 128 Go, Xbox Series X…" autocomplete="off">
+            </div>
+            <div class="field">
+              <span style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">Ce que vous apportez</span>
+              <div class="checks">
+                <label class="chk"><input type="checkbox" id="acc-box" value="boîte"> Boîte</label>
+                <label class="chk"><input type="checkbox" id="acc-charger" value="chargeur / câbles"> Chargeur / câbles</label>
+                <label class="chk"><input type="checkbox" id="acc-invoice" value="facture"> Facture</label>
+              </div>
+            </div>
+          </div>
+          <div class="row-end">
+            <button class="linkish" id="back-cat">← Changer de catégorie</button>
+            <button class="btn btn-cash big" id="analyse" disabled>Lancer l'estimation</button>
+          </div>
+        </div>
+
+        <div id="v-scan" hidden>
+          <div class="scan">
+            <div>
+              <div class="scan-img"><img id="scan-main" alt=""><div class="grid"></div></div>
+              <div class="thumbs" id="scan-thumbs"></div>
+            </div>
+            <div>
+              <h2 id="scan-title">Notre IA examine votre article</h2>
+              <p class="sub" id="scan-sub">Cela prend généralement quelques secondes.</p>
+              <ul class="phases" id="phases"></ul>
+              <div class="bar"><i id="bar"></i></div>
+              <p class="scan-note" id="scan-note"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="v-confirm" hidden></div>
+        <div id="v-result" hidden></div>
+        <div id="v-store" hidden></div>
+        <div id="v-done" hidden></div>
+
+        <div id="v-old" hidden>
+          <div class="refuse">
+            <div class="big">❌</div>
+            <h2 style="color:var(--red)">Article trop ancien</h2>
+            <p id="old-model"></p>
+            <p><b>Merci pour votre demande. Nous ne sommes généralement pas intéressés par les téléphones de 2017 ou antérieurs.</b></p>
+            <p class="small">Vous pouvez tout de même passer en magasin : nos acheteurs vous orienteront.</p>
+            <button class="btn btn-cash" id="old-back">Retour à l'estimation</button>
+          </div>
+        </div>
+
+        <div id="v-error" hidden>
+          <div class="refuse">
+            <div class="big">🔍</div>
+            <h2 id="err-title">Nous n'avons pas pu estimer cet article</h2>
+            <p id="err-text"></p>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+              <button class="btn btn-cash" id="err-retry">Réessayer</button>
+              <button class="btn btn-ghost" id="err-photos">Modifier mes photos</button>
+              <button class="btn btn-ghost" id="err-restart">Recommencer</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap frow">
+    <div class="fbrand"><img src="/logo.png" alt="Affair's" width="165" height="81"><span>Vente et achat cash de produits<br>neufs et d'occasion</span></div>
+    <div class="fhelp">
+      <svg viewBox="0 0 54 54" fill="none" stroke="#fff" stroke-width="2.4"><path d="M12 28v-5a15 15 0 0 1 30 0v5"/><rect x="8" y="26" width="6" height="11" rx="3"/><rect x="40" y="26" width="6" height="11" rx="3"/><path d="M43 37c0 6-6 9-12 9"/><path d="M20 26q2-2 4 0M30 26q2-2 4 0" stroke="#fdc300"/><path d="M22 33q5 4 10 0" stroke="#fdc300"/></svg>
+      <div><small>Besoin d'aide ?</small><a class="tel" href="tel:0476494203" style="text-decoration:none">04 76 49 42 03</a></div>
+    </div>
+    <a class="fmag" href="https://www.affairs.fr/magasins,14.html" target="_blank" rel="noopener">
+      <svg width="46" height="56" viewBox="0 0 46 56" fill="none" stroke="#fff" stroke-width="2.6"><path d="M23 44S8 28 8 19a15 15 0 0 1 30 0c0 9-15 25-15 25z"/><circle cx="23" cy="19" r="5" stroke="#fdc300"/><path d="M8 53h30"/></svg>
+      <span>Trouver<br>mon magasin</span></a>
+  </div>
+  <div class="wrap flinks"><a href="https://www.affairs.fr/mentions-legales,4.html">Mentions Légales</a><span>|</span><a href="https://www.affairs.fr/conditions-generales-de-ventes,5.html">Conditions générales de ventes</a><span>|</span><a href="https://www.franchise-affairs.fr/">Franchise</a><span>|</span><a href="https://www.affairs.fr/contact,6.html">Contact</a></div>
+  <div class="fbottom"><div class="wrap"><span>🔒 Paiement sécurisé</span><a class="gerant-link" href="/gerant" style="text-decoration:none">Espace gérant</a><span>Suivez-nous sur les réseaux</span></div></div>
+</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const CATS = [
+  {k:"telephone", ico:"📱", n:"Téléphone"}, {k:"ordinateur", ico:"💻", n:"Ordinateur"}, {k:"console", ico:"🎮", n:"Console"},
+  {k:"tv", ico:"📺", n:"TV"}, {k:"photo", ico:"📷", n:"Appareil photo"}, {k:"audio", ico:"🎧", n:"Audio"},
+  {k:"montre", ico:"⌚", n:"Montre connectée"}, {k:"drone", ico:"🚁", n:"Drone"}, {k:"tablette", ico:"📱", n:"Tablette"},
+  {k:"jeux", ico:"🎮", n:"Jeux vidéo"}, {k:"autre", ico:"👜", n:"Autre"}
+];
+const CAT = Object.fromEntries(CATS.map(c=>[c.k,c]));
+const ETATS = { tres_bon:{n:"Très bon état",c:"good"}, bon:{n:"Bon état",c:"good"}, correct:{n:"État correct",c:"warn"}, abime:{n:"Abîmé / à réparer",c:"bad"} };
+const SLOT_NAMES = ["Vue générale","Face avant","Arrière","Étiquette / référence","Défauts éventuels"];
+const MAX_PHOTOS = 6;
+let STORES = [];
+let S = { cat:null, photos:[null,null,null,null,null], extra:[], slotTarget:null, id:null, ident:null, result:null, store:null, lastAction:null };
+
+fetch("/magasins.json").then(r=>r.json()).then(j=>STORES=j).catch(()=>{});
+fetch("/api/statut").then(r=>r.json()).then(j=>{ if (j.mode==="test") $("#test-ribbon").hidden = false; }).catch(()=>{});
+
+const esc = s => String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const eur = n => Math.round(n).toLocaleString("fr-FR") + " €";
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+const range = (a,b) => a===b ? eur(a) : `${eur(a)} – ${eur(b)}`;
+
+/* ---------- Navigation ---------- */
+const VIEWS = ["v-cat","v-photos","v-scan","v-confirm","v-result","v-store","v-done","v-old","v-error"];
+function show(id, step){
+  VIEWS.forEach(v => $("#"+v).hidden = v!==id);
+  [...$("#steps").children].forEach((li,i)=>{ li.className = step>=5 || i<step ? "done" : i===step ? "cur" : ""; });
+  $("#panel").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto":"smooth", block:"start"});
+}
+function resetAll(){
+  S.photos.forEach(p=>p&&URL.revokeObjectURL(p.url)); S.extra.forEach(p=>URL.revokeObjectURL(p.url));
+  S = { cat:null, photos:[null,null,null,null,null], extra:[], slotTarget:null, id:null, ident:null, result:null, store:null, lastAction:null };
+  $("#f-model").value=""; ["acc-box","acc-charger","acc-invoice"].forEach(id=>$("#"+id).checked=false);
+  renderCats(); renderSlots();
+}
+$("#start").onclick = () => { $("#hero").hidden = true; $("#flow").hidden = false; resetAll(); show("v-cat",0); };
+
+/* ---------- Étape 1 ---------- */
+function renderCats(){ $("#cats").innerHTML = CATS.map(c=>`<button class="cat" data-k="${c.k}" aria-pressed="${S.cat===c.k}"><span class="ico">${c.ico}</span>${c.n}</button>`).join(""); }
+$("#cats").onclick = e => {
+  const b = e.target.closest(".cat"); if(!b) return;
+  S.cat = b.dataset.k; renderCats();
+  $("#chosen").innerHTML = `${CAT[S.cat].ico} ${CAT[S.cat].n} <button id="chg">Modifier</button>`;
+  $("#chg").onclick = () => show("v-cat",0);
+  setTimeout(()=>show("v-photos",1),150);
+};
+$("#back-cat").onclick = () => show("v-cat",0);
+
+/* ---------- Étape 2 : photos ---------- */
+const allPhotos = () => [...S.photos.map((p,i)=>p&&{...p,role:SLOT_NAMES[i]}).filter(Boolean), ...S.extra.map(p=>({...p,role:"Photo supplémentaire"}))];
+function renderSlots(){
+  $("#slots").innerHTML = S.photos.map((p,i)=> p
+    ? `<div class="slot filled"><img src="${p.url}" alt="${SLOT_NAMES[i]}"><span class="lbl">${SLOT_NAMES[i]}</span><button class="rm" data-rm="${i}" aria-label="Retirer la photo ${SLOT_NAMES[i]}">×</button></div>`
+    : `<button class="slot" data-slot="${i}"><span class="plus">+</span><strong>${SLOT_NAMES[i]}</strong>${i===0?"Obligatoire":"Conseillé"}</button>`).join("")
+    + S.extra.map((p,j)=>`<div class="slot filled"><img src="${p.url}" alt="Photo supplémentaire"><span class="lbl">Autre</span><button class="rm" data-rmx="${j}" aria-label="Retirer la photo">×</button></div>`).join("");
+  const n = allPhotos().length;
+  $("#counter").innerHTML = n ? `<b>${n} photo${n>1?"s":""}</b> ajoutée${n>1?"s":""}${n<3?" · ajoutez-en encore pour plus de précision":""}${n>=MAX_PHOTOS?" · maximum atteint":""}` : "Ajoutez au moins une photo pour continuer.";
+  $("#analyse").disabled = n===0;
+}
+function addFiles(files, target){
+  [...files].filter(f=>f.type.startsWith("image/") || /\.(heic|heif)$/i.test(f.name)).forEach((f,idx)=>{
+    if (allPhotos().length >= MAX_PHOTOS) return;
+    const item = {file:f, url:URL.createObjectURL(f)};
+    const i = (idx===0 && target!=null && !S.photos[target]) ? target : S.photos.findIndex(p=>!p);
+    if (i>=0) S.photos[i]=item; else S.extra.push(item);
+  });
+  renderSlots();
+}
+$("#slots").onclick = e => {
+  const rm = e.target.closest("[data-rm]"), rmx = e.target.closest("[data-rmx]"), sl = e.target.closest("[data-slot]");
+  if (rm){ const i=+rm.dataset.rm; URL.revokeObjectURL(S.photos[i].url); S.photos[i]=null; return renderSlots(); }
+  if (rmx){ const j=+rmx.dataset.rmx; URL.revokeObjectURL(S.extra[j].url); S.extra.splice(j,1); return renderSlots(); }
+  if (sl){ S.slotTarget=+sl.dataset.slot; $("#in-slot").click(); }
+};
+["in-slot","in-camera","in-multi"].forEach(id => $("#"+id).onchange = e => { addFiles(e.target.files, id==="in-slot"?S.slotTarget:null); e.target.value=""; });
+$("#slots").addEventListener("dragover", e=>{ e.preventDefault(); e.target.closest(".slot")?.classList.add("drag"); });
+$("#slots").addEventListener("dragleave", e=>{ e.target.closest(".slot")?.classList.remove("drag"); });
+$("#slots").addEventListener("drop", e=>{ e.preventDefault(); const s=e.target.closest("[data-slot]"); document.querySelectorAll(".slot.drag").forEach(x=>x.classList.remove("drag")); addFiles(e.dataTransfer.files, s? +s.dataset.slot : null); });
+
+/* Compression des photos avant envoi (plus rapide, moins cher) */
+function loadImg(url){ return new Promise((ok,ko)=>{ const im=new Image(); im.onload=()=>ok(im); im.onerror=()=>ko(new Error("decode")); im.src=url; }); }
+async function toJpeg(url, max, q){
+  const im = await loadImg(url);
+  const k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
+  const c = document.createElement("canvas"); c.width = Math.round(im.naturalWidth*k); c.height = Math.round(im.naturalHeight*k);
+  const g = c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height);
+  return c.toDataURL("image/jpeg", q);
+}
+
+/* ---------- Analyse ---------- */
+function setPhases(list, i){
+  $("#phases").innerHTML = list.map((t,j)=>`<li class="${j<i?"ok":j===i?"run":""}"><span class="dot">${j<i?"✓":""}</span>${j<i?t.replace("…",""):t}</li>`).join("");
+  $("#bar").style.width = Math.min(100,(i/list.length)*100 + (i<list.length?6:0)) + "%";
+}
+async function withPhases(list, promise, notes){
+  let done=false, i=0; const t0=Date.now();
+  setPhases(list,0);
+  const tick = setInterval(()=>{
+    if(done) return;
+    const s=(Date.now()-t0)/1000;
+    const target = Math.min(list.length-1, Math.floor(s/2.2));
+    if (target>i){ i=target; setPhases(list,i); }
+    if (notes && s>6) $("#scan-note").textContent = notes[Math.min(notes.length-1, Math.floor((s-6)/9))];
+    if (i===list.length-1) $("#bar").style.width = Math.min(97, 80 + s*0.35) + "%";
+  }, 400);
+  try { return await promise; } finally { done=true; clearInterval(tick); setPhases(list,list.length); await wait(350); }
+}
+async function api(url, body){
+  try {
+    const r = await fetch(url, { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(body) });
+    return await r.json();
+  } catch { return { ok:false, code:"offline" }; }
+}
+
+$("#analyse").onclick = runIdentify;
+async function runIdentify(){
+  S.lastAction = runIdentify;
+  const photos = allPhotos(); if(!photos.length) return;
+  $("#scan-main").src = photos[0].url;
+  $("#scan-thumbs").innerHTML = photos.slice(1).map(p=>`<img src="${p.url}" alt="">`).join("");
+  $("#scan-title").textContent = "Notre IA examine votre article";
+  $("#scan-sub").textContent = "Cela prend généralement 10 à 20 secondes.";
+  $("#scan-note").textContent = "";
+  show("v-scan",2);
+  let images;
+  try {
+    images = await Promise.all(photos.map(async p => ({ media_type:"image/jpeg", data:(await toJpeg(p.url, 1568, 0.85)).split(",")[1] })));
+    S.thumb = await toJpeg(photos[0].url, 240, 0.7);
+  } catch { return showError({code:"photo_format"}); }
+  const acc = ["acc-box","acc-charger","acc-invoice"].filter(id=>$("#"+id).checked).map(id=>$("#"+id).value);
+  const r = await withPhases(["Analyse de votre article…","Identification du produit…","Analyse de l'état…"],
+    api("/api/identifier", { cat:S.cat, images, roles:photos.map(p=>p.role), modele_saisi:$("#f-model").value.trim(), accessoires:acc }),
+    ["L'IA relève les logos, inscriptions et formes de votre article…","Comparaison avec les modèles connus…","Encore quelques secondes…"]);
+  if (!r.ok) return showError(r);
+  S.id = r.id; S.ident = r.ident;
+  if (r.ident.trop_ancien) return showOld(r.ident);
+  showConfirm();
+}
+
+/* ---------- Confirmation du modèle ---------- */
+function identName(i){ return [i.marque, i.modele].filter(Boolean).join(" ").trim() || "Article"; }
+function showOld(i){ $("#old-model").textContent = `Article identifié : ${identName(i)}${i.annee?` (sorti en ${i.annee})`:""}.`; show("v-old",3); }
+function showConfirm(){
+  const d = S.ident;
+  const conf = {haute:["good","Identification fiable"], moyenne:["warn","Identification probable"], faible:["bad","Identification incertaine"]}[d.confiance];
+  $("#v-confirm").innerHTML = `
+    <div class="prod">
+      <img src="${allPhotos()[0]?.url||""}" alt="">
+      <div>
+        <span class="tag">Article identifié</span>
+        <h3 style="margin-top:8px">${esc(identName(d))}</h3>
+        ${d.variante?`<div class="spec">${esc(d.variante)}</div>`:""}
+        <div class="meta"><span class="pill ${ETATS[d.etat].c}">${ETATS[d.etat].n}</span><span class="pill ${conf[0]}">${conf[1]}</span></div>
+      </div>
+    </div>
+    ${d.indices.length?`<div class="block"><h4>Ce que l'IA a reconnu sur vos photos</h4><ul class="obs">${d.indices.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`:""}
+    <div class="block">
+      <h2 style="font-size:24px">Est-ce bien votre article ?</h2>
+      <div class="upl-actions" style="justify-content:center">
+        <button class="btn btn-cash big" id="cf-yes">Oui, voir mon estimation</button>
+        ${d.alternatives.map((a,i)=>`<button class="btn btn-ghost" data-alt="${i}">C'est plutôt : ${esc(a)}</button>`).join("")}
+      </div>
+      <div class="field" style="margin:16px auto 0;max-width:620px">
+        <label for="cf-model">Non, il s'agit de :</label>
+        <div class="form-grid">
+          <input type="text" id="cf-model" placeholder="Modèle exact, ex. Xbox Series X" autocomplete="off">
+          <input type="text" id="cf-var" placeholder="Capacité / version, ex. 1 To" autocomplete="off">
+        </div>
+        <button class="btn btn-brand" id="cf-fix" style="margin-top:10px">Corriger et estimer</button>
+      </div>
+    </div>`;
+  $("#cf-yes").onclick = () => runPrice(null);
+  $("#v-confirm").querySelectorAll("[data-alt]").forEach(b => b.onclick = () => runPrice({ correction:d.alternatives[+b.dataset.alt] }));
+  $("#cf-fix").onclick = () => { const v=$("#cf-model").value.trim(); if(!v) return $("#cf-model").focus(); runPrice({ correction:v, variante_corrigee:$("#cf-var").value.trim() }); };
+  show("v-confirm",3);
+}
+
+/* ---------- Prix ---------- */
+async function runPrice(corr){
+  S.lastAction = () => runPrice(corr);
+  $("#scan-title").textContent = "Recherche des prix du marché";
+  $("#scan-sub").textContent = "Notre IA compare les prix actuels en France. Cela peut prendre jusqu'à une minute.";
+  $("#scan-note").textContent = "";
+  show("v-scan",3);
+  const r = await withPhases(["Recherche des prix actuels…","Comparaison neuf / reconditionné / occasion…","Calcul de votre estimation…"],
+    api("/api/prix", { id:S.id, ...(corr||{}) }),
+    ["Consultation des sites de vente et de reconditionnement…","Vérification des prix réellement pratiqués…","Encore quelques secondes…"]);
+  if (!r.ok) return showError(r);
+  S.ident = r.ident;
+  if (r.trop_ancien) return showOld(r.ident);
+  S.result = r; showResult();
+}
+
+/* ---------- Résultat ---------- */
+function showResult(){
+  const d = S.ident, r = S.result, et = ETATS[d.etat];
+  const conf = {haute:["good","Identification fiable"], moyenne:["warn","Identification probable"], faible:["bad","Identification à confirmer"]}[d.confiance];
+  const obs = d.observations.map(o=>`<li>${esc(o)}</li>`).join("") + d.defauts.map(o=>`<li class="def">${esc(o)}</li>`).join("");
+  const hint = d.photo_utile ? `<div class="hint">📸 Pour affiner : ${esc(d.photo_utile)}</div>` : (allPhotos().length<3 ? `<div class="hint">📸 Ajoutez des photos (arrière, étiquette) pour une estimation plus précise.</div>` : "");
+  $("#v-result").innerHTML = `
+    <div class="res">
+      <div>
+        <div class="prod">
+          <img src="${allPhotos()[0]?.url||""}" alt="">
+          <div>
+            <span class="tag">${CAT[d.cat].ico} ${CAT[d.cat].n}</span>
+            <h3 style="margin-top:8px">${esc(identName(d))}</h3>
+            ${d.variante?`<div class="spec">${esc(d.variante)}</div>`:""}
+            <div class="meta"><span class="pill ${et.c}">${et.n}</span><span class="pill ${conf[0]}">${conf[1]}</span>${d.corrige?`<span class="pill good">Modèle indiqué par vous</span>`:""}</div>
+          </div>
+        </div>
+        ${obs?`<div class="block"><h4>Ce que notre IA a relevé</h4><ul class="obs">${obs}</ul>${hint}</div>`:""}
+      </div>
+      <div>
+        <div class="price-card">
+          <div class="resale"><small>💰 Valeur de revente estimée</small><strong>${range(r.revente.min, r.revente.max)}</strong></div>
+          <div class="buy">
+            <small>🏪 Estimation de reprise Affair's</small>
+            <strong>${range(r.reprise.min, r.reprise.max)}</strong>
+            <span class="cash">Payé cash en magasin</span>
+            <p>Estimation indicative — le prix définitif sera confirmé en magasin après contrôle du produit.</p>
+          </div>
+        </div>
+        <p class="disclaimer">L'estimation réalisée par notre IA est indicative. Le prix définitif dépendra de l'état réel du produit, de son fonctionnement, de son authenticité et des vérifications effectuées en magasin.</p>
+      </div>
+    </div>
+    <div class="cta">
+      <div>
+        <h3>Votre article vous intéresse toujours ?</h3>
+        <p>Venez directement chez Affair's avec votre produit pour obtenir notre offre définitive.</p>
+        <div class="stores">${STORES.map(s=>s.n).join(" · ")}</div>
+      </div>
+      <div class="acts">
+        <button class="btn btn-cash big" id="go-store">📍 Choisir mon magasin</button>
+        <button class="btn btn-ghost" id="again">🔄 Estimer un autre article</button>
+      </div>
+    </div>`;
+  $("#again").onclick = () => { resetAll(); show("v-cat",0); };
+  $("#go-store").onclick = () => { renderStores(); show("v-store",4); };
+  show("v-result",3);
+}
+
+/* ---------- Choix du magasin ---------- */
+let storeFilter = "Tous";
+function renderStores(){
+  const d = S.ident, r = S.result;
+  const deps = ["Tous", ...new Set(STORES.map(s=>s.dep))];
+  const list = STORES.filter(s=>storeFilter==="Tous" || s.dep===storeFilter);
+  $("#v-store").innerHTML = `
+    <h2>Choisissez votre magasin Affair's</h2>
+    <p class="sub">Sélectionnez le magasin où vous apporterez votre article. Nos acheteurs le contrôleront et vous paieront immédiatement en cash.</p>
+    <div class="recap"><span><b>${esc([identName(d), d.variante].filter(Boolean).join(" "))}</b><br><span class="small">${ETATS[d.etat].n}</span></span><span>Estimation de reprise<br><span class="rp">${range(r.reprise.min, r.reprise.max)}</span></span></div>
+    <div class="depts">${deps.map(x=>`<button data-dep="${esc(x)}" aria-pressed="${x===storeFilter}">${esc(x)}</button>`).join("")}</div>
+    <div class="stores-grid">${list.map(s=>`
+      <button class="store" data-store="${s.id}" aria-pressed="${S.store===s.id}">
+        <span class="dep">${s.dep}</span>
+        <h3>Affair's ${s.n}</h3>
+        <span>${s.adr}<br>${s.cp}</span>
+        <span><b>${s.tel}</b></span>
+        <span class="hrs">${s.hrs}<br>${s.achat}. Fermé le dimanche.</span>
+      </button>`).join("")}</div>
+    <div class="extra" style="border:0">
+      <div class="field"><label for="c-prenom">Votre prénom <span style="color:var(--red)">*</span></label><input type="text" id="c-prenom" autocomplete="given-name"></div>
+      <div class="field"><label for="c-tel">Votre téléphone <span class="small">(facultatif, pour être rappelé)</span></label><input type="text" id="c-tel" inputmode="tel" autocomplete="tel"></div>
+    </div>
+    <div class="row-end">
+      <button class="linkish" id="st-back">← Revenir à mon estimation</button>
+      <button class="btn btn-cash big" id="st-ok" ${S.store?"":"disabled"}>Valider ce magasin</button>
+    </div>
+    <p class="err-inline" id="st-err" hidden></p>`;
+  const keep = { p:S.prenom||"", t:S.tel||"" }; $("#c-prenom").value = keep.p; $("#c-tel").value = keep.t;
+  $("#c-prenom").oninput = e => S.prenom = e.target.value; $("#c-tel").oninput = e => S.tel = e.target.value;
+  $("#v-store").querySelectorAll("[data-dep]").forEach(b=>b.onclick=()=>{ storeFilter=b.dataset.dep; renderStores(); });
+  $("#v-store").querySelectorAll("[data-store]").forEach(b=>b.onclick=()=>{ S.store=b.dataset.store; renderStores(); });
+  $("#st-back").onclick = () => show("v-result",3);
+  $("#st-ok").onclick = saveAndFinish;
+}
+async function saveAndFinish(){
+  if ((S.prenom||"").trim().length < 2){ const e=$("#st-err"); e.hidden=false; e.textContent="Indiquez votre prénom pour valider."; return $("#c-prenom").focus(); }
+  const btn = $("#st-ok"); btn.disabled = true; btn.textContent = "Enregistrement…";
+  const r = await api("/api/enregistrer", { id:S.id, magasin:S.store, miniature:S.thumb, prenom:S.prenom||"", telephone:S.tel||"" });
+  if (!r.ok){ btn.disabled=false; btn.textContent="Valider ce magasin"; const e=$("#st-err"); e.hidden=false; e.textContent = r.code==="expired" ? "Cette estimation a expiré. Recommencez l'estimation." : "L'enregistrement n'a pas abouti. Vérifiez votre connexion et réessayez."; return; }
+  showDone(r);
+}
+function showDone(r){
+  const s = r.magasin, d = S.ident, res = S.result;
+  const valid = new Date(r.valide_jusqu_au).toLocaleDateString("fr-FR",{day:"numeric",month:"long"});
+  const maps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`Affair's ${s.adr} ${s.cp}`);
+  const bring = ["Votre article, en état de fonctionnement","Une pièce d'identité en cours de validité (obligatoire pour toute vente)",
+    ...(["telephone","tablette","montre"].includes(d.cat) ? ["Appareil déverrouillé et compte iCloud / Google déconnecté","Idéalement chargé à plus de 50 %"] : []),
+    "Boîte, chargeur, câbles et facture si vous les avez : ils peuvent améliorer l'offre"];
+  $("#v-done").innerHTML = `
+    <h2>Votre estimation est enregistrée</h2>
+    <p class="sub">Présentez ce numéro au service achat d'Affair's ${esc(s.n)} : votre estimation y est déjà enregistrée.</p>
+    <div class="done">
+      <div class="ticket">
+        <div class="th"><div class="small">N° d'estimation</div><div class="ref">${r.ref}</div><div class="small">Valable jusqu'au ${valid}</div></div>
+        <dl>
+          <dt>Article</dt><dd>${esc([identName(d), d.variante].filter(Boolean).join(" "))}</dd>
+          <dt>État estimé</dt><dd>${ETATS[d.etat].n}</dd>
+          <dt>Magasin</dt><dd>Affair's ${esc(s.n)}<br><span style="font-weight:400">${esc(s.adr)}, ${esc(s.cp)}</span></dd>
+          <dt>Téléphone</dt><dd><a href="tel:${s.tel.replace(/\s/g,"")}" style="color:inherit">${s.tel}</a></dd>
+          <dt>Horaires</dt><dd style="font-weight:400">${s.hrs}<br>${s.achat}</dd>
+        </dl>
+        <div class="amt"><span>Estimation de reprise<br><span class="small" style="color:#fff">indicative</span></span><strong>${range(res.reprise.min, res.reprise.max)}</strong></div>
+      </div>
+      <div>
+        <div class="bring"><h4>À apporter en magasin</h4><ul>${bring.map(b=>`<li>${b}</li>`).join("")}</ul></div>
+        <div class="upl-actions">
+          <a class="btn btn-brand" href="${maps}" target="_blank" rel="noopener">🗺️ Itinéraire</a>
+          <a class="btn btn-ghost" href="${s.url}" target="_blank" rel="noopener">Page du magasin</a>
+        </div>
+        <p class="disclaimer">L'estimation réalisée par notre IA est indicative. Le prix définitif dépendra de l'état réel du produit, de son fonctionnement, de son authenticité et des vérifications effectuées en magasin.</p>
+        <button class="btn btn-cash" id="dn-again" style="margin-top:14px">🔄 Estimer un autre article</button>
+      </div>
+    </div>`;
+  $("#dn-again").onclick = () => { resetAll(); show("v-cat",0); };
+  show("v-done",5);
+}
+
+/* ---------- Erreurs ---------- */
+function showError(r){
+  const copy = {
+    invalid_item:["Nous n'avons pas reconnu d'article", (r.message? r.message+" " : "") + "Essayez une photo nette de l'article entier, à la lumière du jour."],
+    no_price:["Estimation impossible en ligne","Notre IA n'a pas trouvé de prix de référence fiable pour cet article. Nos acheteurs l'estimeront gratuitement en magasin."],
+    too_low:["Valeur de reprise trop faible","Cet article a une valeur de revente trop faible pour une estimation en ligne. Nos acheteurs peuvent tout de même le regarder en magasin."],
+    photo_format:["Photo non prise en charge","Ce format de photo n'a pas pu être lu. Sur iPhone, réglez Appareil photo › Formats sur « Le plus compatible », ou envoyez une capture d'écran de la photo."],
+    rate:["Trop de demandes","Vous avez fait beaucoup d'estimations depuis cet appareil. Réessayez dans une heure."],
+    expired:["Estimation expirée","Recommencez l'estimation depuis le début."],
+    offline:["Connexion perdue","Impossible de joindre le serveur Affair's. Vérifiez votre connexion puis réessayez."],
+    ai_key:["IA non configurée","La clé API est invalide. (Gérant : vérifiez le fichier cle-api.txt puis relancez le serveur.)"],
+    ai_credit:["IA indisponible","Le crédit de l'API est épuisé. (Gérant : rechargez le compte sur console.anthropic.com.)"],
+    ai_busy:["IA très sollicitée","L'IA est momentanément surchargée. Réessayez dans quelques secondes."],
+    ai_network:["IA injoignable","Le serveur n'arrive pas à joindre l'IA. Vérifiez la connexion Internet de l'ordinateur qui fait tourner le site."],
+    ai_format:["Réponse de l'IA incomplète","L'analyse n'a pas abouti correctement. Réessayez."]
+  }[r.code] || ["L'analyse n'a pas abouti","Un problème temporaire est survenu. Réessayez dans un instant." + (r.message ? " ("+r.message+")" : "")];
+  $("#err-title").textContent = copy[0]; $("#err-text").textContent = copy[1];
+  $("#err-retry").hidden = !S.lastAction || ["invalid_item","no_price","too_low","expired","photo_format","rate"].includes(r.code);
+  show("v-error",3);
+}
+$("#err-retry").onclick = () => S.lastAction && S.lastAction();
+$("#err-photos").onclick = () => show("v-photos",1);
+$("#err-restart").onclick = () => { resetAll(); show("v-cat",0); };
+$("#old-back").onclick = () => { resetAll(); show("v-cat",0); };
+
+renderCats(); renderSlots();
+</script>
+</body>
+</html>

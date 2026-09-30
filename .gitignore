@@ -1,0 +1,11 @@
+node_modules/
+android/.gradle/
+android/app/build/
+android/build/
+ios/App/build/
+ios/DerivedData/
+serveur/data/*.json
+serveur/cle-api.txt
+*.apk
+.DS_Store
+serveur/mot-de-passe-gerant.txt

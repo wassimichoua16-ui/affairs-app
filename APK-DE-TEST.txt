@@ -1,0 +1,27 @@
+OBTENIR L'APK DE TEST (Android) SANS RIEN INSTALLER
+=====================================================================
+GitHub compile l'application gratuitement dans le cloud.
+
+1. Créez un compte gratuit sur https://github.com (si vous n'en avez pas).
+2. Bouton « + » › « New repository » › nom : affairs-app › Private › Create.
+3. Décompressez affairs-app-github.zip (16 fichiers seulement). Sur la page du dépôt :
+   « uploading an existing file », puis glissez TOUT le contenu du dossier
+   affairs-app-github, y compris le dossier .github (sur Windows : Affichage ›
+   cocher « Éléments masqués » pour le voir) › « Commit changes ».
+   GitHub reconstruit lui-même le projet Android complet.
+4. Onglet « Actions » : la compilation démarre (environ 5 à 8 minutes).
+5. Quand la ligne est verte ✓ : cliquez dessus › en bas « Artifacts » ›
+   « Affairs-APK » : un zip contenant Affairs-demo.apk.
+6. Envoyez Affairs-demo.apk sur votre téléphone Android (câble, e-mail, WhatsApp…),
+   ouvrez-le et autorisez « Installer des applications inconnues ».
+
+VERSION DÉMO OU IA RÉELLE ?
+- Sans serveur : l'APK est en « version de démonstration » (bandeau jaune) : tous les
+  écrans et services fonctionnent, mais les estimations sont fictives.
+- Avec l'IA réelle : mettez d'abord le serveur en ligne (GUIDE-PUBLICATION.txt, étape 1),
+  puis dans GitHub : Settings › Secrets and variables › Actions › Variables ›
+  New variable : AFFAIRS_API = https://adresse-de-votre-serveur
+  Relancez : Actions › « Construire l'APK Android » › Run workflow.
+
+L'APK de test (« debug ») sert uniquement aux essais : pour le Play Store,
+suivez GUIDE-PUBLICATION.txt (étape 3, fichier .aab signé).

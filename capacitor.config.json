@@ -1,0 +1,11 @@
+{
+  "appId": "fr.affairs.app",
+  "appName": "Affair's",
+  "webDir": "www",
+  "backgroundColor": "#ffffff",
+  "android": { "allowMixedContent": false },
+  "ios": { "contentInset": "never" },
+  "plugins": {
+    "SplashScreen": { "launchShowDuration": 1200, "backgroundColor": "#ffffff", "showSpinner": false }
+  }
+}

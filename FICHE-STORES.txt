@@ -1,0 +1,56 @@
+FICHE STORES — TEXTES PRÊTS À COPIER
+=====================================================================
+
+NOM DE L'APPLICATION (30 caractères max)
+Affair's – Vendez cash
+
+SOUS-TITRE App Store (30 caractères max)
+Estimez vos objets en photo
+
+DESCRIPTION COURTE Google Play (80 caractères max)
+Estimez gratuitement vos objets en photo et vendez-les cash en magasin Affair's.
+
+DESCRIPTION COMPLÈTE
+Combien vaut votre téléphone, votre console ou votre ordinateur ? Avec l'application Affair's, obtenez une estimation de reprise en quelques photos, puis venez la finaliser en magasin : paiement immédiat en cash.
+
+📸 ESTIMATION PAR PHOTO
+• Choisissez la catégorie et photographiez votre article
+• Notre intelligence artificielle identifie le modèle et analyse son état
+• Vous confirmez le modèle et obtenez aussitôt une estimation de reprise
+• Choisissez votre magasin : vous recevez un numéro d'estimation valable 7 jours
+
+📍 NOS MAGASINS
+Échirolles, Saint-Martin-d'Hères, Tignieu-Jameyzieu, Vaulx-en-Velin, Albertville, Chambéry–Bassens : adresses, horaires, appel et itinéraire en un geste.
+
+🛒 ACHETER MALIN
+Téléphonie, jeux vidéo, informatique, multimédia, bijoux et montres : produits neufs, d'occasion et reconditionnés, garantis 2 ans, à découvrir sur affairs.fr.
+
+🪙 VENDRE VOTRE OR
+Expertise gratuite et confidentielle de vos bijoux et débris d'or.
+
+AFFAIR'S, magasins spécialisés dans la vente et l'achat cash aux particuliers depuis plus de 25 ans.
+
+L'estimation est indicative : le prix définitif est confirmé en magasin après contrôle de l'article.
+
+MOTS-CLÉS App Store (100 caractères max)
+occasion,rachat,vendre,cash,estimation,reprise,téléphone,iphone,console,reconditionné,or
+
+CATÉGORIE
+Shopping (principale) · Utilitaires (secondaire)
+
+CLASSIFICATION D'ÂGE
+4+ / Tout public (pas de contenu sensible). ⚠ Vente réservée aux majeurs en magasin : à préciser dans la description si souhaité.
+
+CONFIDENTIALITÉ — réponses aux questionnaires
+Données collectées, liées à l'utilisateur :
+• Photos (contenu utilisateur) : estimation de l'article
+• Prénom (coordonnées) : identification de l'estimation en magasin
+• Numéro de téléphone (coordonnées, facultatif) : rappel par le magasin
+Pas de suivi publicitaire, pas de localisation, pas de publicité.
+Données transmises à un sous-traitant (IA) pour la fonctionnalité uniquement.
+
+URL de la politique de confidentialité : à publier sur affairs.fr (texte dans l'application, page « Confidentialité »)
+URL d'assistance : https://www.affairs.fr/contact,6.html
+
+NOTES POUR LE VÉRIFICATEUR APPLE
+L'application permet aux particuliers d'estimer un objet d'occasion à partir de photos (onglet central « Estimer ») grâce à une analyse par intelligence artificielle, puis de choisir un magasin Affair's pour le vendre. Pour tester : Estimer › Téléphone › ajouter une photo d'un smartphone › Lancer l'estimation. Le catalogue (onglet Acheter) ouvre le site affairs.fr ; aucun achat n'est réalisé dans l'application.

@@ -1,0 +1,108 @@
+AFFAIR'S — ESTIMATION EN LIGNE PAR IA
+Guide d'installation et de test
+=====================================================================
+
+Ce dossier contient un vrai site web qui fonctionne sur votre ordinateur :
+- la page client « Combien vaut votre article ? » (photos → IA → estimation → choix du magasin) ;
+- l'espace gérant (liste des estimations, numéro à rechercher, statut acheté/refusé, réglage des marges).
+
+L'IA utilisée est Claude (Anthropic), appelée par le serveur avec VOTRE clé API.
+Vos marges et votre formule de calcul restent sur le serveur : le client ne les voit jamais.
+
+
+1) INSTALLER NODE.JS (une seule fois, 2 minutes)
+---------------------------------------------------------------------
+Allez sur https://nodejs.org/fr, téléchargez la version « LTS » et installez-la
+(suivant, suivant, terminer). Aucune autre installation n'est nécessaire.
+
+
+2) CRÉER VOTRE CLÉ API (une seule fois)
+---------------------------------------------------------------------
+a. Allez sur https://console.anthropic.com et créez un compte.
+b. Menu « Billing » : ajoutez un moyen de paiement et quelques euros de crédit
+   (10 € suffisent largement pour tester : voir le coût plus bas).
+c. Menu « API Keys » : cliquez sur « Create Key » et copiez la clé (elle commence par sk-ant-).
+d. Ouvrez le fichier cle-api.txt de ce dossier avec le Bloc-notes,
+   remplacez toute la ligne par votre clé, enregistrez.
+
+   ⚠ Ne donnez jamais cette clé à personne et ne la mettez pas dans un e-mail.
+
+
+3) CHANGER LE MOT DE PASSE GÉRANT
+---------------------------------------------------------------------
+Ouvrez mot-de-passe-gerant.txt et remplacez « affairs2026 » par votre propre mot de passe.
+
+
+4) LANCER LE SITE
+---------------------------------------------------------------------
+Windows : double-cliquez sur DEMARRER.bat
+Mac     : double-cliquez sur DEMARRER-Mac.command (clic droit › Ouvrir la première fois)
+
+Une fenêtre noire s'ouvre (laissez-la ouverte) et le site s'ouvre dans le navigateur :
+    Site client     : http://localhost:3000
+    Espace gérant   : http://localhost:3000/gerant
+
+La fenêtre noire doit afficher « ✓ IA active ».
+Si elle affiche « MODE TEST », la clé n'a pas été trouvée : vérifiez cle-api.txt
+(le site fonctionne alors avec des résultats fictifs, pratique pour une démo sans Internet).
+
+Pour arrêter le site : fermez la fenêtre noire.
+
+
+5) TESTER DEPUIS VOTRE TÉLÉPHONE (appareil photo réel)
+---------------------------------------------------------------------
+Le téléphone doit être sur le même Wi-Fi que l'ordinateur.
+La fenêtre noire affiche une adresse du type  http://192.168.1.25:3000
+Tapez-la dans le navigateur du téléphone.
+Si Windows demande l'autorisation du pare-feu au démarrage, cochez « Réseaux privés » et acceptez.
+
+
+6) CE QUI SE PASSE PENDANT UNE ESTIMATION
+---------------------------------------------------------------------
+1. Le client choisit la catégorie et envoie jusqu'à 6 photos (compressées automatiquement).
+2. L'IA (Claude Opus 5.5) liste ce qu'elle voit (logos, inscriptions, forme…) puis identifie le modèle et l'état.
+3. Le client confirme le modèle ou le corrige.
+4. L'IA (Claude Sonnet 5.5) recherche les prix actuels sur Internet en France
+   (neuf, reconditionné, occasion) et donne une fourchette de revente prudente.
+5. Le serveur calcule la reprise : revente − marge − remise en état − risque SAV (paramètres gérant).
+6. Le client choisit son magasin → un numéro EST-xxxx est enregistré
+   et apparaît immédiatement dans l'espace gérant, avec la photo, le calcul détaillé et les sources de prix.
+
+Téléphones sortis en 2017 ou avant : refus automatique (réglable).
+
+
+7) COÛT DE L'IA
+---------------------------------------------------------------------
+Environ 10 à 20 centimes par estimation complète (analyse des photos + recherche de prix),
+selon le nombre de photos et de recherches. Vous suivez la consommation exacte dans
+https://console.anthropic.com (menu Usage). Vous pouvez y fixer une limite de dépense mensuelle.
+Protection intégrée : 40 estimations maximum par heure et par appareil.
+
+
+8) OÙ SONT LES DONNÉES ?
+---------------------------------------------------------------------
+Dossier data/ :
+- estimations.json : toutes les estimations enregistrées
+- parametres.json  : vos marges et réglages
+Pour repartir de zéro, fermez le site et supprimez ces deux fichiers.
+
+
+9) RÉGLAGES AVANCÉS (facultatif)
+---------------------------------------------------------------------
+Variables d'environnement reconnues par le serveur :
+- MODELE_IDENTIFICATION (défaut claude-opus-5-5)
+- MODELE_PRIX           (défaut claude-sonnet-5-5)
+- RECHERCHE_WEB=0       désactive la recherche de prix sur Internet
+- PORT                  (défaut 3000)
+- MODE_TEST=1           force les résultats fictifs
+
+
+10) LIMITES DE CETTE VERSION
+---------------------------------------------------------------------
+- Le site tourne sur votre ordinateur : il n'est pas encore accessible depuis Internet.
+  Pour le mettre en ligne (ex. estimation.affairs.fr), il faudra l'héberger
+  (Render, OVH, ou votre prestataire Aquila Informatique) : le code est prêt pour ça.
+- L'IA peut se tromper de modèle sur une photo floue ou ambiguë : c'est pour cela
+  que le client confirme le modèle, et que le prix final est toujours fixé en magasin.
+- Les prix de revente viennent de recherches Internet : vérifiez-les sur les premières
+  estimations et ajustez vos marges dans l'espace gérant si besoin.

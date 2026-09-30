@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Espace gérant – Affair's</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="/style.css">
+<style>
+.gtop{background:var(--black);color:#fff}
+.gtop .wrap{display:flex;align-items:center;gap:20px;padding-block:12px;flex-wrap:wrap}
+.gtop img{width:120px}
+.gtop h1{font-size:20px;font-weight:700;text-transform:uppercase}
+.gtop .sp{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.gtop .btn-ghost{background:transparent;color:#fff;border-color:#777}
+.status{font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px}
+.status.ok{background:#1e9e4a;color:#fff}.status.test{background:var(--yellow);color:var(--black)}
+.login{max-width:380px;margin:60px auto;background:var(--panel);padding:28px;border-radius:10px}
+.login h2{font-size:22px;font-weight:700;color:var(--title);text-transform:uppercase;margin-bottom:16px}
+.login input{width:100%;padding:11px 12px;border:1px solid #bdbdbd;margin-bottom:12px}
+.tabs{display:flex;gap:4px;border-bottom:3px solid var(--yellow);margin-top:24px}
+.tabs button{border:0;background:var(--panel);padding:11px 20px;font-weight:700;text-transform:uppercase;cursor:pointer;font-size:14px}
+.tabs button[aria-selected="true"]{background:var(--yellow)}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-block:16px}
+.tools input,.tools select{padding:9px 12px;border:1px solid #bdbdbd;background:#fff}
+.tools input{min-width:0;flex:1;max-width:340px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--panel);padding:14px 16px}
+.kpi small{display:block;font-size:12px;text-transform:uppercase;font-weight:700;color:var(--title)}
+.kpi b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.tbl{overflow-x:auto;border:1px solid var(--line)}
+table.est{width:100%;border-collapse:collapse;font-size:14px;min-width:860px}
+table.est th{background:var(--black);color:#fff;text-align:left;padding:10px;font-size:12.5px;text-transform:uppercase}
+table.est td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.est tr.row{cursor:pointer}
+table.est tr.row:hover td{background:#fffbe8}
+table.est td.nb{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ref{font-weight:800;letter-spacing:.03em;white-space:nowrap}
+.st{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.st.nouvelle{background:var(--warn-bg);color:var(--warn)}.st.achetee{background:var(--good-bg);color:var(--good)}
+.st.refusee{background:var(--bad-bg);color:var(--red)}.st.sans_suite{background:#eee;color:#666}
+tr.detail td{background:var(--panel);padding:18px}
+.dgrid{display:grid;gap:18px}
+@media (min-width:900px){.dgrid{grid-template-columns:auto 1fr 1fr}}
+.dgrid img{width:160px;height:160px;object-fit:cover;background:#fff}
+.dgrid h4{margin:0 0 8px;font-size:13px;text-transform:uppercase;color:var(--title)}
+.dgrid ul{margin:0;padding-left:18px}
+.act{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.act select,.act input{padding:8px 10px;border:1px solid #bdbdbd;background:#fff}
+.act input.note{flex:1;min-width:200px}
+.params{display:grid;gap:18px;padding-block:20px}
+@media (min-width:900px){.params{grid-template-columns:1fr 1fr 1fr}}
+.params fieldset{border:1px solid var(--line);padding:14px 16px 16px;margin:0;background:#fff}
+.params legend{font-weight:700;font-size:13px;text-transform:uppercase;padding:0 6px;color:var(--red)}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.saved{color:var(--good);font-weight:700}
+</style>
+</head>
+<body>
+<div class="gtop"><div class="wrap">
+  <a href="/"><img src="/logo.png" alt="Affair's"></a>
+  <h1>Espace gérant</h1>
+  <div class="sp" id="top-right" hidden>
+    <span id="ia-status" class="status"></span>
+    <button class="btn btn-ghost" id="logout">Se déconnecter</button>
+  </div>
+</div></div>
+
+<main class="wrap">
+  <form class="login" id="login">
+    <h2>Connexion</h2>
+    <label for="pwd" class="small">Mot de passe gérant</label>
+    <input type="password" id="pwd" autocomplete="current-password" required>
+    <button class="btn btn-cash" style="width:100%">Se connecter</button>
+    <p class="err-inline" id="login-err" hidden></p>
+  </form>
+
+  <div id="app" hidden>
+    <p class="err-inline" id="pwd-warn" hidden>⚠ Mot de passe par défaut (affairs2026) : changez-le dans le fichier mot-de-passe-gerant.txt puis relancez le serveur.</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="t-est">Estimations</button>
+      <button role="tab" aria-selected="false" data-tab="t-par">Paramètres de reprise</button>
+    </div>
+
+    <section id="t-est">
+      <div class="tools">
+        <input type="search" id="q" placeholder="N° d'estimation, modèle, prénom…" autocomplete="off">
+        <select id="f-store"><option value="">Tous les magasins</option></select>
+        <select id="f-st"><option value="">Tous les statuts</option><option value="nouvelle">Nouvelle</option><option value="achetee">Achetée</option><option value="refusee">Refusée</option><option value="sans_suite">Sans suite</option></select>
+        <button class="btn btn-ghost" id="reload">Actualiser</button>
+      </div>
+      <div class="kpis" id="kpis"></div>
+      <div class="tbl"><table class="est"><thead><tr><th>Date</th><th>N°</th><th>Article</th><th>État</th><th>Reprise estimée</th><th>Magasin</th><th>Client</th><th>Statut</th></tr></thead><tbody id="rows"></tbody></table></div>
+    </section>
+
+    <section id="t-par" hidden>
+      <div class="params" id="params"></div>
+      <div class="act" style="margin-bottom:40px"><button class="btn btn-cash" id="p-save">Enregistrer les paramètres</button><button class="btn btn-ghost" id="p-reset">Valeurs par défaut</button><span id="p-msg"></span></div>
+    </section>
+  </div>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const eur = n => n==null ? "—" : Math.round(n).toLocaleString("fr-FR") + " €";
+const CATN = { telephone:"Téléphone", ordinateur:"Ordinateur", console:"Console", tv:"TV", photo:"Appareil photo", audio:"Audio", montre:"Montre connectée", drone:"Drone", tablette:"Tablette", jeux:"Jeux vidéo", autre:"Autre" };
+const ETN = { tres_bon:"Très bon état", bon:"Bon état", correct:"État correct", abime:"Abîmé / à réparer" };
+const STN = { nouvelle:"Nouvelle", achetee:"Achetée", refusee:"Refusée", sans_suite:"Sans suite" };
+let TOKEN = sessionStorage.getItem("gerant") || "", DATA = [], STORES = [], OPEN = null, PAR = null, DEF = null;
+
+async function call(method, url, body){
+  const r = await fetch(url, { method, headers:{ "content-type":"application/json", authorization:"Bearer "+TOKEN }, body: body?JSON.stringify(body):undefined });
+  const j = await r.json().catch(()=>({}));
+  if (r.status === 401 && url !== "/api/gerant/connexion"){ logout(); throw new Error("session"); }
+  return j;
+}
+$("#login").onsubmit = async e => {
+  e.preventDefault();
+  const j = await call("POST","/api/gerant/connexion",{ mot_de_passe:$("#pwd").value });
+  if (!j.ok){ const el=$("#login-err"); el.hidden=false; el.textContent=j.message||"Connexion impossible"; return; }
+  TOKEN = j.jeton; sessionStorage.setItem("gerant", TOKEN); $("#pwd-warn").hidden = !j.mot_de_passe_par_defaut; start();
+};
+function logout(){ TOKEN=""; sessionStorage.removeItem("gerant"); $("#app").hidden=true; $("#top-right").hidden=true; $("#login").hidden=false; }
+$("#logout").onclick = logout;
+
+async function start(){
+  $("#login").hidden = true; $("#app").hidden = false; $("#top-right").hidden = false;
+  await Promise.all([loadEst(), loadPar()]);
+}
+async function loadEst(){
+  const j = await call("GET","/api/gerant/estimations"); DATA = j.estimations||[]; STORES = j.magasins||[];
+  const sel = $("#f-store"), cur = sel.value;
+  sel.innerHTML = `<option value="">Tous les magasins</option>` + STORES.map(s=>`<option value="${s.id}">${esc(s.n)}</option>`).join(""); sel.value = cur;
+  render();
+}
+const storeName = id => STORES.find(s=>s.id===id)?.n || id;
+function filtered(){
+  const q = $("#q").value.trim().toLowerCase(), st = $("#f-store").value, s2 = $("#f-st").value;
+  return DATA.filter(e => (!st || e.magasin===st) && (!s2 || e.statut===s2) &&
+    (!q || [e.ref, e.article.marque, e.article.modele, e.article.variante, e.client?.prenom, e.client?.telephone].join(" ").toLowerCase().includes(q)));
+}
+function render(){
+  const list = filtered();
+  const bought = list.filter(e=>e.statut==="achetee");
+  const paid = bought.reduce((a,e)=>a+(e.prix_paye||0),0);
+  const conv = list.length ? Math.round(bought.length/list.length*100) : 0;
+  $("#kpis").innerHTML = [["Estimations",list.length],["Nouvelles",list.filter(e=>e.statut==="nouvelle").length],["Achetées",bought.length],["Taux d'achat",conv+" %"],["Total payé",eur(paid)]]
+    .map(([l,v])=>`<div class="kpi"><small>${l}</small><b>${v}</b></div>`).join("");
+  if (!list.length){ $("#rows").innerHTML = `<tr><td colspan="8" class="empty">Aucune estimation pour l'instant. Elles apparaîtront ici dès qu'un client choisit un magasin.</td></tr>`; return; }
+  $("#rows").innerHTML = list.map(e => {
+    const a = e.article, nm = [a.marque,a.modele,a.variante].filter(Boolean).join(" ");
+    const row = `<tr class="row" data-ref="${e.ref}"><td class="nb">${new Date(e.date).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
+      <td class="ref">${e.ref}</td><td>${esc(nm)}<br><span class="small">${CATN[a.cat]||""}${a.corrige?" · modèle corrigé par le client":""}</span></td>
+      <td>${ETN[a.etat]||""}</td><td class="nb"><b>${eur(e.reprise.min)} – ${eur(e.reprise.max)}</b>${e.prix_paye!=null?`<br><span class="small">Payé : ${eur(e.prix_paye)}</span>`:""}</td>
+      <td>${esc(storeName(e.magasin))}</td><td>${esc(e.client?.prenom||"")}${e.client?.telephone?`<br><span class="small">${esc(e.client.telephone)}</span>`:""}</td>
+      <td><span class="st ${e.statut}">${STN[e.statut]}</span></td></tr>`;
+    return row + (OPEN===e.ref ? detail(e) : "");
+  }).join("");
+}
+function detail(e){
+  const a = e.article, c = e.calcul, m = e.marche || {};
+  const line = (l,x,y)=>`<tr><td>${l}</td><td class="nb">${x}</td><td class="nb">${y}</td></tr>`;
+  return `<tr class="detail"><td colspan="8"><div class="dgrid">
+    <div>${e.miniature?`<img src="${e.miniature}" alt="">`:""}<p class="small">Confiance IA : <b>${a.confiance}</b><br>Valable jusqu'au ${new Date(e.valide_jusqu_au).toLocaleDateString("fr-FR")}</p></div>
+    <div>
+      <h4>Indices relevés par l'IA</h4><ul>${(a.indices||[]).map(x=>`<li>${esc(x)}</li>`).join("")||"<li>—</li>"}</ul>
+      <h4 style="margin-top:12px">Observations / défauts</h4><ul>${[...(a.observations||[]),...(a.defauts||[]).map(x=>"⚠ "+x)].map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+      <p class="small">Accessoires déclarés : ${esc((a.accessoires||[]).join(", ")||"aucun")}</p>
+    </div>
+    <div>
+      <h4>Calcul de reprise (interne)</h4>
+      <table class="calc"><tr><td></td><td class="nb">Bas</td><td class="nb">Haut</td></tr>
+        ${line("Revente estimée",eur(c.lo.revente),eur(c.hi.revente))}
+        ${c.lo.decote?line("− Décote confiance faible",eur(c.lo.decote),eur(c.hi.decote)):""}
+        ${line(`− Marge (${Math.round(c.margePct)} %)`,eur(c.lo.marge),eur(c.hi.marge))}
+        ${line("− Remise en état",eur(c.lo.remise),eur(c.hi.remise))}
+        ${line(`− Risque SAV (${c.savPct} %)`,eur(c.lo.sav),eur(c.hi.sav))}
+        <tr class="tot"><td>= Reprise affichée</td><td class="nb">${eur(c.low)}</td><td class="nb">${eur(c.high)}</td></tr></table>
+      <p class="small">Neuf : ${eur(m.prix_neuf)} · Reconditionné : ${eur(m.prix_reconditionne)} · Particuliers : ${esc(m.particuliers||"—")} · Demande : ${esc(m.demande||"—")}<br>${esc(m.commentaire||"")}</p>
+      ${(e.sources||[]).length?`<p class="small"><b>Sources consultées :</b><br>${e.sources.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.titre).slice(0,70)}</a>`).join("<br>")}</p>`:""}
+    </div></div>
+    <div class="act">
+      <label class="small" for="a-st">Statut</label>
+      <select id="a-st">${Object.entries(STN).map(([k,v])=>`<option value="${k}" ${e.statut===k?"selected":""}>${v}</option>`).join("")}</select>
+      <label class="small" for="a-px">Prix payé (€)</label><input id="a-px" type="number" min="0" style="width:110px" value="${e.prix_paye??""}">
+      <input id="a-note" class="note" placeholder="Note interne (état réel, remarque…)" value="${esc(e.note||"")}">
+      <button class="btn btn-cash" id="a-save" data-ref="${e.ref}">Enregistrer</button><span id="a-msg"></span>
+    </div></td></tr>`;
+}
+$("#rows").addEventListener("click", async ev => {
+  const save = ev.target.closest("#a-save");
+  if (save){
+    const j = await call("PATCH", "/api/gerant/estimations/"+save.dataset.ref, { statut:$("#a-st").value, prix_paye:$("#a-px").value, note:$("#a-note").value });
+    if (j.ok){ const i = DATA.findIndex(x=>x.ref===j.estimation.ref); DATA[i]=j.estimation; render(); $("#a-msg").innerHTML = `<span class="saved">✓ Enregistré</span>`; }
+    return;
+  }
+  const tr = ev.target.closest("tr.row"); if (!tr) return;
+  OPEN = OPEN===tr.dataset.ref ? null : tr.dataset.ref; render();
+});
+["q","f-store","f-st"].forEach(id => $("#"+id).addEventListener("input", render));
+$("#reload").onclick = loadEst;
+
+/* Paramètres */
+async function loadPar(){
+  const j = await call("GET","/api/gerant/parametres"); PAR = j.parametres; DEF = j.defauts;
+  const s = $("#ia-status");
+  s.className = "status " + (j.mode==="ia"?"ok":"test");
+  s.textContent = j.mode==="ia" ? `IA active · recherche web ${j.recherche_web?"oui":"non"}` : "MODE TEST (pas de clé API)";
+  renderPar();
+}
+function renderPar(){
+  const n = (id,l,v,max=100,step=1)=>`<div class="prow"><label for="${id}">${l}</label><input type="number" id="${id}" min="0" max="${max}" step="${step}" value="${v}"></div>`;
+  $("#params").innerHTML = `
+    <fieldset><legend>Général</legend>
+      ${n("savPct","Risque / SAV (% du prix de revente)",PAR.savPct,40,.5)}
+      ${n("oldYear","Téléphones refusés si sortis en ou avant",PAR.oldYear,2030)}
+      ${n("lowConfidenceCut","Confiance faible : décote supplémentaire (%)",PAR.lowConfidenceCut,40)}
+      <p class="small">Formule : revente − marge − remise en état − risque SAV, arrondi à la dizaine inférieure.</p></fieldset>
+    <fieldset><legend>Remise en état minimum (€)</legend>
+      ${Object.entries(ETN).map(([k,v])=>n("rf-"+k,v,PAR.refurb[k],5000)).join("")}</fieldset>
+    <fieldset><legend>Marge cible par catégorie (%)</legend>
+      ${Object.entries(CATN).map(([k,v])=>n("mg-"+k,v,PAR.margins[k],90)).join("")}</fieldset>`;
+}
+function readPar(){
+  const v = id => Number($("#"+id).value);
+  return { savPct:v("savPct"), oldYear:v("oldYear"), lowConfidenceCut:v("lowConfidenceCut"),
+    refurb:Object.fromEntries(Object.keys(ETN).map(k=>[k,v("rf-"+k)])), margins:Object.fromEntries(Object.keys(CATN).map(k=>[k,v("mg-"+k)])) };
+}
+$("#p-save").onclick = async () => { const j = await call("PUT","/api/gerant/parametres", readPar()); if (j.ok){ PAR=j.parametres; $("#p-msg").innerHTML=`<span class="saved">✓ Paramètres enregistrés (appliqués aux prochaines estimations)</span>`; } };
+$("#p-reset").onclick = () => { PAR = structuredClone(DEF); renderPar(); $("#p-msg").textContent = "Valeurs par défaut chargées : cliquez sur Enregistrer pour les appliquer."; };
+
+document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-tab]").forEach(x=>{ x.setAttribute("aria-selected", x===b); $("#"+x.dataset.tab).hidden = x!==b; });
+});
+if (TOKEN) start().catch(()=>{});
+</script>
+</body>
+</html>

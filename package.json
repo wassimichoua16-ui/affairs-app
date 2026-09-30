@@ -1,0 +1,25 @@
+{
+  "name": "affairs-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Application Affair's : informations, magasins et estimation de reprise par IA",
+  "scripts": {
+    "build": "python3 build.py",
+    "sync": "python3 build.py && npx cap sync",
+    "android": "python3 build.py && npx cap sync android && npx cap open android",
+    "ios": "python3 build.py && npx cap sync ios && npx cap open ios",
+    "icones": "npx @capacitor/assets generate --iconBackgroundColor '#e30613' --splashBackgroundColor '#ffffff'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/browser": "^8.0.0",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
+    "@capacitor/splash-screen": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/assets": "^3.0.5"
+  }
+}

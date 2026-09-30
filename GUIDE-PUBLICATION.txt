@@ -1,0 +1,108 @@
+APPLICATION AFFAIR'S — GUIDE DE PUBLICATION
+App Store (iPhone) + Google Play (Android)
+=====================================================================
+
+CONTENU DU DOSSIER
+---------------------------------------------------------------------
+www/                 L'application (écrans, estimation, catalogue, magasins, infos)
+www/config.js        ⚠ L'adresse de votre serveur d'estimation (à remplir, étape 2)
+android/             Projet Android prêt à ouvrir dans Android Studio
+ios/                 Projet iPhone prêt à ouvrir dans Xcode (sur Mac)
+assets/              Icône et écran de démarrage (provisoires : remplacez-les par votre logo HD)
+serveur/             Le serveur d'estimation IA + espace gérant (voir serveur/LISEZ-MOI.txt)
+src/ + build.py      Sources de l'application (pour les modifications)
+FICHE-STORES.txt     Textes prêts à copier pour les fiches App Store / Google Play
+
+
+AVANT TOUT : 3 VÉRIFICATIONS
+---------------------------------------------------------------------
+1. MARQUE : publier sous le nom et le logo Affair's demande l'accord du propriétaire
+   de la marque (tête de réseau si vous êtes franchisé). Apple et Google peuvent
+   demander une preuve.
+2. LOGO : remplacez assets/icon-only.png et assets/icon-foreground.png (1024×1024)
+   et assets/splash.png par vos fichiers officiels, puis lancez : npm run icones
+3. CONFIDENTIALITÉ : complétez la page « Confidentialité » (src/app.js.part, section
+   DOCS.confidentialite : raison sociale, adresse, e-mail, durée) et mettez-la aussi
+   en ligne sur votre site : les deux stores exigent une adresse web de cette page.
+
+
+ÉTAPE 1 — METTRE LE SERVEUR EN LIGNE
+---------------------------------------------------------------------
+L'application ne contient AUCUNE clé API : elle appelle votre serveur, qui appelle l'IA.
+Le serveur doit donc être accessible sur Internet en HTTPS, par exemple :
+    https://estimation.affairs.fr
+
+Options :
+- Votre prestataire web (Aquila Informatique) peut l'installer : il suffit d'un
+  hébergement Node.js 18+ et de lui donner le dossier serveur/.
+- Ou un hébergeur Node.js (Render, Railway, OVH, Scaleway…), environ 5 à 20 €/mois.
+  ⚠ Prévoir un « disque persistant » pour le dossier serveur/data (sinon les
+  estimations sont effacées à chaque redémarrage).
+Variables à définir chez l'hébergeur :
+    ANTHROPIC_API_KEY = votre clé (sk-ant-…)
+    GERANT_PASSWORD   = votre mot de passe de l'espace gérant
+
+Vérification : ouvrez https://VOTRE-SERVEUR/api/statut → {"mode":"ia",...}
+
+
+ÉTAPE 2 — BRANCHER L'APPLICATION SUR LE SERVEUR
+---------------------------------------------------------------------
+Ouvrez www/config.js et remplacez :
+    window.AFFAIRS_API = "";
+par :
+    window.AFFAIRS_API = "https://estimation.affairs.fr";
+Puis (ordinateur avec Node.js installé), dans ce dossier :
+    npm install
+    npm run sync
+Tant que config.js est vide, l'application tourne en « version de démonstration ».
+
+
+ÉTAPE 3 — ANDROID (Google Play)
+---------------------------------------------------------------------
+1. Compte Google Play Console : https://play.google.com/console (25 $ une fois).
+2. Installez Android Studio, puis : npm run android  (ouvre le projet).
+3. Build › Generate Signed App Bundle › Android App Bundle (.aab).
+   Créez une clé de signature et CONSERVEZ-LA précieusement (indispensable
+   pour toutes les mises à jour).
+4. Play Console › Créer une application › importez le .aab, remplissez la fiche
+   (FICHE-STORES.txt), la section « Sécurité des données », la politique de
+   confidentialité, puis envoyez en test interne avant la production.
+   Nouveaux comptes personnels : Google impose un test fermé (12 testeurs, 14 jours).
+   Un compte « organisation » (avec numéro D-U-N-S) en est dispensé.
+
+
+ÉTAPE 4 — IPHONE (App Store)
+---------------------------------------------------------------------
+1. Apple Developer Program : https://developer.apple.com/programs (99 $/an).
+   Pour une entreprise : numéro D-U-N-S requis (gratuit, quelques jours).
+2. Sur un Mac avec Xcode : npm run ios  (ouvre le projet).
+   Pas de Mac ? Services de compilation en ligne : Codemagic, Ionic Appflow…
+3. Xcode › Signing & Capabilities : choisissez votre équipe (Team).
+   Identifiant de l'application : fr.affairs.app (modifiable dans capacitor.config.json).
+4. Product › Archive › Distribute App › App Store Connect.
+5. App Store Connect (https://appstoreconnect.apple.com) : fiche, captures d'écran
+   (iPhone 6,9" obligatoire), confidentialité, puis « Soumettre pour vérification ».
+   Conseil pour la vérification Apple : dans les notes pour le vérificateur, expliquer
+   que l'estimation par photo est la fonction principale et donner un exemple.
+
+
+CE QUE FAIT L'APPLICATION
+---------------------------------------------------------------------
+- Accueil : présentation, accès rapides, garanties.
+- Estimer : catégorie → photos (appareil photo ou galerie) → IA → confirmation du
+  modèle → estimation de reprise → choix du magasin + prénom (obligatoire) → numéro.
+  L'estimation apparaît dans l'espace gérant du serveur (https://VOTRE-SERVEUR/gerant).
+- Acheter : toutes les rubriques du catalogue, ouvertes sur affairs.fr dans le
+  navigateur intégré de l'application. Commandes et paiements restent sur le site.
+- Magasins : 6 magasins, appel, itinéraire, page du magasin.
+- Infos : vendre en magasin, vendre son or, garanties, contact, réseaux sociaux,
+  confidentialité, mentions légales, CGV.
+- Bouton « Appeler » permanent, bouton retour Android géré.
+
+
+MODIFIER L'APPLICATION
+---------------------------------------------------------------------
+Les textes et écrans sont dans src/app.part (écrans) et src/app.js.part (catalogue,
+magasins, pages d'info, estimation). Magasins : src/magasins.json.
+Après une modification : npm run sync, puis recompiler et publier une nouvelle version
+(augmenter le numéro de version dans Android Studio et Xcode).

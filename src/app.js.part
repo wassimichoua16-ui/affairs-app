@@ -1,0 +1,499 @@
+<script>
+/* ================= Configuration ================= */
+// Adresse du serveur d'estimation (dossier "serveur"). À renseigner avant la publication sur les stores.
+const API_BASE = window.AFFAIRS_API || "";
+const STORES = STORES_JSON;
+const CATALOG = [
+  { n:"Téléphonie", ic:"📱", url:"https://www.affairs.fr/catalogue/telephonie,20.html", sub:[["Apple","https://www.affairs.fr/catalogue/apple,2030.html"],["Samsung","https://www.affairs.fr/catalogue/samsung,2031.html"],["Autres marques","https://www.affairs.fr/catalogue/autres-marques-tel,2041.html"],["Accessoires téléphonie","https://www.affairs.fr/catalogue/accessoires-telephonie,2042.html"]] },
+  { n:"Jeux vidéo", ic:"🎮", url:"https://www.affairs.fr/catalogue/jeux-videos,14.html", sub:[["Consoles","https://www.affairs.fr/catalogue/consoles,1425.html"],["Jeux vidéo","https://www.affairs.fr/catalogue/jeux-video,1429.html"],["Rétro-gaming","https://www.affairs.fr/catalogue/retro-gaming,1430.html"],["Accessoires jeux vidéo","https://www.affairs.fr/catalogue/accessoires-jeux-video,1431.html"]] },
+  { n:"Informatique", ic:"💻", url:"https://www.affairs.fr/catalogue/informatique,11.html", sub:[["PC portable","https://www.affairs.fr/catalogue/pc-portable,1118.html"],["PC fixe","https://www.affairs.fr/catalogue/pc-fixe,1124.html"],["Tablette","https://www.affairs.fr/catalogue/tablette,1119.html"],["Écran","https://www.affairs.fr/catalogue/ecran,1120.html"],["Accessoires informatique","https://www.affairs.fr/catalogue/accessoire-informatique,1121.html"],["Informatique divers","https://www.affairs.fr/catalogue/informatique-divers,1122.html"]] },
+  { n:"Multimédia", ic:"📺", url:"https://www.affairs.fr/catalogue/multimedia,1001.html", sub:[["Télévision","https://www.affairs.fr/catalogue/television,21.html"],["Photo","https://www.affairs.fr/catalogue/photo,17.html"],["Hi-Fi","https://www.affairs.fr/catalogue/hifi-hifi-auto,10.html"],["Sono","https://www.affairs.fr/catalogue/sono,18.html"],["Vidéo","https://www.affairs.fr/catalogue/video,22.html"],["Accessoires audio-visuel","https://www.affairs.fr/catalogue/accessoires-audio-visuel,2.html"],["Blu-ray / DVD","https://www.affairs.fr/catalogue/blu-ray-dvd,7.html"],["CD audio","https://www.affairs.fr/catalogue/cd-audio,6.html"],["Vinyles","https://www.affairs.fr/catalogue/vinyl,616.html"],["Livres, BD, mangas","https://www.affairs.fr/catalogue/livres-bd-mangas,15.html"]] },
+  { n:"Loisir maison", ic:"🛠️", url:"https://www.affairs.fr/catalogue/loisir-maison,1000.html", sub:[["Bricolage","https://www.affairs.fr/catalogue/bricolage,5.html"],["Instruments de musique","https://www.affairs.fr/catalogue/instrument-de-musique,12.html"],["Jouets, jeux","https://www.affairs.fr/catalogue/jouet-jeux,13.html"],["Ménager","https://www.affairs.fr/catalogue/menager,16.html"],["Sport","https://www.affairs.fr/catalogue/sport,19.html"]] },
+  { n:"Bijoux & mode", ic:"💎", url:"https://www.affairs.fr/catalogue/bijoux-mode,4.html", sub:[["Montres","https://www.affairs.fr/catalogue/montre,412.html"],["Bijoux en or","https://www.affairs.fr/catalogue/bijoux-en-or,452.html"],["Bijoux argent et plaqué or","https://www.affairs.fr/catalogue/bijoux-argent-et-plaque-or,413.html"],["Bijoux divers","https://www.affairs.fr/catalogue/bijoux-divers,411.html"],["Maroquinerie","https://www.affairs.fr/catalogue/maroquinerie,2301.html"],["Lunettes","https://www.affairs.fr/catalogue/lunettes,2302.html"]] }
+];
+const DOCS = {
+  apropos:`<h1 class="h1">Qui sommes-nous ?</h1>
+    <p class="lead"><b>AFFAIR'S</b>, la référence de la vente et du rachat <b>cash</b> depuis plus de 25 ans.</p>
+    <p>Spécialistes dans la vente et l'achat cash de produits aux particuliers depuis 1996, les magasins AFFAIR'S vous proposent un très grand choix d'objets neufs, d'occasion et reconditionnés garantis 2 ans (1), en magasin et sur le site affairs.fr.</p>
+    <h3>Ce que vous trouverez chez nous</h3>
+    <p>Téléphonie, jeux vidéo, informatique, multimédia, matériel photo, vidéo, Hi-Fi, TV, électroménager, outillage, instruments de musique, sono, bijoux, montres…</p>
+    <p>Toutes les marques : Apple iPhone, Samsung Galaxy, Huawei, Xiaomi, LG, Motorola, Oppo, Honor, OnePlus, Sony PlayStation, Nintendo Switch, Xbox, Sega, HP, Lenovo, Dell, Black & Decker, Indesit, Alpine, Pioneer…</p>
+    <h3>Des produits contrôlés</h3>
+    <p>Les produits d'occasion et reconditionnés mis en vente sont au préalable rigoureusement testés et expertisés par nos professionnels.</p>
+    <h3>Vendez vos objets</h3>
+    <p>Revendez vos objets dans l'un de nos magasins ou estimez-les dans l'application. Vous pouvez aussi revendre votre or : débris, bijoux ou or dentaire.</p>
+    <div style="display:grid;gap:8px;margin-top:14px"><button class="btn btn-cash" data-go="estimer">📸 Estimer mon article</button><button class="btn btn-ghost" data-go="magasins">📍 Trouver mon magasin</button></div>
+    <p class="small">(1) Garantie légale de conformité, voir « Garanties et conditions de vente ».</p>`,
+  vendre:`<h1 class="h1">Vendre en magasin</h1>
+    <p class="lead">Nous achetons vos objets au meilleur prix. <b>Paiement immédiat en cash.</b></p>
+    <h3>Comment ça se passe ?</h3>
+    <p>Apportez vos articles et matériels au magasin AFFAIR'S de votre choix. Allez au service achat, où l'un de nos acheteurs vous accueillera et vous proposera le meilleur prix pour chaque produit que vous désirez vendre. Si vous êtes d'accord, le produit vous est payé immédiatement en espèces (par chèque pour les gros montants ou les métaux précieux).</p>
+    <h3>Gagnez du temps : estimez avant de venir</h3>
+    <p>Photographiez votre article dans l'application : notre IA vous donne une estimation de reprise et un numéro à présenter au service achat.</p>
+    <h3>À apporter</h3><ul><li>Votre article, en état de fonctionnement</li><li>Une pièce d'identité en cours de validité (obligatoire pour toute vente)</li><li>Boîte, chargeur, câbles et facture si vous les avez</li></ul>
+    <div style="display:grid;gap:8px;margin-top:14px"><button class="btn btn-cash" data-go="estimer">📸 Estimer mon article</button><button class="btn btn-ghost" data-doc="rachat">✅ Les produits que nous rachetons</button></div>`,
+  rachat:`<h1 class="h1">Les produits que nous rachetons</h1>
+    <p class="lead">Nous achetons cash une très large gamme d'objets.</p>
+    <h3>💻 Informatique</h3><p>Unités centrales, écrans, PC gamer, ordinateurs portables, tablettes, imprimantes, haut-parleurs, mémoire, cartes.</p>
+    <h3>🎮 Jeux vidéo</h3><p>Consoles de toutes marques (Sony, Nintendo, Xbox), jeux, manettes, rétro-gaming.</p>
+    <h3>📱 Téléphonie</h3><p>Téléphones et smartphones Apple, Samsung et autres marques.</p>
+    <h3>📺 Image et son</h3><p>Téléviseurs, antennes, lecteurs DVD et Blu-ray, home cinéma, Hi-Fi, casques, enceintes Bluetooth.</p>
+    <h3>🔊 Sono</h3><p>Enceintes, amplificateurs, jeux de lumière, tables de mixage, platines.</p>
+    <h3>📷 Photo</h3><p>Appareils photo numériques, objectifs, GoPro, jumelles, télescopes, drones.</p>
+    <h3>🎸 Instruments de musique</h3><p>Guitares, amplis, violons, claviers, batteries, synthétiseurs, instruments à vent.</p>
+    <h3>💿 Films, musique, livres</h3><p>DVD, Blu-ray, CD de tous genres ; BD, mangas, romans.</p>
+    <h3>🪙 Or et bijoux</h3><p>Bijoux, pièces, or, débris d'or.</p>
+    <h3>👜 Mode et accessoires</h3><p>Sacs de marque, bijoux, montres.</p>
+    <h3>🚲 Sport et loisirs</h3><p>Vélos, VTT, trottinettes électriques, drones.</p>
+    <h3>🧸 Jeux et jouets</h3><p>Jeux de société, jeux d'adresse, figurines, Warhammer, cartes Pokémon.</p>
+    <h3>🛠️ Outillage</h3><p>Outils électroportatifs et outillage à main.</p>
+    <h3>🏠 Électroménager</h3><p>Petit électroménager.</p>
+    <h3>Et bien plus…</h3><p>Votre article n'est pas dans la liste ? Contactez votre magasin ou faites une estimation dans l'application.</p>
+    <p class="small">Les téléphones sortis en 2017 ou avant ne sont généralement plus rachetés.</p>
+    <button class="btn btn-cash btn-full" data-go="estimer" style="margin-top:12px">📸 Estimer mon article</button>`,
+  or:`<h1 class="h1">Vendre mon or</h1>
+    <p class="lead">Rachat d'or cash depuis 1996. <b>Expertise gratuite et sans engagement, sans rendez-vous.</b></p>
+    <h3>Tout type d'or accepté</h3><ul><li>Débris d'or, bijoux cassés</li><li>Or dentaire</li><li>Pièces et louis d'or</li><li>Lingots d'or</li><li>Platine</li></ul>
+    <h3>Un prix basé sur le cours du jour</h3><p>Nos prix de rachat sont basés sur le cours de l'or journalier. Vous trouvez mieux ailleurs ? Affair's s'engage à vous rembourser la différence.</p>
+    <h3>Transparence et confiance</h3><p>Pesée au gramme près sur des balances professionnelles homologuées et régulièrement contrôlées. La composition de l'or est vérifiée, et toute la pesée et l'expertise se font devant vous, dans un cadre sécurisé et confidentiel.</p>
+    <h3>Paiement immédiat</h3><p>Par chèque ou virement, conformément à la réglementation sur le rachat d'or. Pensez à votre pièce d'identité.</p>
+    <div class="help" style="margin-top:14px"><div>Conseiller or régional<b>06 69 76 33 18</b><span class="small" style="color:#ccc">Numéro non surtaxé</span></div></div>
+    <div style="display:grid;gap:8px;margin-top:12px"><a class="btn btn-cash" href="tel:0669763318">📞 Appeler le conseiller or</a><button class="btn btn-ghost" data-go="magasins">📍 Trouver mon magasin</button></div>`,
+  garanties:`<h1 class="h1">Garanties et conditions</h1>
+    <h3>🛡️ Garantie 2 ans</h3><p>Produits neufs et d'occasion : garantie légale de conformité de 24 mois. Pour les produits d'occasion, le défaut est présumé exister à l'achat pendant les 12 premiers mois. Supports enregistrés (CD, DVD, jeux) : 48 heures.</p>
+    <p>Garantie commerciale de 24 mois possible avec la carte de fidélité gratuite (hors télécommandes et batteries).</p>
+    <h3>🔎 Produits testés</h3><p>Les produits d'occasion et reconditionnés sont testés et expertisés par nos professionnels avant la mise en vente.</p>
+    <h3>🏬 Retrait gratuit en magasin</h3><p>Commandez sur affairs.fr et retirez votre article en magasin, dans un délai de 30 jours après l'avis « Commande prête pour retrait magasin ».</p>
+    <h3>🚚 Livraison</h3><p>Par La Poste en France métropolitaine, frais calculés selon les tarifs postaux, expédition dans les meilleurs délais.</p>
+    <h3>↩️ Rétractation et retours</h3><p>Commandes en ligne : 14 jours ouvrés à réception pour changer d'avis (produit complet, non utilisé, dans son emballage d'origine ; frais de retour à la charge du client ; remboursement sous 14 jours). Les supports audio, vidéo, jeux vidéo et logiciels ne peuvent pas être retournés.</p>
+    <h3>💳 Paiement en ligne</h3><p>Carte bancaire (Visa, Mastercard, CB), paiement sécurisé.</p>
+    <p class="small">Résumé indicatif : seules les conditions générales de vente complètes font foi.</p>
+    <button class="btn btn-ghost btn-full" data-url="https://www.affairs.fr/conditions-generales-de-ventes,5.html">Lire les conditions générales de vente complètes</button>`,
+  contact:`<h1 class="h1">Contact</h1>
+    <div class="help"><div>Service client<b>04 76 49 42 03</b></div></div>
+    <div style="display:grid;gap:8px;margin-top:12px">
+      <a class="btn btn-cash" href="tel:0476494203">📞 Appeler le service client</a>
+      <a class="btn btn-ghost" href="mailto:contact@affairs.fr">✉️ contact@affairs.fr</a>
+      <button class="btn btn-ghost" data-go="magasins">📍 Contacter directement un magasin</button></div>
+    <h3>Siège</h3><p>AFFAIR'S FRANCE<br>73 rue des Javaux, 38320 Eybens</p>
+    <h3>Suivez-nous</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn btn-ghost" data-url="https://www.facebook.com/affairs.france">Facebook</button><button class="btn btn-ghost" data-url="https://www.instagram.com/affairs.france">Instagram</button><button class="btn btn-ghost" data-url="https://fr.linkedin.com/company/affairs-france">LinkedIn</button></div>`,
+  mentions:`<h1 class="h1">Mentions légales</h1>
+    <h3>Éditeur</h3><p>AFFAIR'S FRANCE<br>73 rue des Javaux, 38320 Eybens, France<br>RCS Grenoble 425 008 810 · Capital social : 8 000 €<br>Téléphone : 04 76 49 42 03 · E-mail : contact@affairs.fr</p>
+    <h3>Directeur de la publication</h3><p>AFFAIR'S FRANCE, représentée par son gérant.</p>
+    <h3>Activité</h3><p>Achat et vente de produits neufs et d'occasion, magasins physiques et site affairs.fr.</p>
+    <h3>Données personnelles</h3><p>Vous disposez d'un droit d'accès, de rectification et de suppression de vos données, à exercer auprès d'AFFAIR'S FRANCE à l'adresse ci-dessus. Voir aussi la page « Confidentialité ».</p>
+    <button class="btn btn-ghost btn-full" data-url="https://www.affairs.fr/mentions-legales,4.html">Mentions légales du site affairs.fr</button>`,
+  confidentialite:`<h1 class="h1">Confidentialité</h1>
+    <p class="small">Document à faire valider avant publication (durée de conservation, sous-traitants).</p>
+    <h3>Responsable du traitement</h3><p>AFFAIR'S FRANCE, 73 rue des Javaux, 38320 Eybens · contact@affairs.fr</p>
+    <h3>Données collectées</h3><ul><li><b>Photos de votre article</b>, le modèle et l'état que vous indiquez : pour réaliser l'estimation.</li><li><b>Prénom</b> (obligatoire) et <b>téléphone</b> (facultatif) : pour que le magasin choisi retrouve votre estimation et puisse vous recontacter.</li><li><b>Magasin choisi</b> et numéro d'estimation.</li></ul>
+    <p>L'application ne collecte pas votre position, ne contient pas de publicité et ne vous suit pas à des fins publicitaires.</p>
+    <h3>Analyse par intelligence artificielle</h3><p>Les photos sont transmises à notre prestataire d'intelligence artificielle (Anthropic) uniquement pour identifier l'article et estimer son prix. Seule une miniature de la première photo est conservée avec votre estimation.</p>
+    <h3>Durée de conservation</h3><p>Les estimations sont conservées [12 mois], puis supprimées.</p>
+    <h3>Vos droits</h3><p>Accès, rectification, suppression : contact@affairs.fr. Vous pouvez aussi saisir la CNIL (cnil.fr).</p>`
+};
+const CATS = [
+  {k:"telephone", ico:"📱", n:"Téléphone"}, {k:"ordinateur", ico:"💻", n:"Ordinateur"}, {k:"console", ico:"🎮", n:"Console"},
+  {k:"tv", ico:"📺", n:"TV"}, {k:"photo", ico:"📷", n:"Photo"}, {k:"audio", ico:"🎧", n:"Audio"},
+  {k:"montre", ico:"⌚", n:"Montre connectée"}, {k:"drone", ico:"🚁", n:"Drone"}, {k:"tablette", ico:"📱", n:"Tablette"},
+  {k:"jeux", ico:"🎮", n:"Jeux vidéo"}, {k:"autre", ico:"👜", n:"Autre"}
+];
+const CAT = Object.fromEntries(CATS.map(c=>[c.k,c]));
+const CATN = Object.fromEntries(CATS.map(c=>[c.k,c.n]));
+const ETATS = { tres_bon:{n:"Très bon état",c:"good"}, bon:{n:"Bon état",c:"good"}, correct:{n:"État correct",c:"warn"}, abime:{n:"Abîmé / à réparer",c:"bad"} };
+const SLOT_NAMES = ["Vue générale","Face avant","Arrière","Étiquette","Défauts"];
+const DEFAULT_PARAMS = { savPct:3, oldYear:2017, lowConfidenceCut:10, refurb:{ tres_bon:0, bon:10, correct:30, abime:60 },
+  margins:{ telephone:20, ordinateur:25, console:20, tv:30, photo:25, audio:30, montre:25, drone:25, tablette:22, jeux:40, autre:35 } };
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const eur = n => Math.round(n).toLocaleString("fr-FR") + " €";
+const range = (a,b) => a===b ? eur(a) : `${eur(a)} – ${eur(b)}`;
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+const clean = (s,n=200) => String(s ?? "").replace(/[\u0000-\u001f]/g," ").slice(0,n).trim();
+
+/* ================= Liens externes (navigateur intégré dans l'app) ================= */
+function openUrl(url){
+  const B = window.Capacitor?.Plugins?.Browser;
+  if (B) return B.open({ url, toolbarColor:"#e30613" });
+  const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
+}
+document.addEventListener("click", e => {
+  const u = e.target.closest("[data-url]"); if (u){ e.preventDefault(); return openUrl(u.dataset.url); }
+  const g = e.target.closest("[data-go]"); if (g){ e.preventDefault(); return go(g.dataset.go); }
+  const d = e.target.closest("[data-doc]"); if (d){ e.preventDefault(); return openDoc(d.dataset.doc); }
+});
+
+/* ================= Navigation ================= */
+let current = "accueil", history_ = [];
+function go(name, push = true){
+  if (push && name !== current) history_.push(current);
+  document.querySelectorAll("[data-screen]").forEach(s => s.hidden = s.dataset.screen !== name);
+  document.querySelectorAll("[data-tab]").forEach(t => { if (t.dataset.tab === name) t.setAttribute("aria-current","page"); else t.removeAttribute("aria-current"); });
+  current = name;
+  $("#back").hidden = name !== "doc"; $("#top-logo").hidden = name === "doc";
+  if (name === "estimer" && !S.cat) startEstimate();
+  window.scrollTo({ top:0 });
+}
+document.querySelectorAll("[data-tab]").forEach(t => t.onclick = () => { history_ = []; go(t.dataset.tab, false); });
+let docStack = [], curDoc = null;
+function backNav(){
+  if (current === "doc" && docStack.length){ curDoc = docStack.pop(); $("#doc-body").innerHTML = DOCS[curDoc]; return window.scrollTo({top:0}); }
+  go(history_.pop() || "infos", false);
+}
+$("#back").onclick = backNav;
+function openDoc(k){ if (current === "doc" && curDoc) docStack.push(curDoc); else docStack = []; curDoc = k; $("#doc-body").innerHTML = DOCS[k]; go("doc"); window.scrollTo({top:0}); }
+$("#top-logo").onclick = () => { history_ = []; go("accueil", false); };
+// Bouton retour Android
+window.Capacitor?.Plugins?.App?.addListener?.("backButton", () => {
+  if (current === "doc") return backNav();
+  if (current !== "accueil") return go("accueil", false);
+  window.Capacitor.Plugins.App.exitApp();
+});
+
+/* ================= Acheter ================= */
+$("#catalog").innerHTML = CATALOG.map(c => `<details><summary><span class="ic">${c.ic}</span>${c.n}</summary><div class="sub">
+  ${c.sub.map(([n,u]) => `<button data-url="${u}">${n}</button>`).join("")}
+  <button class="all" data-url="${c.url}">Tout voir : ${c.n}</button></div></details>`).join("");
+
+/* ================= Magasins ================= */
+let magFilter = "Tous";
+function mapsUrl(s){ return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`Affair's ${s.adr} ${s.cp}`); }
+function renderMag(){
+  const deps = ["Tous", ...new Set(STORES.map(s=>s.dep))];
+  $("#mag-depts").innerHTML = deps.map(d=>`<button aria-pressed="${d===magFilter}" data-dep="${esc(d)}">${esc(d)}</button>`).join("");
+  $("#mag-list").innerHTML = STORES.filter(s=>magFilter==="Tous"||s.dep===magFilter).map(s=>`
+    <div class="store"><span class="dep">${s.dep}</span><h3>Affair's ${s.n}</h3><span>${s.adr}, ${s.cp}</span>
+      <span class="hrs">${s.hrs} · Fermé le dimanche<br>${s.achat}</span>
+      <span>${s.desc||""}</span>
+      <div class="acts"><a class="btn btn-cash" href="tel:${s.tel.replace(/\s/g,"")}">Appeler</a><button class="btn btn-red" data-url="${mapsUrl(s)}">Itinéraire</button><button class="btn btn-ghost" data-url="${s.url}">Détails</button></div>
+      <div class="soc">${s.wa?`<button data-url="${s.wa}">💬 WhatsApp</button>`:""}${s.fb?`<button data-url="${s.fb}">👍 Facebook</button>`:""}${s.ig?`<button data-url="${s.ig}">📷 Instagram</button>`:""}</div></div>`).join("");
+  $("#mag-depts").querySelectorAll("[data-dep]").forEach(b => b.onclick = () => { magFilter = b.dataset.dep; renderMag(); });
+}
+renderMag();
+
+/* ================= Moteur d'estimation =================
+   3 modes : "server" (application publiée → ton serveur), "claude" (aperçu dans Claude), "demo" (résultats fictifs) */
+let MODE = API_BASE ? "server" : "demo", sample = null, sampleLimits = null, db = null, PARAMS = structuredClone(DEFAULT_PARAMS);
+const READY = (async () => {
+  if (!API_BASE && window.claude) {
+    try {
+      const [smp, d] = await Promise.all([claude.use("sample"), claude.use("db")]);
+      sample = smp; db = d;
+      if (sample) { MODE = "claude"; sampleLimits = await sample.limits().catch(()=>null); }
+      if (db) { try { const snap = await db.doc("config/params").get(); if (snap.exists) PARAMS = Object.assign(structuredClone(DEFAULT_PARAMS), snap.data()); } catch {} }
+    } catch {}
+  }
+  $("#demo-banner").hidden = MODE !== "demo";
+})();
+
+let S = newState();
+function newState(){ return { cat:null, photos:[null,null,null,null,null], extra:[], slotTarget:null, id:null, ident:null, result:null, store:null, prenom:"", tel:"", thumb:null, lastAction:null }; }
+const VIEWS = ["v-cat","v-photos","v-scan","v-confirm","v-result","v-store","v-done","v-old","v-error"];
+function show(id, step){
+  VIEWS.forEach(v => $("#"+v).hidden = v !== id);
+  [...$("#pbar").children].forEach((b,i) => b.className = step>=5 || i<step ? "on" : i===step ? "cur" : "");
+  window.scrollTo({ top:0 });
+}
+function startEstimate(){
+  S.photos.forEach(p=>p&&URL.revokeObjectURL(p.url)); S.extra.forEach(p=>URL.revokeObjectURL(p.url));
+  S = newState(); $("#f-model").value = ""; $("#f-etat").value = ""; ["acc-box","acc-charger","acc-invoice"].forEach(id=>$("#"+id).checked=false);
+  renderCats(); renderSlots(); show("v-cat",0);
+}
+
+function renderCats(){ $("#cats").innerHTML = CATS.map(c=>`<button class="cat" data-k="${c.k}" aria-pressed="${S.cat===c.k}"><span class="ico">${c.ico}</span>${c.n}</button>`).join(""); }
+$("#cats").onclick = e => {
+  const b = e.target.closest(".cat"); if (!b) return;
+  S.cat = b.dataset.k; renderCats();
+  $("#chosen").innerHTML = `${CAT[S.cat].ico} ${CAT[S.cat].n} · <button id="chg">Modifier</button>`;
+  $("#chg").onclick = () => show("v-cat",0);
+  setTimeout(()=>show("v-photos",1),120);
+};
+
+const MAXP = 6;
+const allPhotos = () => [...S.photos.map((p,i)=>p&&{...p,role:SLOT_NAMES[i]}).filter(Boolean), ...S.extra.map(p=>({...p,role:"Photo supplémentaire"}))];
+function renderSlots(){
+  $("#slots").innerHTML = S.photos.map((p,i)=> p
+    ? `<div class="slot filled"><img src="${p.url}" alt="${SLOT_NAMES[i]}"><span class="lbl">${SLOT_NAMES[i]}</span><button class="rm" data-rm="${i}" aria-label="Retirer">×</button></div>`
+    : `<button class="slot" data-slot="${i}"><span class="plus">+</span><strong>${SLOT_NAMES[i]}</strong>${i===0?"Obligatoire":"Conseillé"}</button>`).join("")
+    + S.extra.map((p,j)=>`<div class="slot filled"><img src="${p.url}" alt=""><span class="lbl">Autre</span><button class="rm" data-rmx="${j}" aria-label="Retirer">×</button></div>`).join("");
+  const n = allPhotos().length;
+  $("#counter").textContent = n ? `${n} photo${n>1?"s":""} ajoutée${n>1?"s":""}${n<3?" · ajoutez-en pour plus de précision":""}` : "Ajoutez au moins une photo pour continuer.";
+  $("#analyse").disabled = n === 0;
+}
+function addFiles(files, target){
+  [...files].filter(f=>f.type.startsWith("image/") || /\.(heic|heif)$/i.test(f.name)).forEach((f,idx)=>{
+    if (allPhotos().length >= MAXP) return;
+    const item = { file:f, url:URL.createObjectURL(f) };
+    const i = (idx===0 && target!=null && !S.photos[target]) ? target : S.photos.findIndex(p=>!p);
+    if (i>=0) S.photos[i] = item; else S.extra.push(item);
+  });
+  renderSlots();
+}
+$("#slots").onclick = e => {
+  const rm = e.target.closest("[data-rm]"), rmx = e.target.closest("[data-rmx]"), sl = e.target.closest("[data-slot]");
+  if (rm){ const i=+rm.dataset.rm; URL.revokeObjectURL(S.photos[i].url); S.photos[i]=null; return renderSlots(); }
+  if (rmx){ const j=+rmx.dataset.rmx; URL.revokeObjectURL(S.extra[j].url); S.extra.splice(j,1); return renderSlots(); }
+  if (sl){ S.slotTarget=+sl.dataset.slot; $("#in-slot").click(); }
+};
+["in-slot","in-camera","in-multi"].forEach(id => $("#"+id).onchange = e => { addFiles(e.target.files, id==="in-slot"?S.slotTarget:null); e.target.value=""; });
+
+function loadImg(url){ return new Promise((ok,ko)=>{ const im=new Image(); im.onload=()=>ok(im); im.onerror=()=>ko(new Error("decode")); im.src=url; }); }
+async function toCanvas(url, max){
+  const im = await loadImg(url); const k = Math.min(1, max/Math.max(im.naturalWidth, im.naturalHeight));
+  const c = document.createElement("canvas"); c.width = Math.round(im.naturalWidth*k); c.height = Math.round(im.naturalHeight*k);
+  const g = c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height); return c;
+}
+const toBlob = (c,q) => new Promise((ok,ko)=>c.toBlob(b=>b?ok(b):ko(new Error("blob")),"image/jpeg",q));
+
+/* ---- Prompts IA (mode aperçu Claude ; en mode serveur, le serveur a les siens) ---- */
+function promptIdentify(n, roles, acc, noPhoto){
+  const etatClient = $("#f-etat").value, today = new Date().toISOString().slice(0,10);
+  return `Tu es l'expert acheteur d'Affair's, magasin d'achat-revente d'occasion en France. Date du jour : ${today}.
+Un particulier veut nous vendre un article. ${noPhoto ? "Les photos n'ont pas pu t'être transmises : base-toi UNIQUEMENT sur le modèle et l'état indiqués par le client. Dans \"indices_visuels\", écris seulement « Identification d'après le modèle indiqué par le client ». Confiance au maximum \"moyenne\"." : `Analyse les ${n} photo(s) jointe(s) (dans l'ordre : ${roles.join(", ")}).`}
+Catégorie choisie : ${CATN[S.cat]}. Modèle saisi : ${clean($("#f-model").value) || "non précisé"}. État déclaré : ${etatClient ? ETATS[etatClient].n : "non précisé"}. Accessoires : ${acc.join(", ") || "aucun indiqué"}.
+${noPhoto ? "" : `IDENTIFICATION en deux temps : 1) dans "indices_visuels", liste UNIQUEMENT ce que tu vois (logos, inscriptions, étiquettes, couleur, forme, ports, grilles, objectifs photo) ; 2) déduis le modèle À PARTIR DE CES INDICES, jamais d'après la catégorie ou le modèle saisi si les photos ne le confirment pas, jamais le modèle le plus courant par défaut.
+Pièges : Xbox Series X (tour noire, dessus perforé à reflet vert) vs Series S (petite, blanche) vs PS5 (façades blanches incurvées) ; PS5 standard/Slim/Pro ; Switch/OLED/Switch 2 ; générations d'iPhone (bloc photo, Dynamic Island, bouton Action, USB-C, plateau photo pleine largeur des iPhone 17 Pro) ; Pro vs Pro Max ; Galaxy S vs A ; luxe potentiellement contrefait.
+En cas de doute : confiance "moyenne" ou "faible" et "alternatives". Capacité non visible : « à confirmer ».`}
+ÉTAT : "tres_bon", "bon", "correct" ou "abime"${noPhoto ? " (état déclaré, \"bon\" par défaut)" : " d'après les photos ; si le client déclare un état moins bon, retiens le sien"}. "remise" = coût de remise en état en euros si défauts, sinon 0.
+Article non revendable ou photos inexploitables : "article_valide": false et "raison_invalide".
+Textes en français, courts, polis, pour le client. Aucun prix dans les observations.
+Réponds uniquement avec ce JSON :
+{"indices_visuels":[],"article_valide":true,"cat":"telephone|ordinateur|console|tv|photo|audio|montre|drone|tablette|jeux|autre","marque":"","modele":"","variante":"","annee":2023,"alternatives":[],"etat":"bon","confiance":"haute|moyenne|faible","observations":[],"defauts":[],"remise":0,"photo_utile":"","raison_invalide":""}`;
+}
+function promptPrice(i){
+  const nom = [i.marque, i.modele, i.variante].filter(Boolean).join(" "), today = new Date().toISOString().slice(0,10);
+  return `Tu es l'acheteur d'Affair's, magasin d'achat-revente d'occasion en France. Date du jour : ${today}.
+Article : ${nom}${i.corrige ? " (modèle confirmé par le client)" : ""}. Catégorie : ${CATN[i.cat]}. État : ${ETATS[i.etat].n}. Défauts : ${i.defauts.join("; ") || "aucun"}. Accessoires : ${i.accessoires.join(", ") || "aucun"}.
+D'après ta connaissance du marché français (neuf, reconditionné, magasins d'occasion, particuliers) et en tenant compte de la décote depuis la sortie du modèle, donne un prix de REVENTE réaliste et PRUDENT pour un magasin d'occasion qui vend avec garantie : "rmin" = vente rapide, "rmax" = maximum raisonnable. Jamais le prix neuf.
+Réponds uniquement avec ce JSON :
+{"prix_neuf":0,"prix_reconditionne":0,"rmin":0,"rmax":0,"annee":2023,"demande":"forte|moyenne|faible","commentaire":""}`;
+}
+function normIdent(d, acc){
+  return { cat: CATN[d.cat] ? d.cat : S.cat, marque:clean(d.marque,60), modele:clean(d.modele,100), variante:clean(d.variante,120),
+    annee:Number(d.annee)||null, etat: ETATS[d.etat] ? d.etat : "bon", confiance:["haute","moyenne","faible"].includes(d.confiance) ? d.confiance : "moyenne",
+    indices:(d.indices_visuels||d.indices||[]).slice(0,6).map(x=>clean(x,160)), alternatives:(d.alternatives||[]).slice(0,3).map(x=>clean(x,80)).filter(Boolean),
+    observations:(d.observations||[]).slice(0,5).map(x=>clean(x,160)), defauts:(d.defauts||[]).slice(0,4).map(x=>clean(x,160)),
+    remise:Math.max(0, Number(d.remise)||0), photo_utile:clean(d.photo_utile,160), accessoires:acc, trop_ancien:!!d.trop_ancien };
+}
+function roundDown(v){ if (v<=0) return 0; const st = v>=100?10:v>=20?5:1; return Math.floor(v/st)*st; }
+function computeOffer(i, rmin, rmax){
+  const m = (PARAMS.margins[i.cat] ?? PARAMS.margins.autre)/100, sav = PARAMS.savPct/100, rf = Math.max(PARAMS.refurb[i.etat]||0, i.remise||0);
+  const pr = i.confiance==="faible" ? PARAMS.lowConfidenceCut/100 : 0;
+  const one = r => { const b=r*(1-pr); return { revente:r, marge:+(b*m).toFixed(2), sav:+(b*sav).toFixed(2), remise:rf, brut:+(b*(1-m-sav)-rf).toFixed(2) }; };
+  const lo = one(rmin), hi = one(rmax); return { lo, hi, low:roundDown(lo.brut), high:roundDown(hi.brut), margePct:m*100, savPct:PARAMS.savPct };
+}
+const MOCK = { telephone:{marque:"Apple",modele:"iPhone 17 Pro Max",variante:"256 Go · Orange cosmique",annee:2025,etat:"tres_bon",confiance:"haute",rmin:1049,rmax:1099,indices:["Plateau photo pleine largeur avec trois objectifs","Logo Apple","Port USB-C"],observations:["Modèle identifié","Écran en bon état"]},
+  console:{marque:"Microsoft",modele:"Xbox Series X",variante:"1 To",annee:2020,etat:"bon",confiance:"haute",rmin:300,rmax:340,indices:["Tour noire rectangulaire","Dessus perforé à reflet vert","Logo Xbox"],observations:["Modèle identifié"]} };
+
+async function post(path, body){
+  try { const r = await fetch(API_BASE.replace(/\/$/,"") + path, { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(body) }); return await r.json(); }
+  catch { return { ok:false, code:"offline" }; }
+}
+// Étape A : identification
+async function backendIdentify(photos, acc){
+  if (MODE === "demo"){ await wait(2500); const m = MOCK[S.cat] || { marque:"Produit", modele:"de démonstration", variante:"", annee:2022, etat:"bon", confiance:"moyenne", indices:["Démo : pas d'analyse réelle"], observations:["Démo"] }; return { ok:true, ident:normIdent({ ...m, cat:S.cat }, acc) }; }
+  const blobs = await Promise.all(photos.slice(0,MAXP).map(async p => toBlob(await toCanvas(p.url, 1600), 0.88)));
+  if (MODE === "server"){
+    const images = await Promise.all(blobs.map(b => new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok({ media_type:"image/jpeg", data:String(fr.result).split(",")[1] }); fr.readAsDataURL(b); })));
+    const r = await post("/api/identifier", { cat:S.cat, images, roles:photos.map(p=>p.role), modele_saisi:$("#f-model").value.trim(), etat_declare:$("#f-etat").value, accessoires:acc });
+    if (!r.ok) return r; S.id = r.id; return { ok:true, ident:normIdent(r.ident, acc) };
+  }
+  // MODE claude
+  const typed = $("#f-model").value.trim(), canImg = !!sampleLimits?.images;
+  if (!canImg && !typed) return { ok:false, code:"need_model" };
+  try {
+    let d;
+    try { d = canImg ? await sample.json(promptIdentify(blobs.length, photos.map(p=>p.role), acc, false), { images:blobs, modelTier:"complex", cache:false })
+                     : await sample.json(promptIdentify(0, [], acc, true), { modelTier:"default", cache:false }); }
+    catch (e) { if (["images_unavailable","image_rejected"].includes(e?.code) && typed) d = await sample.json(promptIdentify(0, [], acc, true), { modelTier:"default", cache:false }); else throw e; }
+    if (!d || d.article_valide === false) return { ok:false, code:"invalid_item", message:clean(d?.raison_invalide,300) };
+    return { ok:true, ident:normIdent(d, acc) };
+  } catch (e) { return aiErr(e); }
+}
+// Étape B : prix + reprise
+async function backendPrice(corr){
+  const i = S.ident;
+  if (corr){ i.corrige = true; i.marque = ""; i.modele = clean(corr.modele,120); i.variante = clean(corr.variante,120) || "à confirmer"; i.confiance = "haute"; i.annee = null; }
+  if (MODE === "server"){
+    const r = await post("/api/prix", { id:S.id, ...(corr ? { correction:corr.modele, variante_corrigee:corr.variante } : {}) });
+    if (!r.ok) return r; if (r.ident) S.ident = normIdent(r.ident, i.accessoires); if (corr) S.ident.corrige = true;
+    if (r.trop_ancien) return { ok:true, old:true };
+    return { ok:true, low:r.reprise.min, high:r.reprise.max };
+  }
+  let d;
+  if (MODE === "demo"){ await wait(2000); const m = Object.values(MOCK).find(x=>x.modele===i.modele) || { rmin:200, rmax:240 }; d = { rmin:m.rmin, rmax:m.rmax, annee:m.annee || i.annee }; }
+  else { try { d = await sample.json(promptPrice(i), { modelTier:"default", cache:false }); } catch (e) { return aiErr(e); } }
+  let rmin = Number(d.rmin)||0, rmax = Number(d.rmax)||rmin; if (rmax<rmin) [rmin,rmax] = [rmax,rmin];
+  if (!rmin) return { ok:false, code:"no_price" };
+  if (!i.annee && Number(d.annee)) i.annee = Number(d.annee);
+  if (isOld(i)) return { ok:true, old:true };
+  const calc = computeOffer(i, rmin, rmax); if (calc.high <= 0) return { ok:false, code:"too_low" };
+  S.result = { rmin, rmax, calc, marche:{ prix_neuf:Number(d.prix_neuf)||null, prix_reconditionne:Number(d.prix_reconditionne)||null, demande:clean(d.demande,20), commentaire:clean(d.commentaire,300) } };
+  return { ok:true, low:calc.low, high:calc.high };
+}
+// Étape C : enregistrement
+async function backendSave(){
+  const store = STORES.find(s=>s.id===S.store);
+  if (MODE === "server"){
+    const r = await post("/api/enregistrer", { id:S.id, magasin:S.store, miniature:S.thumb, prenom:S.prenom, telephone:S.tel });
+    return r.ok ? { ok:true, ref:r.ref, valid:r.valide_jusqu_au, saved:true } : r;
+  }
+  const now = new Date(), ref = "EST-" + String(now.getDate()).padStart(2,"0") + String(now.getMonth()+1).padStart(2,"0") + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
+  const valid = new Date(now.getTime()+7*864e5).toISOString(); let saved = false;
+  if (MODE === "claude" && db && S.result){
+    const i = S.ident, r = S.result;
+    try { await db.doc("estimations/"+ref).set({ ref, date:now.toISOString(), valide_jusqu_au:valid, magasin:store.id, statut:"nouvelle", prix_paye:null, note:"", source:"app",
+      article:{ cat:i.cat, marque:i.marque, modele:i.modele, variante:i.variante, annee:i.annee, etat:i.etat, confiance:i.confiance, corrige:!!i.corrige, indices:i.indices, observations:i.observations, defauts:i.defauts, accessoires:i.accessoires },
+      revente:{ min:r.rmin, max:r.rmax }, reprise:{ min:r.calc.low, max:r.calc.high }, calcul:r.calc, marche:r.marche, client:{ prenom:clean(S.prenom,40), telephone:clean(S.tel,20) }, miniature:S.thumb }); saved = true; } catch {}
+  }
+  return { ok:true, ref, valid, saved };
+}
+function aiErr(e){
+  const c = e?.code || "upstream_error";
+  if (["not_granted","sampling_disabled","images_unavailable","capability_disabled","not_declared","capability_removed","session_expired"].includes(c)) return { ok:false, code:"ai_off", diag:c };
+  if (c==="rate_limited") return { ok:false, code:"ai_busy" }; if (c==="invalid_json") return { ok:false, code:"ai_format" };
+  if (c==="image_rejected") return { ok:false, code:"photo_format" }; if (c==="refused") return { ok:false, code:"invalid_item" };
+  return { ok:false, code:"ai_error", diag:c };
+}
+const isOld = i => i.cat==="telephone" && i.annee && i.annee <= PARAMS.oldYear;
+
+/* ---- Déroulé ---- */
+function setPhases(list, i){
+  $("#phases").innerHTML = list.map((t,j)=>`<li class="${j<i?"ok":j===i?"run":""}"><span class="dot">${j<i?"✓":""}</span>${j<i?t.replace("…",""):t}</li>`).join("");
+  $("#bar").style.width = Math.min(100,(i/list.length)*100 + (i<list.length?6:0)) + "%";
+}
+async function withPhases(list, promise, notes){
+  let done = false, i = 0; const t0 = Date.now(); setPhases(list,0);
+  const tick = setInterval(()=>{ if (done) return; const s=(Date.now()-t0)/1000; const t=Math.min(list.length-1,Math.floor(s/2.2));
+    if (t>i){ i=t; setPhases(list,i); } if (notes && s>6) $("#scan-note").textContent = notes[Math.min(notes.length-1, Math.floor((s-6)/10))];
+    if (i===list.length-1) $("#bar").style.width = Math.min(97, 80+s*0.3) + "%"; }, 400);
+  try { return await promise; } finally { done = true; clearInterval(tick); setPhases(list,list.length); await wait(300); }
+}
+$("#analyse").onclick = runIdentify;
+async function runIdentify(){
+  S.lastAction = runIdentify;
+  const photos = allPhotos(); if (!photos.length) return;
+  $("#scan-main").src = photos[0].url; $("#scan-title").textContent = "Notre IA examine votre article";
+  $("#scan-sub").textContent = "Environ 20 à 40 secondes."; $("#scan-note").textContent = ""; show("v-scan",2);
+  await READY;
+  let r;
+  try { S.thumb = (await toCanvas(photos[0].url, 240)).toDataURL("image/jpeg",0.7); } catch { return showError({code:"photo_format"}); }
+  const acc = ["acc-box","acc-charger","acc-invoice"].filter(id=>$("#"+id).checked).map(id=>$("#"+id).value);
+  try { r = await withPhases(["Analyse de votre article…","Identification du produit…","Analyse de l'état…"], backendIdentify(photos, acc), ["L'IA relève logos, inscriptions et formes…","Comparaison avec les modèles connus…","Encore quelques secondes…"]); }
+  catch { return showError({code:"photo_format"}); }
+  if (!r.ok) return showError(r);
+  S.ident = r.ident;
+  if (r.ident.trop_ancien || isOld(r.ident)) return showOld();
+  showConfirm();
+}
+const identName = i => [i.marque, i.modele].filter(Boolean).join(" ").trim() || "Article";
+function showOld(){ const i = S.ident; $("#old-model").textContent = `Article identifié : ${identName(i)}${i.annee?` (sorti en ${i.annee})`:""}.`; show("v-old",3); }
+function showConfirm(){
+  const d = S.ident, conf = {haute:["good","Identification fiable"], moyenne:["warn","Identification probable"], faible:["bad","Identification incertaine"]}[d.confiance];
+  $("#v-confirm").innerHTML = `
+    <div class="prod"><img src="${allPhotos()[0]?.url||""}" alt=""><div><span class="tag">Article identifié</span><h3>${esc(identName(d))}</h3>${d.variante?`<div class="spec">${esc(d.variante)}</div>`:""}
+      <div class="meta"><span class="pill ${ETATS[d.etat].c}">${ETATS[d.etat].n}</span><span class="pill ${conf[0]}">${conf[1]}</span></div></div></div>
+    ${d.indices.length?`<div class="block"><h4>Reconnu sur vos photos</h4><ul class="obs">${d.indices.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`:""}
+    <h2 style="margin-top:18px">Est-ce bien votre article ?</h2>
+    <div style="display:grid;gap:8px;margin-top:12px"><button class="btn btn-cash" id="cf-yes">Oui, voir mon estimation</button>
+      ${d.alternatives.map((a,k)=>`<button class="btn btn-ghost" data-alt="${k}">C'est plutôt : ${esc(a)}</button>`).join("")}</div>
+    <div class="field"><label for="cf-model">Non, il s'agit de :</label><input type="text" id="cf-model" placeholder="Modèle exact" autocomplete="off">
+      <input type="text" id="cf-var" placeholder="Capacité / version" autocomplete="off" style="margin-top:8px"></div>
+    <button class="btn btn-red btn-full" id="cf-fix" style="margin-top:10px">Corriger et estimer</button>`;
+  $("#cf-yes").onclick = () => runPrice(null);
+  $("#v-confirm").querySelectorAll("[data-alt]").forEach(b => b.onclick = () => runPrice({ modele:d.alternatives[+b.dataset.alt] }));
+  $("#cf-fix").onclick = () => { const v = $("#cf-model").value.trim(); if (!v) return $("#cf-model").focus(); runPrice({ modele:v, variante:$("#cf-var").value.trim() }); };
+  show("v-confirm",3);
+}
+async function runPrice(corr){
+  S.lastAction = () => runPrice(corr);
+  $("#scan-title").textContent = "Estimation du prix"; $("#scan-sub").textContent = "Comparaison des prix du marché en France."; $("#scan-note").textContent = "";
+  show("v-scan",3);
+  const r = await withPhases(["Recherche des prix du marché…","Comparaison neuf / reconditionné / occasion…","Calcul de votre estimation…"], backendPrice(corr), ["Application d'une estimation prudente…","Encore quelques secondes…"]);
+  if (!r.ok) return showError(r);
+  if (r.old) return showOld();
+  S.offer = { low:r.low, high:r.high }; showResult();
+}
+function showResult(){
+  const d = S.ident, o = S.offer, et = ETATS[d.etat];
+  const obs = d.observations.map(x=>`<li>${esc(x)}</li>`).join("") + d.defauts.map(x=>`<li class="def">${esc(x)}</li>`).join("");
+  $("#v-result").innerHTML = `
+    <div class="prod"><img src="${allPhotos()[0]?.url||""}" alt=""><div><span class="tag">${CAT[d.cat].ico} ${CAT[d.cat].n}</span><h3>${esc(identName(d))}</h3>${d.variante?`<div class="spec">${esc(d.variante)}</div>`:""}
+      <div class="meta"><span class="pill ${et.c}">${et.n}</span>${d.corrige?`<span class="pill good">Modèle indiqué par vous</span>`:""}</div></div></div>
+    <div class="buy"><small>🏪 Estimation de reprise Affair's</small><strong>${range(o.low,o.high)}</strong><span class="cash">Payé cash en magasin</span>
+      <p>Estimation indicative — le prix définitif sera confirmé en magasin après contrôle du produit.</p></div>
+    ${obs?`<div class="block"><h4>Ce que notre IA a relevé</h4><ul class="obs">${obs}</ul></div>`:""}
+    ${MODE==="demo"?`<div class="tip" style="margin-top:10px"><span>⚠️</span><span><b>Démonstration :</b> résultat fictif.</span></div>`:""}
+    <p class="disc">L'estimation réalisée par notre IA est indicative. Le prix définitif dépendra de l'état réel du produit, de son fonctionnement, de son authenticité et des vérifications effectuées en magasin.</p>
+    <div style="display:grid;gap:8px;margin-top:14px"><button class="btn btn-cash" id="go-store">📍 Choisir mon magasin</button><button class="btn btn-ghost" id="again">🔄 Estimer un autre article</button></div>`;
+  $("#go-store").onclick = () => { renderStores(); show("v-store",4); };
+  $("#again").onclick = startEstimate;
+  show("v-result",3);
+}
+function renderStores(){
+  const d = S.ident, o = S.offer;
+  $("#v-store").innerHTML = `
+    <h2>Choisissez votre magasin</h2><p class="sub2">Nos acheteurs contrôleront votre article et vous paieront cash.</p>
+    <div class="recap"><span><b>${esc(identName(d))}</b><br><span class="small">${ETATS[d.etat].n}</span></span><span class="rp">${range(o.low,o.high)}</span></div>
+    ${STORES.map(s=>`<button class="store" data-store="${s.id}" aria-pressed="${S.store===s.id}"><span class="dep">${s.dep}</span><h3>Affair's ${s.n}</h3><span>${s.adr}, ${s.cp}</span><span class="hrs">${s.hrs}</span></button>`).join("")}
+    <div class="field"><label for="c-prenom">Votre prénom <span style="color:var(--red)">*</span></label><input type="text" id="c-prenom" autocomplete="given-name" placeholder="Obligatoire"></div>
+    <div class="field"><label for="c-tel">Votre téléphone (facultatif)</label><input type="tel" id="c-tel" autocomplete="tel"></div>
+    <p class="err" id="st-err" hidden></p>
+    <div class="sticky-cta"><button class="btn btn-cash btn-full" id="st-ok">Valider ce magasin</button></div>`;
+  $("#c-prenom").value = S.prenom; $("#c-tel").value = S.tel;
+  const refresh = () => { const ok = S.prenom.trim().length >= 2; $("#st-ok").disabled = !(S.store && ok);
+    const e = $("#st-err"); if (S.store && !ok){ e.hidden=false; e.textContent="Indiquez votre prénom pour valider."; } else e.hidden = true; };
+  $("#c-prenom").oninput = e => { S.prenom = e.target.value; refresh(); }; $("#c-tel").oninput = e => S.tel = e.target.value;
+  $("#v-store").querySelectorAll("[data-store]").forEach(b => b.onclick = () => { S.store = b.dataset.store; $("#v-store").querySelectorAll("[data-store]").forEach(x=>x.setAttribute("aria-pressed", x===b)); refresh(); });
+  $("#st-ok").onclick = saveAndFinish; refresh();
+}
+async function saveAndFinish(){
+  if (!S.store || S.prenom.trim().length < 2) return $("#c-prenom").focus();
+  const b = $("#st-ok"); b.disabled = true; b.textContent = "Enregistrement…";
+  const r = await backendSave();
+  if (!r.ok){ b.disabled = false; b.textContent = "Valider ce magasin"; const e=$("#st-err"); e.hidden=false; e.textContent = r.code==="expired" ? "Estimation expirée : recommencez." : "L'enregistrement n'a pas abouti. Vérifiez votre connexion et réessayez."; return; }
+  showDone(r);
+}
+function showDone(r){
+  const s = STORES.find(x=>x.id===S.store), d = S.ident, o = S.offer;
+  const valid = new Date(r.valid).toLocaleDateString("fr-FR",{day:"numeric",month:"long"});
+  const bring = ["Votre article, en état de fonctionnement","Une pièce d'identité en cours de validité (obligatoire)",
+    ...(["telephone","tablette","montre"].includes(d.cat)?["Appareil déverrouillé, compte iCloud / Google déconnecté"]:[]),"Boîte, chargeur et facture si vous les avez"];
+  $("#v-done").innerHTML = `
+    <h2>${r.saved ? "Estimation enregistrée" : "Votre estimation est prête"}</h2><p class="sub2">Présentez ce numéro au service achat d'Affair's ${esc(s.n)}.</p>
+    <div class="ticket"><div class="th"><div class="small">N° d'estimation</div><div class="ref">${r.ref}</div><div class="small">Valable jusqu'au ${valid}</div></div>
+      <dl><dt>Article</dt><dd>${esc([identName(d), d.variante].filter(Boolean).join(" "))}</dd><dt>Client</dt><dd>${esc(S.prenom)}</dd>
+      <dt>Magasin</dt><dd>Affair's ${esc(s.n)}<br><span style="font-weight:400">${esc(s.adr)}, ${esc(s.cp)}</span></dd><dt>Horaires</dt><dd style="font-weight:400">${s.hrs}</dd></dl>
+      <div class="amt"><span>Reprise estimée</span><strong>${range(o.low,o.high)}</strong></div></div>
+    <div class="bring"><h4>À apporter</h4><ul>${bring.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn btn-red" data-url="${mapsUrl(s)}">Itinéraire</button><a class="btn btn-ghost" href="tel:${s.tel.replace(/\s/g,"")}">Appeler</a></div>
+    <button class="btn btn-cash btn-full" id="dn-again" style="margin-top:8px">🔄 Estimer un autre article</button>`;
+  $("#dn-again").onclick = startEstimate;
+  show("v-done",5);
+}
+function showError(r){
+  const copy = {
+    invalid_item:["Article non reconnu",(r.message? r.message+" " : "")+"Essayez une photo nette de l'article entier, à la lumière du jour."],
+    no_price:["Estimation impossible","Nous n'avons pas trouvé de prix de référence fiable. Nos acheteurs l'estimeront gratuitement en magasin."],
+    too_low:["Valeur trop faible","La valeur de cet article est trop faible pour une estimation en ligne. Passez en magasin."],
+    photo_format:["Photo non lisible","Sur iPhone : Réglages › Appareil photo › Formats › « Le plus compatible », ou envoyez une capture d'écran de la photo."],
+    need_model:["Indiquez le modèle","Vos photos ne peuvent pas être analysées ici : indiquez le modèle et l'état de votre article."],
+    ai_off:["Estimation indisponible","L'IA n'est pas disponible pour le moment."],
+    ai_busy:["IA très sollicitée","Patientez quelques secondes puis réessayez."],
+    offline:["Pas de connexion","Vérifiez votre connexion Internet puis réessayez."],
+    rate:["Trop de demandes","Réessayez dans une heure."], expired:["Estimation expirée","Recommencez l'estimation."]
+  }[r.code] || ["L'analyse n'a pas abouti","Un problème temporaire est survenu. Réessayez."];
+  $("#err-title").textContent = copy[0]; $("#err-text").textContent = copy[1] + (r.diag ? ` (${r.diag})` : "");
+  $("#err-retry").hidden = !S.lastAction || ["invalid_item","no_price","too_low","photo_format","need_model","ai_off","expired"].includes(r.code);
+  $("#err-photos").textContent = r.code==="need_model" ? "Indiquer le modèle" : "Modifier mes photos";
+  show("v-error",3);
+}
+$("#err-retry").onclick = () => S.lastAction && S.lastAction();
+$("#err-photos").onclick = () => show("v-photos",1);
+$("#err-restart").onclick = startEstimate;
+$("#old-back").onclick = startEstimate;
+
+renderCats(); renderSlots();
+</script>

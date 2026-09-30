@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e30613">
+<title>Affair's</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<script src="config.js"></script>
+</head>
+<body>
+<style>
+/* App Affair's — mobile, charte affairs.fr (rouge logo, jaune cash, gris titres), thème clair unique */
+:root{
+  --red:#e30613; --red-d:#b8050f; --yellow:#fdc300; --ink:#2e2e2e; --title:#5f5e5e; --panel:#f5f5f5;
+  --line:#e0e0e0; --white:#fff; --black:#151515; --muted:#6b6b6b;
+  --good:#1e9e4a; --good-bg:#e6f5eb; --warn:#b77400; --warn-bg:#fff4d6; --bad:#e30613; --bad-bg:#fde6e7;
+  --font:"Open Sans",Arial,Helvetica,sans-serif; --tab-h:64px; color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--panel);color:var(--ink);font:15.5px/1.5 var(--font)}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.app{max-width:560px;margin:0 auto;min-height:100vh;background:var(--white);position:relative;padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 10px)}
+.banner{background:var(--yellow);color:var(--black);font-size:12.5px;font-weight:700;text-align:center;padding:6px 12px}
+.banner.red{background:var(--red);color:#fff}
+
+/* En-tête */
+.top{position:sticky;top:0;z-index:20;background:var(--white);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px 8px;box-shadow:0 2px 6px -3px rgba(0,0,0,.25)}
+.top img{height:46px;width:auto;display:block}
+.top .call{display:inline-flex;align-items:center;gap:6px;background:var(--yellow);color:var(--black);font-weight:700;font-size:13px;padding:7px 10px;text-decoration:none;text-transform:uppercase}
+.top .back{background:none;border:0;font-weight:700;color:var(--red);padding:8px 0;cursor:pointer;font-size:15px}
+
+/* Barre d'onglets */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--black);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--tab-h)}
+.tabs button{background:none;border:0;color:#bdbdbd;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:.02em}
+.tabs svg{width:24px;height:24px}
+.tabs button[aria-current="page"]{color:var(--yellow)}
+.tabs button.est{color:var(--black)}
+.tabs button.est .bub{background:var(--yellow);border-radius:50%;width:44px;height:44px;display:grid;place-items:center;margin-top:-18px;box-shadow:0 0 0 4px var(--black)}
+.tabs button.est span.l{color:#bdbdbd}
+.tabs button.est[aria-current="page"] span.l{color:var(--yellow)}
+
+.scr{padding:0 16px 24px}
+.scr[hidden]{display:none}
+.h1{font-size:26px;font-weight:400;text-align:center;line-height:1.2;padding-top:22px}
+.h1::after{content:"";display:block;width:110px;height:6px;background:var(--yellow);margin:12px auto 0}
+.h2{font-size:18px;font-weight:700;color:var(--title);text-transform:uppercase;margin:24px 0 12px}
+.lead{text-align:center;margin:14px 0 18px}
+.small{font-size:12.5px;color:var(--muted)}
+
+/* Boutons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:0;font-weight:700;text-transform:uppercase;text-decoration:none;cursor:pointer;padding:12px 18px;font-size:15px;min-height:48px}
+.btn-cash{background:var(--yellow);color:var(--black)}
+.btn-red{background:var(--red);color:#fff}
+.btn-ghost{background:#fff;border:1px solid #bdbdbd;color:var(--ink)}
+.btn-full{width:100%}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+
+/* Accueil */
+.hero{background:var(--red);color:#fff;margin:0 -16px;padding:26px 20px 24px;text-align:center;border-bottom:8px solid var(--yellow)}
+.hero small{display:block;font-size:13px;text-transform:uppercase;font-weight:700;letter-spacing:.05em;opacity:.9}
+.hero h1{font-size:28px;font-weight:800;text-transform:uppercase;line-height:1.1;margin:8px 0 6px}
+.hero p{margin:0 0 18px}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.qk{background:var(--panel);border:0;text-align:left;padding:14px;display:flex;flex-direction:column;gap:6px;cursor:pointer;min-height:96px;text-decoration:none;color:var(--ink)}
+.qk b{font-size:15px;text-transform:uppercase}
+.qk span{font-size:13px;color:var(--muted)}
+.qk i{font-style:normal;font-size:24px}
+.qk.or{background:var(--yellow)}
+.qk.or span{color:var(--black)}
+.gar{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gar div{display:flex;gap:10px;align-items:center;background:var(--panel);padding:12px;font-weight:600;font-size:13.5px}
+.gar i{font-style:normal;font-size:22px}
+.steps3{display:grid;gap:12px}
+.st3{display:flex;gap:14px;align-items:flex-start}
+.st3 .n{width:40px;height:40px;border-radius:50%;background:var(--red);color:#fff;font-weight:700;font-size:19px;display:grid;place-items:center;flex:none}
+.about{background:var(--panel);padding:16px;font-size:14.5px;margin-top:14px}
+
+/* Acheter */
+.note{display:flex;gap:10px;background:var(--warn-bg);padding:12px 14px;font-size:13.5px;margin:14px 0}
+.cat-acc{border-top:1px solid var(--line)}
+.cat-acc details{border-bottom:1px solid var(--line)}
+.cat-acc summary{list-style:none;display:flex;align-items:center;gap:12px;padding:15px 4px;font-weight:700;text-transform:uppercase;cursor:pointer;font-size:15px}
+.cat-acc summary::-webkit-details-marker{display:none}
+.cat-acc summary .ic{font-size:22px;width:30px;text-align:center}
+.cat-acc summary::after{content:"+";margin-left:auto;font-size:22px;color:var(--red);font-weight:400}
+.cat-acc details[open] summary::after{content:"–"}
+.sub{display:grid;gap:6px;padding:0 0 14px 46px}
+.sub a,.sub button{background:none;border:0;text-align:left;padding:8px 0;color:var(--ink);text-decoration:none;cursor:pointer;font-size:14.5px;display:flex;justify-content:space-between}
+.sub a::after,.sub button::after{content:"↗";color:var(--muted)}
+.sub .all{font-weight:700;color:var(--red)}
+
+/* Magasins */
+.depts{display:flex;gap:6px;overflow-x:auto;margin:12px -16px 14px;padding:0 16px}
+.depts button{border:1px solid #bdbdbd;background:#fff;padding:7px 13px;cursor:pointer;font-weight:600;font-size:13.5px;white-space:nowrap}
+.depts button[aria-pressed="true"]{background:var(--black);color:#fff;border-color:var(--black)}
+.store{border:1px solid var(--line);padding:14px;display:grid;gap:4px;margin-bottom:12px;background:#fff;width:100%;text-align:left;font-size:14px}
+.store .dep{font-size:11.5px;font-weight:700;color:var(--title);text-transform:uppercase}
+.store h3{font-size:17px;font-weight:700;text-transform:uppercase}
+.store .hrs{color:var(--muted);font-size:13px}
+.store .acts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
+.store .acts .btn{min-height:40px;padding:8px;font-size:12.5px}
+.soc{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.soc button{background:var(--panel);border:0;padding:7px 10px;font-size:12.5px;font-weight:600;cursor:pointer}
+button.store{cursor:pointer}
+button.store[aria-pressed="true"]{border:2px solid var(--red);box-shadow:inset 0 -5px 0 var(--yellow)}
+
+/* Infos */
+.list{border-top:1px solid var(--line)}
+.list a,.list button{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:15px 4px;text-align:left;color:var(--ink);text-decoration:none;cursor:pointer;font-size:15px}
+.list a::after,.list button::after{content:"›";margin-left:auto;font-size:22px;color:var(--muted)}
+.list i{font-style:normal;font-size:20px;width:28px;text-align:center}
+.help{background:var(--black);color:#fff;padding:18px;display:flex;align-items:center;gap:14px;margin-top:16px}
+.help b{display:block;font-size:22px;user-select:all}
+.doc h3{font-size:15px;font-weight:700;margin:18px 0 6px;color:var(--title);text-transform:uppercase}
+.doc p,.doc li{font-size:14px}
+
+/* Estimation */
+.pbar{display:flex;gap:4px;margin:14px 0 18px}
+.pbar i{flex:1;height:6px;background:#dcdcdc}
+.pbar i.on{background:var(--red)}
+.pbar i.cur{background:var(--yellow)}
+.ev h2{font-size:20px;font-weight:700;color:var(--title);text-transform:uppercase;text-align:center}
+.ev .sub2{text-align:center;margin:6px 0 18px;font-size:14.5px}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cat{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 4px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600;font-size:12px;text-transform:uppercase;text-align:center;min-height:92px;justify-content:center}
+.cat .ico{font-size:28px;line-height:1}
+.cat[aria-pressed="true"]{border-color:var(--red);box-shadow:inset 0 -4px 0 var(--yellow)}
+.chosen{text-align:center;font-size:14px;margin-bottom:10px}
+.chosen button{background:none;border:0;color:var(--red);font-weight:700;text-decoration:underline;cursor:pointer}
+.tip{display:flex;gap:10px;background:var(--panel);border-left:5px solid var(--yellow);padding:10px 12px;font-size:13.5px;margin-bottom:14px}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.slot{position:relative;aspect-ratio:1/1;border:2px dashed #c7c7c7;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;cursor:pointer;overflow:hidden;padding:4px;font-size:11px;color:var(--muted)}
+.slot strong{color:var(--ink);font-size:11.5px;line-height:1.2}
+.slot .plus{font-size:24px;color:var(--red);line-height:1}
+.slot.filled{border:2px solid var(--red);padding:0}
+.slot img{width:100%;height:100%;object-fit:cover}
+.slot .lbl{position:absolute;left:0;right:0;bottom:0;background:rgba(21,21,21,.78);color:#fff;font-size:10.5px;padding:2px 5px;text-align:left}
+.slot .rm{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:var(--red);color:#fff;font-size:15px;cursor:pointer}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
+.counter{font-size:13px;color:var(--muted)}
+.field{margin-top:14px}
+.field label,.field .lab{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.field input,.field select{width:100%;padding:11px 12px;border:1px solid #bdbdbd;border-radius:0;background:#fff;font-size:16px}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.chk{display:inline-flex;align-items:center;gap:6px;border:1px solid #bdbdbd;padding:8px 11px;font-size:13.5px;cursor:pointer}
+.chk:has(input:checked){border-color:var(--red)}
+.chk input{accent-color:var(--red)}
+.sticky-cta{position:sticky;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 6px);margin-top:18px;z-index:5}
+.linkish{background:none;border:0;text-decoration:underline;color:var(--ink);cursor:pointer;padding:10px 0;font-size:14px}
+.scan-img{position:relative;width:62%;margin:10px auto 14px;aspect-ratio:1/1;overflow:hidden;border:1px solid var(--line)}
+.scan-img img{width:100%;height:100%;object-fit:cover}
+.scan-img::after{content:"";position:absolute;left:0;right:0;height:36%;top:-36%;background:linear-gradient(180deg,transparent,rgba(253,195,0,.55),transparent);animation:scan 1.6s linear infinite}
+@keyframes scan{to{top:100%}}
+.phases{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.phases li{display:flex;align-items:center;gap:10px;color:var(--muted)}
+.phases .dot{width:26px;height:26px;border-radius:50%;border:3px solid #d0d0d0;display:grid;place-items:center;flex:none;font-size:13px;font-weight:700}
+.phases li.run{color:var(--ink);font-weight:600}
+.phases li.run .dot{border-color:var(--red);border-top-color:transparent;animation:spin .8s linear infinite}
+.phases li.ok{color:var(--ink)}
+.phases li.ok .dot{background:var(--red);border-color:var(--red);color:#fff}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bar{height:7px;background:#e0e0e0;margin-top:16px}
+.bar i{display:block;height:100%;width:0;background:var(--yellow);transition:width .5s}
+.note2{font-size:13px;color:var(--muted);margin-top:8px;min-height:1.5em}
+.prod{display:flex;gap:12px;align-items:flex-start;background:var(--panel);padding:12px}
+.prod img{width:80px;height:80px;object-fit:cover;flex:none;background:#fff}
+.prod>div{min-width:0}
+.prod h3{font-size:19px;font-weight:700}
+.tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;padding:2px 8px;background:#fff;color:var(--title)}
+.spec{color:var(--muted);font-weight:600;font-size:13.5px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.good{background:var(--good-bg);color:var(--good)}.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.block{background:var(--panel);padding:12px;margin-top:10px}
+.block h4{font-size:13px;text-transform:uppercase;color:var(--title);margin-bottom:8px}
+.obs{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14.5px}
+.obs li{display:flex;gap:8px}
+.obs li::before{content:"✓";color:var(--good);font-weight:800}
+.obs li.def::before{content:"!";color:var(--warn)}
+.buy{background:var(--red);color:#fff;padding:18px;border-bottom:7px solid var(--yellow);margin-top:14px}
+.buy small{display:block;font-size:12.5px;text-transform:uppercase;font-weight:700}
+.buy strong{display:block;font-size:40px;font-weight:800;line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
+.buy .cash{display:inline-block;margin-top:8px;background:var(--yellow);color:var(--black);font-weight:700;font-size:12px;text-transform:uppercase;padding:3px 9px}
+.buy p{margin:10px 0 0;font-size:13px}
+.disc{font-size:12.5px;color:var(--muted);border-left:4px solid var(--yellow);padding:2px 0 2px 10px;margin-top:12px}
+.recap{display:flex;justify-content:space-between;gap:10px;background:var(--panel);border-left:5px solid var(--red);padding:10px 12px;margin-bottom:12px;font-size:14px}
+.recap .rp{font-weight:800;color:var(--red);font-size:17px;white-space:nowrap}
+.err{color:var(--red);font-weight:600;font-size:13.5px;margin-top:8px}
+.ticket{border-top:7px solid var(--red);background:var(--panel)}
+.ticket .th{text-align:center;padding:14px;border-bottom:2px dashed var(--line)}
+.ticket .ref{font-size:26px;font-weight:800;letter-spacing:.05em;user-select:all}
+.ticket dl{margin:0;padding:12px 14px;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px}
+.ticket dt{color:var(--muted)}.ticket dd{margin:0;font-weight:600;min-width:0}
+.ticket .amt{background:var(--red);color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:5px solid var(--yellow)}
+.ticket .amt strong{font-size:24px;font-weight:800}
+.bring{background:var(--panel);padding:12px 14px;margin-top:12px}
+.bring h4{font-size:13px;text-transform:uppercase;color:var(--title);margin-bottom:6px}
+.bring ul{margin:0;padding-left:18px;font-size:14px;display:grid;gap:4px}
+.refuse{text-align:center;padding-top:20px}
+.refuse .big{font-size:48px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <div class="banner" id="demo-banner" hidden>VERSION DE DÉMONSTRATION — serveur d'estimation non configuré : résultats fictifs</div>
+  <div class="banner red" id="ai-banner" hidden>L'estimation IA n'est pas disponible dans cette vue.</div>
+  <header class="top">
+    <button class="back" id="back" hidden>‹ Retour</button>
+    <img id="top-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKUAAABRCAYAAACzKGbVAAARnUlEQVR4nO2de2xb133HP4ekREm25YcuY8e2pDQPm2q2JojtJrHJeAWWAQWWhka6Qm5jocEUNMXQDYMTwy4cIEM82LBj9JE/hkT6Y5BT2EWbWAWyYsWGJTYpJ2mdoMG6inmtlpS4qXnlh2zJokTy7I/Lc3UvxXtJ6mFR8/3CBinec879/X7n+3uccy4lEQqF8FA5vvYg8i/ukXzpDsmd6yW1tSB8kg8/E7z/MfzXe4Le0z6x0HIuRgiPlJXhO19FPvWIZPUqmEzD9cuCQINECEBIapcYrzVLJOeH4cc/8/Gvr3vkrAQeKctEswZHn0Ruu1syPgrZSQg2SmrqgLr1jNe145eD1F4/wfiIAJ8EAfUrJf/+juDvXwiIkdGF1mJxwLfQAiwGbFwHr34f+cAGGL0CdctgaRPUBI3r+kd+gnf/I7LpGyAEdSsk9SugtkEydknw8CbJa0cm5S2r5ILqsVjgkbIEGhvgpb9DrlkJOSRLlgMSJCAVx6xcq11vfCQl/lpoWCXJpOGLrZKu/RmPlWXAI2UJ/PPjQt55q0D4oSYgAGH8EzCRaeHa6ldp2nkGgJpbHyT3pV+TXvcak/U7obYZAQSXGWM98OeSf/pu1iNmCXikdMH2u5E7HgDqMghpRD8VJtOTzVwP/ZAldz4wrV/NmgfJrt6NnBjKR1OJrwayWclTX8/wxdulR0wXeKR0QcdXBKJG4hM+BAIhpiLl5XQ7y//sflv7K797h/SFTwHwj/wUgdFcvfhrjBD77a9lb6Qaiw7e6tsByxvgdz8W0r/ST24kY7ivMPYi01cFPPAWwVuM+nHi4qfI39xP/cocV4b8jPnbWdvyE2MF7gOERORfCQS4eCVDWyzobRM5wIuUDvjyXUIKBEwGQIh8pASEYPyqnU+1q9ZTv7oZEKxozbG2+Se2CCnMHwRC1NC0HO7Z6KVwJ3ikdMCGtSCRiKVLQUok0qgppaRumWT8wme29rl732biC68yLrYi8/WnWqEbfdVnfqSUbGjNLYxiiwAeKR0QagRfbR1ybBIj1k3VlMHlkotv/MisHxUCoQep2fRz0utfQwRb7DWlyEdMEQBfPbesusEKLSJ4pHSA3we5iXEkfvKxzlxJI+EL95wm9fozXE2+Pa1vzZoHyd79a6htLrgiAT/kxhHCy95O8EjpgMtj+fgoAkxFSrDuUzZviCPf/xsu/LSd4cSr0yLn5Kqn84FS1aACEViJEJC65K1znBBwu7j2Ji57Lv0xHx9FAOMdIPMPXsj8aU7depavH2K5OA2+03z6bw+x7okT5hhZWox2It8fCbnrICWXzomb2r7nXcKhjZRrc/DIhJSbsrD5Jj8R8/9WIPBDehRz/WwGPMmw70csW7eW4KWjMPIWQkhqltptlrv8lm0VDgIRvIPc5c849A5A7qY18nkfnPcJ3vXDS3XCljZMUm7OSPny6E1ro2nIpiQT/5MjuNmHaLwNee0PIEEIyfn+21j71GMAyLU/Z/KykbZvuX+9bYz6QAImLB8s2YS8eprr/+lVTWtzsDYn2ZyBRyalfK5ecDZgkNMHHiGdcP1XEpm+gqgP4Qs2mfuUrPmGrV3NivXUrLATcvT3P0NcOzO1TxlogtwIAsHoqx4prVibg+euSzZnjKWkCIVCvH41J2/m+sYNy/f6CH4ZxIo7kVc/Qvjgymc+rol2lt7zGHW3rDNPdgBGP34bcf4oS5fGwWdwGJ+E+rtg4kPGXvNx+ZB/4RSqYpz3wV8v8wnxt8s1+dx1L0o6wdcEqw75CKxvQqy4HXn1E+TkMELA+DVIjwiuB9tZveMI6aG3qP/TY/ZjRR+Ipq/C5V8y+YHgwhN+8I6+HfFSUOC7zzOQK3LDcOVIjqw+TPbCbxCNd5jPUwaXSZY35wiM9wHgC2A+ZCllPjrW34W8+Esyg4KL3/d5hCyBTVkQ79Q1eam7DARaofEffNTcBWL5HfjqViGvfQw+yZ/+O4u89Ts0agMsXXIWWbMK4QN5/UNE9iLpd+HS836yFxZai+rHeR+IodomL3dXgKXfFDR8HUQdICS+xjuNNB1cZez7jH0EmYvgk8jrcO0VwbVj3sKmEniknAFEPdR/BWo3Qe1G8K02HmlDQO4STH4A6Xdg7FcCOb7Q0i4+eKScC/jB1wByHOTkQguz+OF6zOihTGQhd3Whhfj/A6/Y8VB18EjpoergkdJD1WFWNWWgtYXg9m1ltc2cGyR9um9OxnLDaM9xAJZ07Jz1WOlTfWQGBqd9Xu7YpXQGWPrdTtfr1/6lG4DgQ9sI3NZS1n0LZQDIDgwV1UXBSScnGwRaW/C3NhPcvg1/SzOBVrtsqs9E/AyZc4Ml72/FrFbfjc/uoXH/nrLaZgYG0R+OOQpWyVhu9/h8w30EWltY8+F7sxoLIPXwo9NIVenYn2+4z3Uy1l3+FFFfV/TaxLu/5cLWvwTmxj7pU32MHDhc1FHWp/WifT4NarafA60tLNv/TMVOnz7VR+qvHi2r7azSdzBafmRTnrXY0dDRPq/t5xPB7dsI/ccvaHzWTu7CKKegso7Cko6drPnwvTnJQm6YMSlnkm4bdlXPBM0UlUarShz3RqFx/x4bEZ3mcezY1FP0wYe2sbLrxXmXDWZByplEgCUdOx29cjFgJrIHt2+rSp2t81cb3Vq0jTXNr+y+MYSEWSx0nKJeZmCQ9Kk+xxAf3L6NTE95Ba8Voz3HyQ4OubbJDrhfV0if6iMdd1+AFBvPzRFHDhx2jKINHe2MPH+4LNlmAlWvK/hbm1nZ/aKrM1gjeLFIOXJgSt5Aa4vrWJmBQcaOnWCsZyqy+lubCdyWXwxVmC1mREo3IceOnSA7MORIytro1mm1SjmYiJ+ZUb9iyAwMzogkTqRTjsj+4v0ads0vKZUM1vefb7jPcfFSiGJzWUgwN6RP9U3TLzNQeufBCTNK324RI32qj9Ge444rzsWawt2K+7FjJ0ifLr51AqUjzUJAZYrgQ9OjWOH8lcpAwe3baHx2T9GxZoIZRUrXiJH3jvSpPgIdxSdiJinc39pcUuly98ICrS1lGdDq6U51F2BGibFjJxxts2z/M1x68nsl7zlXKKVf+pShW7G9z4n4mYruFWhtMfTePxWx06f6TGetFBWT0s3jrau1ifgZx+jS8Hh7xalYKe2G0Z7jZU18cPs2Qtt/4dpGpUAwdHbSxeoEbil8ScdOrh44UvYGciUItLbYVsaldkYuPfk9kyyZc4PTbFY4N5mBQUZ7jpe1FaT4EegwbKbqzUrKl4pJ6Za6rXXIaM9xlu1/piiJ1Yp0PiZoPuCqs8URVQp3ctyZLvLKQTmEKbZ5nj7dV1Y0u3rgyIx2ElQU9bc0l50pKial2z5dJdtE870inUuUWj0WbkY7YaaLvLnAyIHDjPWcmHEgUCv8ho72GZ0sLenYWfZitSJSlvKSSoStxk3lYiiVCivReT5TeCk07jeOKUcOHJ5xMFC7FmM9J2joaCcY3VbRAUq5ZVtFpJzLI7NKU7jTgwFWlFugm1s4LlB7onN9TDifKdytdFBo3L/H2Ked4XaNuo8itnLa2ujWkundf1t5x8wVkXK2DwQUopIUPvbKiTlLfelTfWXXN3N9NDqTRV45sD480vjsHhp2tTsSpHH/nrIfjiiFzMAgmR5jIaQWXE7RU22NlQouZe9Tlls3VQI3w1UD5mN/8UYcO448f9g1E1Qqg3oyamXXiyW3mkpFw7K27MoVzN/ifLPMwCBXDxwpeq3h8XZXz/G3NlftKtwtdbvpXBvd6roavhGLPLctOai8jAi0tpjbPDBFruy5IXO8Uig3Q5RFSrd9OjC2Rdxu6CZww672WdU38wm31J09N+Soc+bcoDshbsAiTz3c64TZ7gSY+5EVRFzr9pkbykrfpYp9t1ThduQI1XvsWCp1uz3Q4XbkCDcmhZc6GrzRNnd6uLgYyiKlm2eXc/CuQrzj+HPwNYi5RilHLJV+S63u5/vh38zA4II7hpIj9fCjc3uiowR3MvLYK6VDcjltsgNDrhNZKh0Vwm2sUo/AgeGITmOUUwOPHTvhvj2Sr9Enf58sORaUtk+xyJg9N+QaECqp5dVuRW10a8m9W3W0CKWdtxi835DhYVZw+sLYbOCR0kPVwfvet4eqg0dKD1UHj5Qeqg4eKT1UHTxSeqg6BFKa9wvPPVQXxPibyBrvz7p4qBJkc1769lCF8EjpoergkdJD1cEjpYeqQ+D0+7ULLYMHDzaIUCi00DJ48GCDl749VB0Ct99++0LL4MGDDYGNGzZIIcRCy+HBA2D8SWovfXuoOnik9FB1KPnFMU3T6HzySQC6u7rQdd12LRKNEg6H0VMpEokE4bY2wuGw2bazsxMtFOLQwYPs3bfPNnYyaXxpKhwO2z7vPXmS2I4dts8SiQSaphVtq8YBzPsBHDp40BxfjWdtH9uxg3A4TDKZpPfkSVtba7sVK1bw7SeeYHR0lK6XXzb1UG3UOOp+bohEo0QiEdv4SuZiend3dZk2VnKqOek9eRItFCISiQCgp1Low8Mk4nF0XbfNndVekUjEtJH1Pta5VbZQbfVUit7eXrONskEikSARj5t9lC2s16wcUH2tNi9EyUgZiUZNMkSiUZvALxw9SiQSmSJXWxtaU5ONOOG2NjRNM/tomkYymSSZTJoK6qmUeU1PpcjlcuYYZttUCl3Xjdd8+3A4PN2QeadQ/62GssqlaRqxWGzK8HkZtVDIkKVg0u69916znxpLEUhrajL7l0Kyv9+8pxovEo2ip1LmvfVUytRbja/6KDspXWzvQyFisRh79+1D0zTbNavN9eHhaXYsRGzHDvbu20e4rY1kMmnI1tZms6emaYQ3bjT7dHZ2EovFzLHNebdwQMmkNTU52qhkpIzFYvT29poGMQXIe+ChgwdtxOjs7DQF0VOpaePpum56luqnJibZ3093d7dtgm1tk0kS8bhJBiuxC++haZppUBVlrPIrB+vu7qazs5NwW5vN40tB13XHCS3VL5lMmhOsXnt7e833KtqZeuehaRqRSIREIjFtXBV5I9EonZ2dpj3BcHrreCpCqbmyRkCFWCwGwNO7d0+7lwoGyf5+ItGo2V85sj48XDQKFnP2YnCNlGrydV03UnPeOwAz4hUjBRgKK48tFOyFo0d54ejRaamqmBKqrZr8cDhMLBYjmUw6pks18ZFIxCRf4URGIhHTQXRdt3l8OUj296PruqMOmzdvZsuWLWzZsoXW1lZ732RyKvuo1GuxYywWM/W26tTd3W1kgjx5neQCbJEoEo2a41mzViQaLZpGzfRbxEmV3IlEwrSp6eD5EkDJb7WNpmns3bfPdAQ3uEZKM/3lvUa97+7uNg2raVpRYj69eze6rtsMC4ZxFZmcCK2QTCbp7uoy2yrFrGM4IZFImOmk0LhKbsCcKOXx5UIfHqa3t5fOzk50h9T9zW99C4Af/uAHdtnicaN0yJcahfL19vYWJUSyvx+ts9MkcjEUI2wiHjd1UxFe1XXF7KjmpdhYioCRSMSUQ/FEzYuaJ1U7q2tP796NpmnTOFEIR1KaHhGPk/zgA8AgpJo8Nel79+0zPaYUyQoVs6ZyJxlU22R/vy2qKC9Uka4QZsTQNFP+wvt3dxt/ITa8caOxAIlGzbGsdeabb7xRVL5kf79ZFhTKcPbsWc6ePVu0n4rkytkLncFaEljto6JlsWijSFIsM2ih0NTn8bhZeqlFGmCLlrqu09vba0Y8NZaaA3Vd3Vdl0Eg0itbUhD48XFTvcuFISlWPWesNs0jVNNNYVo/p7upCz6d1BUUOZQTAVnxbr1mVKWyrZCj8vJDUyf5+o5DPE14LhUjE42aqUouoRDxu9lXtAHORYb3Hm2+8wf9+8oldVl03yxrVrxJY+1kXfMX004eHTTsqR1A2UQRX8qsoqyLiNJv39xsRN7+oUijMeMo21hLjj+fPmzqbNWoqZSx82tqm6mzFnTzRrRww7edCXNGxa5d3ouOhauCd6HioSnik9FB1CPzh3LmFlsGDBxv+D9oQpl0nEeoPAAAAAElFTkSuQmCC" alt="Affair's — Achetez malin, vendez cash" width="94" height="46">
+    <a class="call" href="tel:0476494203" data-ext="tel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Appeler</a>
+  </header>
+
+  <!-- ACCUEIL -->
+  <section class="scr" data-screen="accueil">
+    <div class="hero">
+      <small>Achetez malin · Vendez cash</small>
+      <h1>Nous achetons cash vos objets</h1>
+      <p>Estimez votre article en quelques photos, puis venez en magasin : paiement immédiat.</p>
+      <button class="btn btn-cash btn-full" data-go="estimer">📸 Estimer mon article</button>
+    </div>
+    <div class="quick">
+      <button class="qk" data-go="acheter"><i>🛒</i><b>Acheter</b><span>Neuf, occasion et reconditionné garantis 2 ans</span></button>
+      <button class="qk" data-go="magasins"><i>📍</i><b>Nos magasins</b><span>6 magasins en Auvergne-Rhône-Alpes</span></button>
+      <button class="qk or" data-doc="or"><i>🪙</i><b>Vendre mon or</b><span>Expertise gratuite et confidentielle</span></button>
+      <button class="qk" data-doc="rachat"><i>✅</i><b>Ce que nous rachetons</b><span>La liste des produits acceptés</span></button>
+    </div>
+    <h2 class="h2">Vendre, comment ça marche ?</h2>
+    <div class="steps3">
+      <div class="st3"><span class="n">1</span><div><b>Estimez en ligne</b><br><span class="small">Prenez quelques photos : notre IA identifie votre article et vous donne une estimation de reprise.</span></div></div>
+      <div class="st3"><span class="n">2</span><div><b>Choisissez votre magasin</b><br><span class="small">Vous recevez un numéro d'estimation valable 7 jours.</span></div></div>
+      <div class="st3"><span class="n">3</span><div><b>Payé cash</b><br><span class="small">Nos acheteurs contrôlent l'article et vous paient immédiatement en espèces (par chèque pour les gros montants).</span></div></div>
+    </div>
+    <h2 class="h2">Nos garanties</h2>
+    <div class="gar">
+      <div><i>🛡️</i>Garantie 2 ans (1)</div>
+      <div><i>🏬</i>Retrait gratuit en magasin</div>
+      <div><i>🚚</i>Livraison en 48h</div>
+      <div><i>↩️</i>Satisfait ou remboursé 15 jours</div>
+    </div>
+    <div class="about" data-doc="apropos" style="cursor:pointer"><b>AFFAIR'S</b>, magasins spécialisés dans la vente et l'achat <b>CASH</b> aux particuliers depuis plus de 25 ans. Produits neufs, d'occasion et reconditionnés, rigoureusement testés par nos professionnels. <b style="color:var(--red)">En savoir plus ›</b></div>
+    <p class="small">(1) Garantie légale de conformité, voir les conditions générales de vente.</p>
+  </section>
+
+  <!-- ESTIMER -->
+  <section class="scr ev" data-screen="estimer" hidden>
+    <div class="pbar" id="pbar"><i></i><i></i><i></i><i></i><i></i></div>
+
+    <div id="v-cat">
+      <h2>Que souhaitez-vous vendre ?</h2>
+      <p class="sub2">Choisissez la catégorie la plus proche.</p>
+      <div class="cats" id="cats"></div>
+    </div>
+
+    <div id="v-photos" hidden>
+      <div class="chosen" id="chosen"></div>
+      <h2>Vos photos</h2>
+      <p class="sub2">À la lumière du jour, sur un fond simple.</p>
+      <div class="tip"><span>💡</span><span><b>Plus de photos = estimation plus précise.</b> L'étiquette ou la référence aide beaucoup.</span></div>
+      <div class="slots" id="slots"></div>
+      <div class="two">
+        <label class="btn btn-red" for="in-camera">📷 Photo</label>
+        <label class="btn btn-ghost" for="in-multi">🖼️ Galerie</label>
+      </div>
+      <input type="file" id="in-camera" accept="image/*" capture="environment" hidden>
+      <input type="file" id="in-multi" accept="image/*" multiple hidden>
+      <input type="file" id="in-slot" accept="image/*" hidden>
+      <div class="counter" id="counter"></div>
+      <div class="field"><label for="f-model">Modèle, si vous le connaissez</label><input type="text" id="f-model" placeholder="Ex. iPhone 15 128 Go, Xbox Series X…" autocomplete="off"></div>
+      <div class="field"><label for="f-etat">État de votre article, selon vous</label>
+        <select id="f-etat"><option value="">Je ne sais pas / laisser l'IA juger</option><option value="tres_bon">Très bon état (aucune trace)</option><option value="bon">Bon état (légères traces)</option><option value="correct">État correct (rayures visibles)</option><option value="abime">Abîmé (casse, panne)</option></select></div>
+      <div class="field"><span class="lab">Ce que vous apportez</span><div class="checks">
+        <label class="chk"><input type="checkbox" id="acc-box" value="boîte"> Boîte</label>
+        <label class="chk"><input type="checkbox" id="acc-charger" value="chargeur / câbles"> Chargeur / câbles</label>
+        <label class="chk"><input type="checkbox" id="acc-invoice" value="facture"> Facture</label></div></div>
+      <div class="sticky-cta"><button class="btn btn-cash btn-full" id="analyse" disabled>Lancer l'estimation</button></div>
+    </div>
+
+    <div id="v-scan" hidden>
+      <h2 id="scan-title">Notre IA examine votre article</h2>
+      <p class="sub2" id="scan-sub"></p>
+      <div class="scan-img"><img id="scan-main" alt=""></div>
+      <ul class="phases" id="phases"></ul>
+      <div class="bar"><i id="bar"></i></div>
+      <p class="note2" id="scan-note"></p>
+    </div>
+
+    <div id="v-confirm" hidden></div>
+    <div id="v-result" hidden></div>
+    <div id="v-store" hidden></div>
+    <div id="v-done" hidden></div>
+
+    <div id="v-old" hidden><div class="refuse"><div class="big">❌</div><h2 style="color:var(--red)">Article trop ancien</h2><p id="old-model"></p>
+      <p><b>Merci pour votre demande. Nous ne sommes généralement pas intéressés par les téléphones de 2017 ou antérieurs.</b></p>
+      <button class="btn btn-cash btn-full" id="old-back">Retour à l'estimation</button></div></div>
+
+    <div id="v-error" hidden><div class="refuse"><div class="big">🔍</div><h2 id="err-title"></h2><p id="err-text"></p>
+      <div style="display:grid;gap:8px"><button class="btn btn-cash" id="err-retry">Réessayer</button><button class="btn btn-ghost" id="err-photos">Modifier mes photos</button><button class="btn btn-ghost" id="err-restart">Recommencer</button></div></div></div>
+  </section>
+
+  <!-- ACHETER -->
+  <section class="scr" data-screen="acheter" hidden>
+    <h1 class="h1">Acheter chez Affair's</h1>
+    <p class="lead">Neuf, occasion et reconditionné, <b>garantis 2 ans</b>.</p>
+    <div class="note"><span>ℹ️</span><span>Le catalogue et les commandes se font sur notre site affairs.fr : chaque rubrique s'ouvre directement sur la bonne page.</span></div>
+    <div class="cat-acc" id="catalog"></div>
+    <button class="btn btn-red btn-full" style="margin-top:18px" data-url="https://www.affairs.fr/catalogue.html">Voir tout le catalogue</button>
+  </section>
+
+  <!-- MAGASINS -->
+  <section class="scr" data-screen="magasins" hidden>
+    <h1 class="h1">Nos magasins</h1>
+    <p class="lead">Venez vendre ou acheter dans l'un de nos magasins.</p>
+    <div class="depts" id="mag-depts"></div>
+    <div id="mag-list"></div>
+  </section>
+
+  <!-- INFOS -->
+  <section class="scr" data-screen="infos" hidden>
+    <h1 class="h1">Infos</h1>
+    <div class="help"><svg width="40" height="40" viewBox="0 0 54 54" fill="none" stroke="#fff" stroke-width="2.4"><path d="M12 28v-5a15 15 0 0 1 30 0v5"/><rect x="8" y="26" width="6" height="11" rx="3"/><rect x="40" y="26" width="6" height="11" rx="3"/><path d="M43 37c0 6-6 9-12 9"/></svg><div>Besoin d'aide ?<b>04 76 49 42 03</b></div></div>
+    <h2 class="h2">Vendre</h2>
+    <div class="list">
+      <button data-go="estimer"><i>📸</i>Estimer mon article en ligne</button>
+      <button data-doc="vendre"><i>🏬</i>Vendre en magasin</button>
+      <button data-doc="or"><i>🪙</i>Vendre mon or et mes bijoux</button>
+      <button data-doc="rachat"><i>✅</i>Les produits que nous rachetons</button>
+    </div>
+    <h2 class="h2">Affair's</h2>
+    <div class="list">
+      <button data-doc="apropos"><i>🏆</i>Qui sommes-nous ?</button>
+      <button data-doc="garanties"><i>🛡️</i>Garanties et conditions de vente</button>
+      <button data-doc="contact"><i>✉️</i>Contact</button>
+      <button data-go="magasins"><i>📍</i>Nos magasins</button>
+      <button data-url="https://www.franchise-affairs.fr/"><i>🤝</i>Devenir franchisé</button>
+      <button data-url="https://www.facebook.com/affairs.france"><i>👍</i>Facebook</button>
+      <button data-url="https://www.instagram.com/affairs.france"><i>📷</i>Instagram</button>
+    </div>
+    <h2 class="h2">Informations légales</h2>
+    <div class="list">
+      <button data-doc="confidentialite"><i>🔒</i>Confidentialité et données personnelles</button>
+      <button data-doc="mentions"><i>📄</i>Mentions légales</button>
+      <button data-url="https://www.affairs.fr/conditions-generales-de-ventes,5.html"><i>📄</i>Conditions générales de vente</button>
+    </div>
+    <p class="small" style="text-align:center;margin-top:18px">Application Affair's · version 1.0</p>
+  </section>
+
+  <!-- PAGES D'INFO -->
+  <section class="scr doc" data-screen="doc" hidden><div id="doc-body"></div></section>
+
+  <nav class="tabs" aria-label="Navigation principale"><div class="in">
+    <button data-tab="accueil" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Accueil</button>
+    <button data-tab="acheter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h17l-2 9H6zM6 15 4 3H2"/><circle cx="8" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>Acheter</button>
+    <button data-tab="estimer" class="est"><span class="bub"><svg viewBox="0 0 24 24" fill="none" stroke="#151515" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="l">Estimer</span></button>
+    <button data-tab="magasins"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-7-7-12a7 7 0 0 1 14 0c0 5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>Magasins</button>
+    <button data-tab="infos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Infos</button>
+  </div></nav>
+</div>
+
+<script>
+/* ================= Configuration ================= */
+// Adresse du serveur d'estimation (dossier "serveur"). À renseigner avant la publication sur les stores.
+const API_BASE = window.AFFAIRS_API || "";
+const STORES = [{"id": "echirolles", "n": "Échirolles", "dep": "Isère (38)", "adr": "21 Avenue Salvador Allende", "cp": "38130 Échirolles", "tel": "04 76 33 87 27", "hrs": "Lun 14h–19h · Mar–Ven 10h–12h / 14h–19h · Sam non-stop", "achat": "Service achat : fermeture 30 min avant", "url": "https://www.affairs.fr/affairs-echirolles,502.html", "wa": "https://chat.whatsapp.com/Eng1kqTnhDyIDPAKbIz5tO", "fb": "https://www.facebook.com/AffairsEchirolles38130", "ig": "https://www.instagram.com/affairsechirolles/", "desc": "Grand choix d'articles d'occasion et reconditionnés garantis 24 mois, arrivages quotidiens, estimation gratuite et rachat cash immédiat."}, {"id": "smh", "n": "Saint-Martin-d'Hères", "dep": "Isère (38)", "adr": "121 Avenue Gabriel Péri", "cp": "38400 Saint-Martin-d'Hères", "tel": "04 76 00 91 91", "hrs": "Lun 14h–19h · Mar–Ven 10h–12h / 14h–19h · Sam journée continue", "achat": "Service achat : fermeture 15 min avant, fermé le samedi 11h45–14h", "url": "https://www.affairs.fr/affairs-saint-martin-heres,512.html", "wa": "https://chat.whatsapp.com/CVuhp14bWiIEHJ1ppSyMZZ", "fb": "https://www.facebook.com/affairssmh38400/", "ig": "https://www.instagram.com/affairs_smh/", "desc": "Estimation et rachat cash immédiat, produits testés et garantis 24 mois, conseils personnalisés et essai en magasin avant achat."}, {"id": "tignieu", "n": "Tignieu-Jameyzieu", "dep": "Isère (38)", "adr": "19 Rue des Ardennes", "cp": "38230 Tignieu-Jameyzieu", "tel": "04 78 31 61 94", "hrs": "Lun 14h–19h · Mar–Sam 10h–12h / 14h–19h", "achat": "Service achat : fermeture 30 min avant", "url": "https://www.affairs.fr/affairs-tignieu,572.html", "wa": "https://chat.whatsapp.com/Kw5jOuKkGGG5kzIlipUJgE", "fb": "https://www.facebook.com/affairstignieu38230/", "ig": "https://www.instagram.com/affairstignieu/", "desc": "Estimation et rachat immédiat, arrivages réguliers : téléphonie, jeux vidéo, informatique, multimédia, bijoux et maison. Garantie 24 mois."}, {"id": "vaulx", "n": "Vaulx-en-Velin (Lyon)", "dep": "Rhône (69)", "adr": "10 Rue des Frères Lumière", "cp": "69120 Vaulx-en-Velin", "tel": "04 72 81 81 91", "hrs": "Lun 14h–19h · Mar–Ven 10h–12h / 14h–19h · Sam 10h–19h non-stop", "achat": "Service achat : fermeture 30 min avant", "url": "https://www.affairs.fr/affairs-lyon,522.html", "wa": "https://chat.whatsapp.com/IdBW0XlUAI1ABb5qjoGvRh", "fb": "https://www.facebook.com/affairslyon69120/", "ig": "https://www.instagram.com/affairslyon/", "desc": "Le magasin Affair's de Lyon : estimation et rachat cash sur place, garantie 24 mois, retrait gratuit en magasin ou livraison."}, {"id": "albertville", "n": "Albertville", "dep": "Savoie (73)", "adr": "141 Rue Louis Armand", "cp": "73200 Albertville", "tel": "04 79 37 93 08", "hrs": "Lun 14h–19h · Mar–Sam 10h–12h / 14h–19h", "achat": "Service achat : 10h–11h45 / 14h–18h45", "url": "https://www.affairs.fr/affairs-albertville,562.html", "fb": "https://www.facebook.com/affairsalbertville73200/", "ig": "https://www.instagram.com/affairsalbertville/", "desc": "Au pied des Alpes : arrivages fréquents, estimation rapide sur place et paiement le jour même. Garantie 24 mois."}, {"id": "bassens", "n": "Chambéry – Bassens", "dep": "Savoie (73)", "adr": "C.C. Les Portiques, 78 Rue de la Martinière", "cp": "73230 Saint-Alban-Leysse", "tel": "04 79 33 30 53", "hrs": "Lun 14h15–19h · Mar–Sam 10h–12h / 14h–19h", "achat": "Service achat : fermeture 15 min avant", "url": "https://www.affairs.fr/affairs-chambery,532.html", "fb": "https://www.facebook.com/affairschambery73230/", "ig": "https://www.instagram.com/affairs_chambery/", "desc": "Estimation gratuite et sans engagement, rachat cash immédiat, retrait rapide en magasin et garantie 24 mois."}];
+const CATALOG = [
+  { n:"Téléphonie", ic:"📱", url:"https://www.affairs.fr/catalogue/telephonie,20.html", sub:[["Apple","https://www.affairs.fr/catalogue/apple,2030.html"],["Samsung","https://www.affairs.fr/catalogue/samsung,2031.html"],["Autres marques","https://www.affairs.fr/catalogue/autres-marques-tel,2041.html"],["Accessoires téléphonie","https://www.affairs.fr/catalogue/accessoires-telephonie,2042.html"]] },
+  { n:"Jeux vidéo", ic:"🎮", url:"https://www.affairs.fr/catalogue/jeux-videos,14.html", sub:[["Consoles","https://www.affairs.fr/catalogue/consoles,1425.html"],["Jeux vidéo","https://www.affairs.fr/catalogue/jeux-video,1429.html"],["Rétro-gaming","https://www.affairs.fr/catalogue/retro-gaming,1430.html"],["Accessoires jeux vidéo","https://www.affairs.fr/catalogue/accessoires-jeux-video,1431.html"]] },
+  { n:"Informatique", ic:"💻", url:"https://www.affairs.fr/catalogue/informatique,11.html", sub:[["PC portable","https://www.affairs.fr/catalogue/pc-portable,1118.html"],["PC fixe","https://www.affairs.fr/catalogue/pc-fixe,1124.html"],["Tablette","https://www.affairs.fr/catalogue/tablette,1119.html"],["Écran","https://www.affairs.fr/catalogue/ecran,1120.html"],["Accessoires informatique","https://www.affairs.fr/catalogue/accessoire-informatique,1121.html"],["Informatique divers","https://www.affairs.fr/catalogue/informatique-divers,1122.html"]] },
+  { n:"Multimédia", ic:"📺", url:"https://www.affairs.fr/catalogue/multimedia,1001.html", sub:[["Télévision","https://www.affairs.fr/catalogue/television,21.html"],["Photo","https://www.affairs.fr/catalogue/photo,17.html"],["Hi-Fi","https://www.affairs.fr/catalogue/hifi-hifi-auto,10.html"],["Sono","https://www.affairs.fr/catalogue/sono,18.html"],["Vidéo","https://www.affairs.fr/catalogue/video,22.html"],["Accessoires audio-visuel","https://www.affairs.fr/catalogue/accessoires-audio-visuel,2.html"],["Blu-ray / DVD","https://www.affairs.fr/catalogue/blu-ray-dvd,7.html"],["CD audio","https://www.affairs.fr/catalogue/cd-audio,6.html"],["Vinyles","https://www.affairs.fr/catalogue/vinyl,616.html"],["Livres, BD, mangas","https://www.affairs.fr/catalogue/livres-bd-mangas,15.html"]] },
+  { n:"Loisir maison", ic:"🛠️", url:"https://www.affairs.fr/catalogue/loisir-maison,1000.html", sub:[["Bricolage","https://www.affairs.fr/catalogue/bricolage,5.html"],["Instruments de musique","https://www.affairs.fr/catalogue/instrument-de-musique,12.html"],["Jouets, jeux","https://www.affairs.fr/catalogue/jouet-jeux,13.html"],["Ménager","https://www.affairs.fr/catalogue/menager,16.html"],["Sport","https://www.affairs.fr/catalogue/sport,19.html"]] },
+  { n:"Bijoux & mode", ic:"💎", url:"https://www.affairs.fr/catalogue/bijoux-mode,4.html", sub:[["Montres","https://www.affairs.fr/catalogue/montre,412.html"],["Bijoux en or","https://www.affairs.fr/catalogue/bijoux-en-or,452.html"],["Bijoux argent et plaqué or","https://www.affairs.fr/catalogue/bijoux-argent-et-plaque-or,413.html"],["Bijoux divers","https://www.affairs.fr/catalogue/bijoux-divers,411.html"],["Maroquinerie","https://www.affairs.fr/catalogue/maroquinerie,2301.html"],["Lunettes","https://www.affairs.fr/catalogue/lunettes,2302.html"]] }
+];
+const DOCS = {
+  apropos:`<h1 class="h1">Qui sommes-nous ?</h1>
+    <p class="lead"><b>AFFAIR'S</b>, la référence de la vente et du rachat <b>cash</b> depuis plus de 25 ans.</p>
+    <p>Spécialistes dans la vente et l'achat cash de produits aux particuliers depuis 1996, les magasins AFFAIR'S vous proposent un très grand choix d'objets neufs, d'occasion et reconditionnés garantis 2 ans (1), en magasin et sur le site affairs.fr.</p>
+    <h3>Ce que vous trouverez chez nous</h3>
+    <p>Téléphonie, jeux vidéo, informatique, multimédia, matériel photo, vidéo, Hi-Fi, TV, électroménager, outillage, instruments de musique, sono, bijoux, montres…</p>
+    <p>Toutes les marques : Apple iPhone, Samsung Galaxy, Huawei, Xiaomi, LG, Motorola, Oppo, Honor, OnePlus, Sony PlayStation, Nintendo Switch, Xbox, Sega, HP, Lenovo, Dell, Black & Decker, Indesit, Alpine, Pioneer…</p>
+    <h3>Des produits contrôlés</h3>
+    <p>Les produits d'occasion et reconditionnés mis en vente sont au préalable rigoureusement testés et expertisés par nos professionnels.</p>
+    <h3>Vendez vos objets</h3>
+    <p>Revendez vos objets dans l'un de nos magasins ou estimez-les dans l'application. Vous pouvez aussi revendre votre or : débris, bijoux ou or dentaire.</p>
+    <div style="display:grid;gap:8px;margin-top:14px"><button class="btn btn-cash" data-go="estimer">📸 Estimer mon article</button><button class="btn btn-ghost" data-go="magasins">📍 Trouver mon magasin</button></div>
+    <p class="small">(1) Garantie légale de conformité, voir « Garanties et conditions de vente ».</p>`,
+  vendre:`<h1 class="h1">Vendre en magasin</h1>
+    <p class="lead">Nous achetons vos objets au meilleur prix. <b>Paiement immédiat en cash.</b></p>
+    <h3>Comment ça se passe ?</h3>
+    <p>Apportez vos articles et matériels au magasin AFFAIR'S de votre choix. Allez au service achat, où l'un de nos acheteurs vous accueillera et vous proposera le meilleur prix pour chaque produit que vous désirez vendre. Si vous êtes d'accord, le produit vous est payé immédiatement en espèces (par chèque pour les gros montants ou les métaux précieux).</p>
+    <h3>Gagnez du temps : estimez avant de venir</h3>
+    <p>Photographiez votre article dans l'application : notre IA vous donne une estimation de reprise et un numéro à présenter au service achat.</p>
+    <h3>À apporter</h3><ul><li>Votre article, en état de fonctionnement</li><li>Une pièce d'identité en cours de validité (obligatoire pour toute vente)</li><li>Boîte, chargeur, câbles et facture si vous les avez</li></ul>
+    <div style="display:grid;gap:8px;margin-top:14px"><button class="btn btn-cash" data-go="estimer">📸 Estimer mon article</button><button class="btn btn-ghost" data-doc="rachat">✅ Les produits que nous rachetons</button></div>`,
+  rachat:`<h1 class="h1">Les produits que nous rachetons</h1>
+    <p class="lead">Nous achetons cash une très large gamme d'objets.</p>
+    <h3>💻 Informatique</h3><p>Unités centrales, écrans, PC gamer, ordinateurs portables, tablettes, imprimantes, haut-parleurs, mémoire, cartes.</p>
+    <h3>🎮 Jeux vidéo</h3><p>Consoles de toutes marques (Sony, Nintendo, Xbox), jeux, manettes, rétro-gaming.</p>
+    <h3>📱 Téléphonie</h3><p>Téléphones et smartphones Apple, Samsung et autres marques.</p>
+    <h3>📺 Image et son</h3><p>Téléviseurs, antennes, lecteurs DVD et Blu-ray, home cinéma, Hi-Fi, casques, enceintes Bluetooth.</p>
+    <h3>🔊 Sono</h3><p>Enceintes, amplificateurs, jeux de lumière, tables de mixage, platines.</p>
+    <h3>📷 Photo</h3><p>Appareils photo numériques, objectifs, GoPro, jumelles, télescopes, drones.</p>
+    <h3>🎸 Instruments de musique</h3><p>Guitares, amplis, violons, claviers, batteries, synthétiseurs, instruments à vent.</p>
+    <h3>💿 Films, musique, livres</h3><p>DVD, Blu-ray, CD de tous genres ; BD, mangas, romans.</p>
+    <h3>🪙 Or et bijoux</h3><p>Bijoux, pièces, or, débris d'or.</p>
+    <h3>👜 Mode et accessoires</h3><p>Sacs de marque, bijoux, montres.</p>
+    <h3>🚲 Sport et loisirs</h3><p>Vélos, VTT, trottinettes électriques, drones.</p>
+    <h3>🧸 Jeux et jouets</h3><p>Jeux de société, jeux d'adresse, figurines, Warhammer, cartes Pokémon.</p>
+    <h3>🛠️ Outillage</h3><p>Outils électroportatifs et outillage à main.</p>
+    <h3>🏠 Électroménager</h3><p>Petit électroménager.</p>
+    <h3>Et bien plus…</h3><p>Votre article n'est pas dans la liste ? Contactez votre magasin ou faites une estimation dans l'application.</p>
+    <p class="small">Les téléphones sortis en 2017 ou avant ne sont généralement plus rachetés.</p>
+    <button class="btn btn-cash btn-full" data-go="estimer" style="margin-top:12px">📸 Estimer mon article</button>`,
+  or:`<h1 class="h1">Vendre mon or</h1>
+    <p class="lead">Rachat d'or cash depuis 1996. <b>Expertise gratuite et sans engagement, sans rendez-vous.</b></p>
+    <h3>Tout type d'or accepté</h3><ul><li>Débris d'or, bijoux cassés</li><li>Or dentaire</li><li>Pièces et louis d'or</li><li>Lingots d'or</li><li>Platine</li></ul>
+    <h3>Un prix basé sur le cours du jour</h3><p>Nos prix de rachat sont basés sur le cours de l'or journalier. Vous trouvez mieux ailleurs ? Affair's s'engage à vous rembourser la différence.</p>
+    <h3>Transparence et confiance</h3><p>Pesée au gramme près sur des balances professionnelles homologuées et régulièrement contrôlées. La composition de l'or est vérifiée, et toute la pesée et l'expertise se font devant vous, dans un cadre sécurisé et confidentiel.</p>
+    <h3>Paiement immédiat</h3><p>Par chèque ou virement, conformément à la réglementation sur le rachat d'or. Pensez à votre pièce d'identité.</p>
+    <div class="help" style="margin-top:14px"><div>Conseiller or régional<b>06 69 76 33 18</b><span class="small" style="color:#ccc">Numéro non surtaxé</span></div></div>
+    <div style="display:grid;gap:8px;margin-top:12px"><a class="btn btn-cash" href="tel:0669763318">📞 Appeler le conseiller or</a><button class="btn btn-ghost" data-go="magasins">📍 Trouver mon magasin</button></div>`,
+  garanties:`<h1 class="h1">Garanties et conditions</h1>
+    <h3>🛡️ Garantie 2 ans</h3><p>Produits neufs et d'occasion : garantie légale de conformité de 24 mois. Pour les produits d'occasion, le défaut est présumé exister à l'achat pendant les 12 premiers mois. Supports enregistrés (CD, DVD, jeux) : 48 heures.</p>
+    <p>Garantie commerciale de 24 mois possible avec la carte de fidélité gratuite (hors télécommandes et batteries).</p>
+    <h3>🔎 Produits testés</h3><p>Les produits d'occasion et reconditionnés sont testés et expertisés par nos professionnels avant la mise en vente.</p>
+    <h3>🏬 Retrait gratuit en magasin</h3><p>Commandez sur affairs.fr et retirez votre article en magasin, dans un délai de 30 jours après l'avis « Commande prête pour retrait magasin ».</p>
+    <h3>🚚 Livraison</h3><p>Par La Poste en France métropolitaine, frais calculés selon les tarifs postaux, expédition dans les meilleurs délais.</p>
+    <h3>↩️ Rétractation et retours</h3><p>Commandes en ligne : 14 jours ouvrés à réception pour changer d'avis (produit complet, non utilisé, dans son emballage d'origine ; frais de retour à la charge du client ; remboursement sous 14 jours). Les supports audio, vidéo, jeux vidéo et logiciels ne peuvent pas être retournés.</p>
+    <h3>💳 Paiement en ligne</h3><p>Carte bancaire (Visa, Mastercard, CB), paiement sécurisé.</p>
+    <p class="small">Résumé indicatif : seules les conditions générales de vente complètes font foi.</p>
+    <button class="btn btn-ghost btn-full" data-url="https://www.affairs.fr/conditions-generales-de-ventes,5.html">Lire les conditions générales de vente complètes</button>`,
+  contact:`<h1 class="h1">Contact</h1>
+    <div class="help"><div>Service client<b>04 76 49 42 03</b></div></div>
+    <div style="display:grid;gap:8px;margin-top:12px">
+      <a class="btn btn-cash" href="tel:0476494203">📞 Appeler le service client</a>
+      <a class="btn btn-ghost" href="mailto:contact@affairs.fr">✉️ contact@affairs.fr</a>
+      <button class="btn btn-ghost" data-go="magasins">📍 Contacter directement un magasin</button></div>
+    <h3>Siège</h3><p>AFFAIR'S FRANCE<br>73 rue des Javaux, 38320 Eybens</p>
+    <h3>Suivez-nous</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn btn-ghost" data-url="https://www.facebook.com/affairs.france">Facebook</button><button class="btn btn-ghost" data-url="https://www.instagram.com/affairs.france">Instagram</button><button class="btn btn-ghost" data-url="https://fr.linkedin.com/company/affairs-france">LinkedIn</button></div>`,
+  mentions:`<h1 class="h1">Mentions légales</h1>
+    <h3>Éditeur</h3><p>AFFAIR'S FRANCE<br>73 rue des Javaux, 38320 Eybens, France<br>RCS Grenoble 425 008 810 · Capital social : 8 000 €<br>Téléphone : 04 76 49 42 03 · E-mail : contact@affairs.fr</p>
+    <h3>Directeur de la publication</h3><p>AFFAIR'S FRANCE, représentée par son gérant.</p>
+    <h3>Activité</h3><p>Achat et vente de produits neufs et d'occasion, magasins physiques et site affairs.fr.</p>
+    <h3>Données personnelles</h3><p>Vous disposez d'un droit d'accès, de rectification et de suppression de vos données, à exercer auprès d'AFFAIR'S FRANCE à l'adresse ci-dessus. Voir aussi la page « Confidentialité ».</p>
+    <button class="btn btn-ghost btn-full" data-url="https://www.affairs.fr/mentions-legales,4.html">Mentions légales du site affairs.fr</button>`,
+  confidentialite:`<h1 class="h1">Confidentialité</h1>
+    <p class="small">Document à faire valider avant publication (durée de conservation, sous-traitants).</p>
+    <h3>Responsable du traitement</h3><p>AFFAIR'S FRANCE, 73 rue des Javaux, 38320 Eybens · contact@affairs.fr</p>
+    <h3>Données collectées</h3><ul><li><b>Photos de votre article</b>, le modèle et l'état que vous indiquez : pour réaliser l'estimation.</li><li><b>Prénom</b> (obligatoire) et <b>téléphone</b> (facultatif) : pour que le magasin choisi retrouve votre estimation et puisse vous recontacter.</li><li><b>Magasin choisi</b> et numéro d'estimation.</li></ul>
+    <p>L'application ne collecte pas votre position, ne contient pas de publicité et ne vous suit pas à des fins publicitaires.</p>
+    <h3>Analyse par intelligence artificielle</h3><p>Les photos sont transmises à notre prestataire d'intelligence artificielle (Anthropic) uniquement pour identifier l'article et estimer son prix. Seule une miniature de la première photo est conservée avec votre estimation.</p>
+    <h3>Durée de conservation</h3><p>Les estimations sont conservées [12 mois], puis supprimées.</p>
+    <h3>Vos droits</h3><p>Accès, rectification, suppression : contact@affairs.fr. Vous pouvez aussi saisir la CNIL (cnil.fr).</p>`
+};
+const CATS = [
+  {k:"telephone", ico:"📱", n:"Téléphone"}, {k:"ordinateur", ico:"💻", n:"Ordinateur"}, {k:"console", ico:"🎮", n:"Console"},
+  {k:"tv", ico:"📺", n:"TV"}, {k:"photo", ico:"📷", n:"Photo"}, {k:"audio", ico:"🎧", n:"Audio"},
+  {k:"montre", ico:"⌚", n:"Montre connectée"}, {k:"drone", ico:"🚁", n:"Drone"}, {k:"tablette", ico:"📱", n:"Tablette"},
+  {k:"jeux", ico:"🎮", n:"Jeux vidéo"}, {k:"autre", ico:"👜", n:"Autre"}
+];
+const CAT = Object.fromEntries(CATS.map(c=>[c.k,c]));
+const CATN = Object.fromEntries(CATS.map(c=>[c.k,c.n]));
+const ETATS = { tres_bon:{n:"Très bon état",c:"good"}, bon:{n:"Bon état",c:"good"}, correct:{n:"État correct",c:"warn"}, abime:{n:"Abîmé / à réparer",c:"bad"} };
+const SLOT_NAMES = ["Vue générale","Face avant","Arrière","Étiquette","Défauts"];
+const DEFAULT_PARAMS = { savPct:3, oldYear:2017, lowConfidenceCut:10, refurb:{ tres_bon:0, bon:10, correct:30, abime:60 },
+  margins:{ telephone:20, ordinateur:25, console:20, tv:30, photo:25, audio:30, montre:25, drone:25, tablette:22, jeux:40, autre:35 } };
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const eur = n => Math.round(n).toLocaleString("fr-FR") + " €";
+const range = (a,b) => a===b ? eur(a) : `${eur(a)} – ${eur(b)}`;
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+const clean = (s,n=200) => String(s ?? "").replace(/[\u0000-\u001f]/g," ").slice(0,n).trim();
+
+/* ================= Liens externes (navigateur intégré dans l'app) ================= */
+function openUrl(url){
+  const B = window.Capacitor?.Plugins?.Browser;
+  if (B) return B.open({ url, toolbarColor:"#e30613" });
+  const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
+}
+document.addEventListener("click", e => {
+  const u = e.target.closest("[data-url]"); if (u){ e.preventDefault(); return openUrl(u.dataset.url); }
+  const g = e.target.closest("[data-go]"); if (g){ e.preventDefault(); return go(g.dataset.go); }
+  const d = e.target.closest("[data-doc]"); if (d){ e.preventDefault(); return openDoc(d.dataset.doc); }
+});
+
+/* ================= Navigation ================= */
+let current = "accueil", history_ = [];
+function go(name, push = true){
+  if (push && name !== current) history_.push(current);
+  document.querySelectorAll("[data-screen]").forEach(s => s.hidden = s.dataset.screen !== name);
+  document.querySelectorAll("[data-tab]").forEach(t => { if (t.dataset.tab === name) t.setAttribute("aria-current","page"); else t.removeAttribute("aria-current"); });
+  current = name;
+  $("#back").hidden = name !== "doc"; $("#top-logo").hidden = name === "doc";
+  if (name === "estimer" && !S.cat) startEstimate();
+  window.scrollTo({ top:0 });
+}
+document.querySelectorAll("[data-tab]").forEach(t => t.onclick = () => { history_ = []; go(t.dataset.tab, false); });
+let docStack = [], curDoc = null;
+function backNav(){
+  if (current === "doc" && docStack.length){ curDoc = docStack.pop(); $("#doc-body").innerHTML = DOCS[curDoc]; return window.scrollTo({top:0}); }
+  go(history_.pop() || "infos", false);
+}
+$("#back").onclick = backNav;
+function openDoc(k){ if (current === "doc" && curDoc) docStack.push(curDoc); else docStack = []; curDoc = k; $("#doc-body").innerHTML = DOCS[k]; go("doc"); window.scrollTo({top:0}); }
+$("#top-logo").onclick = () => { history_ = []; go("accueil", false); };
+// Bouton retour Android
+window.Capacitor?.Plugins?.App?.addListener?.("backButton", () => {
+  if (current === "doc") return backNav();
+  if (current !== "accueil") return go("accueil", false);
+  window.Capacitor.Plugins.App.exitApp();
+});
+
+/* ================= Acheter ================= */
+$("#catalog").innerHTML = CATALOG.map(c => `<details><summary><span class="ic">${c.ic}</span>${c.n}</summary><div class="sub">
+  ${c.sub.map(([n,u]) => `<button data-url="${u}">${n}</button>`).join("")}
+  <button class="all" data-url="${c.url}">Tout voir : ${c.n}</button></div></details>`).join("");
+
+/* ================= Magasins ================= */
+let magFilter = "Tous";
+function mapsUrl(s){ return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`Affair's ${s.adr} ${s.cp}`); }
+function renderMag(){
+  const deps = ["Tous", ...new Set(STORES.map(s=>s.dep))];
+  $("#mag-depts").innerHTML = deps.map(d=>`<button aria-pressed="${d===magFilter}" data-dep="${esc(d)}">${esc(d)}</button>`).join("");
+  $("#mag-list").innerHTML = STORES.filter(s=>magFilter==="Tous"||s.dep===magFilter).map(s=>`
+    <div class="store"><span class="dep">${s.dep}</span><h3>Affair's ${s.n}</h3><span>${s.adr}, ${s.cp}</span>
+      <span class="hrs">${s.hrs} · Fermé le dimanche<br>${s.achat}</span>
+      <span>${s.desc||""}</span>
+      <div class="acts"><a class="btn btn-cash" href="tel:${s.tel.replace(/\s/g,"")}">Appeler</a><button class="btn btn-red" data-url="${mapsUrl(s)}">Itinéraire</button><button class="btn btn-ghost" data-url="${s.url}">Détails</button></div>
+      <div class="soc">${s.wa?`<button data-url="${s.wa}">💬 WhatsApp</button>`:""}${s.fb?`<button data-url="${s.fb}">👍 Facebook</button>`:""}${s.ig?`<button data-url="${s.ig}">📷 Instagram</button>`:""}</div></div>`).join("");
+  $("#mag-depts").querySelectorAll("[data-dep]").forEach(b => b.onclick = () => { magFilter = b.dataset.dep; renderMag(); });
+}
+renderMag();
+
+/* ================= Moteur d'estimation =================
+   3 modes : "server" (application publiée → ton serveur), "claude" (aperçu dans Claude), "demo" (résultats fictifs) */
+let MODE = API_BASE ? "server" : "demo", sample = null, sampleLimits = null, db = null, PARAMS = structuredClone(DEFAULT_PARAMS);
+const READY = (async () => {
+  if (!API_BASE && window.claude) {
+    try {
+      const [smp, d] = await Promise.all([claude.use("sample"), claude.use("db")]);
+      sample = smp; db = d;
+      if (sample) { MODE = "claude"; sampleLimits = await sample.limits().catch(()=>null); }
+      if (db) { try { const snap = await db.doc("config/params").get(); if (snap.exists) PARAMS = Object.assign(structuredClone(DEFAULT_PARAMS), snap.data()); } catch {} }
+    } catch {}
+  }
+  $("#demo-banner").hidden = MODE !== "demo";
+})();
+
+let S = newState();
+function newState(){ return { cat:null, photos:[null,null,null,null,null], extra:[], slotTarget:null, id:null, ident:null, result:null, store:null, prenom:"", tel:"", thumb:null, lastAction:null }; }
+const VIEWS = ["v-cat","v-photos","v-scan","v-confirm","v-result","v-store","v-done","v-old","v-error"];
+function show(id, step){
+  VIEWS.forEach(v => $("#"+v).hidden = v !== id);
+  [...$("#pbar").children].forEach((b,i) => b.className = step>=5 || i<step ? "on" : i===step ? "cur" : "");
+  window.scrollTo({ top:0 });
+}
+function startEstimate(){
+  S.photos.forEach(p=>p&&URL.revokeObjectURL(p.url)); S.extra.forEach(p=>URL.revokeObjectURL(p.url));
+  S = newState(); $("#f-model").value = ""; $("#f-etat").value = ""; ["acc-box","acc-charger","acc-invoice"].forEach(id=>$("#"+id).checked=false);
+  renderCats(); renderSlots(); show("v-cat",0);
+}
+
+function renderCats(){ $("#cats").innerHTML = CATS.map(c=>`<button class="cat" data-k="${c.k}" aria-pressed="${S.cat===c.k}"><span class="ico">${c.ico}</span>${c.n}</button>`).join(""); }
+$("#cats").onclick = e => {
+  const b = e.target.closest(".cat"); if (!b) return;
+  S.cat = b.dataset.k; renderCats();
+  $("#chosen").innerHTML = `${CAT[S.cat].ico} ${CAT[S.cat].n} · <button id="chg">Modifier</button>`;
+  $("#chg").onclick = () => show("v-cat",0);
+  setTimeout(()=>show("v-photos",1),120);
+};
+
+const MAXP = 6;
+const allPhotos = () => [...S.photos.map((p,i)=>p&&{...p,role:SLOT_NAMES[i]}).filter(Boolean), ...S.extra.map(p=>({...p,role:"Photo supplémentaire"}))];
+function renderSlots(){
+  $("#slots").innerHTML = S.photos.map((p,i)=> p
+    ? `<div class="slot filled"><img src="${p.url}" alt="${SLOT_NAMES[i]}"><span class="lbl">${SLOT_NAMES[i]}</span><button class="rm" data-rm="${i}" aria-label="Retirer">×</button></div>`
+    : `<button class="slot" data-slot="${i}"><span class="plus">+</span><strong>${SLOT_NAMES[i]}</strong>${i===0?"Obligatoire":"Conseillé"}</button>`).join("")
+    + S.extra.map((p,j)=>`<div class="slot filled"><img src="${p.url}" alt=""><span class="lbl">Autre</span><button class="rm" data-rmx="${j}" aria-label="Retirer">×</button></div>`).join("");
+  const n = allPhotos().length;
+  $("#counter").textContent = n ? `${n} photo${n>1?"s":""} ajoutée${n>1?"s":""}${n<3?" · ajoutez-en pour plus de précision":""}` : "Ajoutez au moins une photo pour continuer.";
+  $("#analyse").disabled = n === 0;
+}
+function addFiles(files, target){
+  [...files].filter(f=>f.type.startsWith("image/") || /\.(heic|heif)$/i.test(f.name)).forEach((f,idx)=>{
+    if (allPhotos().length >= MAXP) return;
+    const item = { file:f, url:URL.createObjectURL(f) };
+    const i = (idx===0 && target!=null && !S.photos[target]) ? target : S.photos.findIndex(p=>!p);
+    if (i>=0) S.photos[i] = item; else S.extra.push(item);
+  });
+  renderSlots();
+}
+$("#slots").onclick = e => {
+  const rm = e.target.closest("[data-rm]"), rmx = e.target.closest("[data-rmx]"), sl = e.target.closest("[data-slot]");
+  if (rm){ const i=+rm.dataset.rm; URL.revokeObjectURL(S.photos[i].url); S.photos[i]=null; return renderSlots(); }
+  if (rmx){ const j=+rmx.dataset.rmx; URL.revokeObjectURL(S.extra[j].url); S.extra.splice(j,1); return renderSlots(); }
+  if (sl){ S.slotTarget=+sl.dataset.slot; $("#in-slot").click(); }
+};
+["in-slot","in-camera","in-multi"].forEach(id => $("#"+id).onchange = e => { addFiles(e.target.files, id==="in-slot"?S.slotTarget:null); e.target.value=""; });
+
+function loadImg(url){ return new Promise((ok,ko)=>{ const im=new Image(); im.onload=()=>ok(im); im.onerror=()=>ko(new Error("decode")); im.src=url; }); }
+async function toCanvas(url, max){
+  const im = await loadImg(url); const k = Math.min(1, max/Math.max(im.naturalWidth, im.naturalHeight));
+  const c = document.createElement("canvas"); c.width = Math.round(im.naturalWidth*k); c.height = Math.round(im.naturalHeight*k);
+  const g = c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height); return c;
+}
+const toBlob = (c,q) => new Promise((ok,ko)=>c.toBlob(b=>b?ok(b):ko(new Error("blob")),"image/jpeg",q));
+
+/* ---- Prompts IA (mode aperçu Claude ; en mode serveur, le serveur a les siens) ---- */
+function promptIdentify(n, roles, acc, noPhoto){
+  const etatClient = $("#f-etat").value, today = new Date().toISOString().slice(0,10);
+  return `Tu es l'expert acheteur d'Affair's, magasin d'achat-revente d'occasion en France. Date du jour : ${today}.
+Un particulier veut nous vendre un article. ${noPhoto ? "Les photos n'ont pas pu t'être transmises : base-toi UNIQUEMENT sur le modèle et l'état indiqués par le client. Dans \"indices_visuels\", écris seulement « Identification d'après le modèle indiqué par le client ». Confiance au maximum \"moyenne\"." : `Analyse les ${n} photo(s) jointe(s) (dans l'ordre : ${roles.join(", ")}).`}
+Catégorie choisie : ${CATN[S.cat]}. Modèle saisi : ${clean($("#f-model").value) || "non précisé"}. État déclaré : ${etatClient ? ETATS[etatClient].n : "non précisé"}. Accessoires : ${acc.join(", ") || "aucun indiqué"}.
+${noPhoto ? "" : `IDENTIFICATION en deux temps : 1) dans "indices_visuels", liste UNIQUEMENT ce que tu vois (logos, inscriptions, étiquettes, couleur, forme, ports, grilles, objectifs photo) ; 2) déduis le modèle À PARTIR DE CES INDICES, jamais d'après la catégorie ou le modèle saisi si les photos ne le confirment pas, jamais le modèle le plus courant par défaut.
+Pièges : Xbox Series X (tour noire, dessus perforé à reflet vert) vs Series S (petite, blanche) vs PS5 (façades blanches incurvées) ; PS5 standard/Slim/Pro ; Switch/OLED/Switch 2 ; générations d'iPhone (bloc photo, Dynamic Island, bouton Action, USB-C, plateau photo pleine largeur des iPhone 17 Pro) ; Pro vs Pro Max ; Galaxy S vs A ; luxe potentiellement contrefait.
+En cas de doute : confiance "moyenne" ou "faible" et "alternatives". Capacité non visible : « à confirmer ».`}
+ÉTAT : "tres_bon", "bon", "correct" ou "abime"${noPhoto ? " (état déclaré, \"bon\" par défaut)" : " d'après les photos ; si le client déclare un état moins bon, retiens le sien"}. "remise" = coût de remise en état en euros si défauts, sinon 0.
+Article non revendable ou photos inexploitables : "article_valide": false et "raison_invalide".
+Textes en français, courts, polis, pour le client. Aucun prix dans les observations.
+Réponds uniquement avec ce JSON :
+{"indices_visuels":[],"article_valide":true,"cat":"telephone|ordinateur|console|tv|photo|audio|montre|drone|tablette|jeux|autre","marque":"","modele":"","variante":"","annee":2023,"alternatives":[],"etat":"bon","confiance":"haute|moyenne|faible","observations":[],"defauts":[],"remise":0,"photo_utile":"","raison_invalide":""}`;
+}
+function promptPrice(i){
+  const nom = [i.marque, i.modele, i.variante].filter(Boolean).join(" "), today = new Date().toISOString().slice(0,10);
+  return `Tu es l'acheteur d'Affair's, magasin d'achat-revente d'occasion en France. Date du jour : ${today}.
+Article : ${nom}${i.corrige ? " (modèle confirmé par le client)" : ""}. Catégorie : ${CATN[i.cat]}. État : ${ETATS[i.etat].n}. Défauts : ${i.defauts.join("; ") || "aucun"}. Accessoires : ${i.accessoires.join(", ") || "aucun"}.
+D'après ta connaissance du marché français (neuf, reconditionné, magasins d'occasion, particuliers) et en tenant compte de la décote depuis la sortie du modèle, donne un prix de REVENTE réaliste et PRUDENT pour un magasin d'occasion qui vend avec garantie : "rmin" = vente rapide, "rmax" = maximum raisonnable. Jamais le prix neuf.
+Réponds uniquement avec ce JSON :
+{"prix_neuf":0,"prix_reconditionne":0,"rmin":0,"rmax":0,"annee":2023,"demande":"forte|moyenne|faible","commentaire":""}`;
+}
+function normIdent(d, acc){
+  return { cat: CATN[d.cat] ? d.cat : S.cat, marque:clean(d.marque,60), modele:clean(d.modele,100), variante:clean(d.variante,120),
+    annee:Number(d.annee)||null, etat: ETATS[d.etat] ? d.etat : "bon", confiance:["haute","moyenne","faible"].includes(d.confiance) ? d.confiance : "moyenne",
+    indices:(d.indices_visuels||d.indices||[]).slice(0,6).map(x=>clean(x,160)), alternatives:(d.alternatives||[]).slice(0,3).map(x=>clean(x,80)).filter(Boolean),
+    observations:(d.observations||[]).slice(0,5).map(x=>clean(x,160)), defauts:(d.defauts||[]).slice(0,4).map(x=>clean(x,160)),
+    remise:Math.max(0, Number(d.remise)||0), photo_utile:clean(d.photo_utile,160), accessoires:acc, trop_ancien:!!d.trop_ancien };
+}
+function roundDown(v){ if (v<=0) return 0; const st = v>=100?10:v>=20?5:1; return Math.floor(v/st)*st; }
+function computeOffer(i, rmin, rmax){
+  const m = (PARAMS.margins[i.cat] ?? PARAMS.margins.autre)/100, sav = PARAMS.savPct/100, rf = Math.max(PARAMS.refurb[i.etat]||0, i.remise||0);
+  const pr = i.confiance==="faible" ? PARAMS.lowConfidenceCut/100 : 0;
+  const one = r => { const b=r*(1-pr); return { revente:r, marge:+(b*m).toFixed(2), sav:+(b*sav).toFixed(2), remise:rf, brut:+(b*(1-m-sav)-rf).toFixed(2) }; };
+  const lo = one(rmin), hi = one(rmax); return { lo, hi, low:roundDown(lo.brut), high:roundDown(hi.brut), margePct:m*100, savPct:PARAMS.savPct };
+}
+const MOCK = { telephone:{marque:"Apple",modele:"iPhone 17 Pro Max",variante:"256 Go · Orange cosmique",annee:2025,etat:"tres_bon",confiance:"haute",rmin:1049,rmax:1099,indices:["Plateau photo pleine largeur avec trois objectifs","Logo Apple","Port USB-C"],observations:["Modèle identifié","Écran en bon état"]},
+  console:{marque:"Microsoft",modele:"Xbox Series X",variante:"1 To",annee:2020,etat:"bon",confiance:"haute",rmin:300,rmax:340,indices:["Tour noire rectangulaire","Dessus perforé à reflet vert","Logo Xbox"],observations:["Modèle identifié"]} };
+
+async function post(path, body){
+  try { const r = await fetch(API_BASE.replace(/\/$/,"") + path, { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(body) }); return await r.json(); }
+  catch { return { ok:false, code:"offline" }; }
+}
+// Étape A : identification
+async function backendIdentify(photos, acc){
+  if (MODE === "demo"){ await wait(2500); const m = MOCK[S.cat] || { marque:"Produit", modele:"de démonstration", variante:"", annee:2022, etat:"bon", confiance:"moyenne", indices:["Démo : pas d'analyse réelle"], observations:["Démo"] }; return { ok:true, ident:normIdent({ ...m, cat:S.cat }, acc) }; }
+  const blobs = await Promise.all(photos.slice(0,MAXP).map(async p => toBlob(await toCanvas(p.url, 1600), 0.88)));
+  if (MODE === "server"){
+    const images = await Promise.all(blobs.map(b => new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok({ media_type:"image/jpeg", data:String(fr.result).split(",")[1] }); fr.readAsDataURL(b); })));
+    const r = await post("/api/identifier", { cat:S.cat, images, roles:photos.map(p=>p.role), modele_saisi:$("#f-model").value.trim(), etat_declare:$("#f-etat").value, accessoires:acc });
+    if (!r.ok) return r; S.id = r.id; return { ok:true, ident:normIdent(r.ident, acc) };
+  }
+  // MODE claude
+  const typed = $("#f-model").value.trim(), canImg = !!sampleLimits?.images;
+  if (!canImg && !typed) return { ok:false, code:"need_model" };
+  try {
+    let d;
+    try { d = canImg ? await sample.json(promptIdentify(blobs.length, photos.map(p=>p.role), acc, false), { images:blobs, modelTier:"complex", cache:false })
+                     : await sample.json(promptIdentify(0, [], acc, true), { modelTier:"default", cache:false }); }
+    catch (e) { if (["images_unavailable","image_rejected"].includes(e?.code) && typed) d = await sample.json(promptIdentify(0, [], acc, true), { modelTier:"default", cache:false }); else throw e; }
+    if (!d || d.article_valide === false) return { ok:false, code:"invalid_item", message:clean(d?.raison_invalide,300) };
+    return { ok:true, ident:normIdent(d, acc) };
+  } catch (e) { return aiErr(e); }
+}
+// Étape B : prix + reprise
+async function backendPrice(corr){
+  const i = S.ident;
+  if (corr){ i.corrige = true; i.marque = ""; i.modele = clean(corr.modele,120); i.variante = clean(corr.variante,120) || "à confirmer"; i.confiance = "haute"; i.annee = null; }
+  if (MODE === "server"){
+    const r = await post("/api/prix", { id:S.id, ...(corr ? { correction:corr.modele, variante_corrigee:corr.variante } : {}) });
+    if (!r.ok) return r; if (r.ident) S.ident = normIdent(r.ident, i.accessoires); if (corr) S.ident.corrige = true;
+    if (r.trop_ancien) return { ok:true, old:true };
+    return { ok:true, low:r.reprise.min, high:r.reprise.max };
+  }
+  let d;
+  if (MODE === "demo"){ await wait(2000); const m = Object.values(MOCK).find(x=>x.modele===i.modele) || { rmin:200, rmax:240 }; d = { rmin:m.rmin, rmax:m.rmax, annee:m.annee || i.annee }; }
+  else { try { d = await sample.json(promptPrice(i), { modelTier:"default", cache:false }); } catch (e) { return aiErr(e); } }
+  let rmin = Number(d.rmin)||0, rmax = Number(d.rmax)||rmin; if (rmax<rmin) [rmin,rmax] = [rmax,rmin];
+  if (!rmin) return { ok:false, code:"no_price" };
+  if (!i.annee && Number(d.annee)) i.annee = Number(d.annee);
+  if (isOld(i)) return { ok:true, old:true };
+  const calc = computeOffer(i, rmin, rmax); if (calc.high <= 0) return { ok:false, code:"too_low" };
+  S.result = { rmin, rmax, calc, marche:{ prix_neuf:Number(d.prix_neuf)||null, prix_reconditionne:Number(d.prix_reconditionne)||null, demande:clean(d.demande,20), commentaire:clean(d.commentaire,300) } };
+  return { ok:true, low:calc.low, high:calc.high };
+}
+// Étape C : enregistrement
+async function backendSave(){
+  const store = STORES.find(s=>s.id===S.store);
+  if (MODE === "server"){
+    const r = await post("/api/enregistrer", { id:S.id, magasin:S.store, miniature:S.thumb, prenom:S.prenom, telephone:S.tel });
+    return r.ok ? { ok:true, ref:r.ref, valid:r.valide_jusqu_au, saved:true } : r;
+  }
+  const now = new Date(), ref = "EST-" + String(now.getDate()).padStart(2,"0") + String(now.getMonth()+1).padStart(2,"0") + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
+  const valid = new Date(now.getTime()+7*864e5).toISOString(); let saved = false;
+  if (MODE === "claude" && db && S.result){
+    const i = S.ident, r = S.result;
+    try { await db.doc("estimations/"+ref).set({ ref, date:now.toISOString(), valide_jusqu_au:valid, magasin:store.id, statut:"nouvelle", prix_paye:null, note:"", source:"app",
+      article:{ cat:i.cat, marque:i.marque, modele:i.modele, variante:i.variante, annee:i.annee, etat:i.etat, confiance:i.confiance, corrige:!!i.corrige, indices:i.indices, observations:i.observations, defauts:i.defauts, accessoires:i.accessoires },
+      revente:{ min:r.rmin, max:r.rmax }, reprise:{ min:r.calc.low, max:r.calc.high }, calcul:r.calc, marche:r.marche, client:{ prenom:clean(S.prenom,40), telephone:clean(S.tel,20) }, miniature:S.thumb }); saved = true; } catch {}
+  }
+  return { ok:true, ref, valid, saved };
+}
+function aiErr(e){
+  const c = e?.code || "upstream_error";
+  if (["not_granted","sampling_disabled","images_unavailable","capability_disabled","not_declared","capability_removed","session_expired"].includes(c)) return { ok:false, code:"ai_off", diag:c };
+  if (c==="rate_limited") return { ok:false, code:"ai_busy" }; if (c==="invalid_json") return { ok:false, code:"ai_format" };
+  if (c==="image_rejected") return { ok:false, code:"photo_format" }; if (c==="refused") return { ok:false, code:"invalid_item" };
+  return { ok:false, code:"ai_error", diag:c };
+}
+const isOld = i => i.cat==="telephone" && i.annee && i.annee <= PARAMS.oldYear;
+
+/* ---- Déroulé ---- */
+function setPhases(list, i){
+  $("#phases").innerHTML = list.map((t,j)=>`<li class="${j<i?"ok":j===i?"run":""}"><span class="dot">${j<i?"✓":""}</span>${j<i?t.replace("…",""):t}</li>`).join("");
+  $("#bar").style.width = Math.min(100,(i/list.length)*100 + (i<list.length?6:0)) + "%";
+}
+async function withPhases(list, promise, notes){
+  let done = false, i = 0; const t0 = Date.now(); setPhases(list,0);
+  const tick = setInterval(()=>{ if (done) return; const s=(Date.now()-t0)/1000; const t=Math.min(list.length-1,Math.floor(s/2.2));
+    if (t>i){ i=t; setPhases(list,i); } if (notes && s>6) $("#scan-note").textContent = notes[Math.min(notes.length-1, Math.floor((s-6)/10))];
+    if (i===list.length-1) $("#bar").style.width = Math.min(97, 80+s*0.3) + "%"; }, 400);
+  try { return await promise; } finally { done = true; clearInterval(tick); setPhases(list,list.length); await wait(300); }
+}
+$("#analyse").onclick = runIdentify;
+async function runIdentify(){
+  S.lastAction = runIdentify;
+  const photos = allPhotos(); if (!photos.length) return;
+  $("#scan-main").src = photos[0].url; $("#scan-title").textContent = "Notre IA examine votre article";
+  $("#scan-sub").textContent = "Environ 20 à 40 secondes."; $("#scan-note").textContent = ""; show("v-scan",2);
+  await READY;
+  let r;
+  try { S.thumb = (await toCanvas(photos[0].url, 240)).toDataURL("image/jpeg",0.7); } catch { return showError({code:"photo_format"}); }
+  const acc = ["acc-box","acc-charger","acc-invoice"].filter(id=>$("#"+id).checked).map(id=>$("#"+id).value);
+  try { r = await withPhases(["Analyse de votre article…","Identification du produit…","Analyse de l'état…"], backendIdentify(photos, acc), ["L'IA relève logos, inscriptions et formes…","Comparaison avec les modèles connus…","Encore quelques secondes…"]); }
+  catch { return showError({code:"photo_format"}); }
+  if (!r.ok) return showError(r);
+  S.ident = r.ident;
+  if (r.ident.trop_ancien || isOld(r.ident)) return showOld();
+  showConfirm();
+}
+const identName = i => [i.marque, i.modele].filter(Boolean).join(" ").trim() || "Article";
+function showOld(){ const i = S.ident; $("#old-model").textContent = `Article identifié : ${identName(i)}${i.annee?` (sorti en ${i.annee})`:""}.`; show("v-old",3); }
+function showConfirm(){
+  const d = S.ident, conf = {haute:["good","Identification fiable"], moyenne:["warn","Identification probable"], faible:["bad","Identification incertaine"]}[d.confiance];
+  $("#v-confirm").innerHTML = `
+    <div class="prod"><img src="${allPhotos()[0]?.url||""}" alt=""><div><span class="tag">Article identifié</span><h3>${esc(identName(d))}</h3>${d.variante?`<div class="spec">${esc(d.variante)}</div>`:""}
+      <div class="meta"><span class="pill ${ETATS[d.etat].c}">${ETATS[d.etat].n}</span><span class="pill ${conf[0]}">${conf[1]}</span></div></div></div>
+    ${d.indices.length?`<div class="block"><h4>Reconnu sur vos photos</h4><ul class="obs">${d.indices.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`:""}
+    <h2 style="margin-top:18px">Est-ce bien votre article ?</h2>
+    <div style="display:grid;gap:8px;margin-top:12px"><button class="btn btn-cash" id="cf-yes">Oui, voir mon estimation</button>
+      ${d.alternatives.map((a,k)=>`<button class="btn btn-ghost" data-alt="${k}">C'est plutôt : ${esc(a)}</button>`).join("")}</div>
+    <div class="field"><label for="cf-model">Non, il s'agit de :</label><input type="text" id="cf-model" placeholder="Modèle exact" autocomplete="off">
+      <input type="text" id="cf-var" placeholder="Capacité / version" autocomplete="off" style="margin-top:8px"></div>
+    <button class="btn btn-red btn-full" id="cf-fix" style="margin-top:10px">Corriger et estimer</button>`;
+  $("#cf-yes").onclick = () => runPrice(null);
+  $("#v-confirm").querySelectorAll("[data-alt]").forEach(b => b.onclick = () => runPrice({ modele:d.alternatives[+b.dataset.alt] }));
+  $("#cf-fix").onclick = () => { const v = $("#cf-model").value.trim(); if (!v) return $("#cf-model").focus(); runPrice({ modele:v, variante:$("#cf-var").value.trim() }); };
+  show("v-confirm",3);
+}
+async function runPrice(corr){
+  S.lastAction = () => runPrice(corr);
+  $("#scan-title").textContent = "Estimation du prix"; $("#scan-sub").textContent = "Comparaison des prix du marché en France."; $("#scan-note").textContent = "";
+  show("v-scan",3);
+  const r = await withPhases(["Recherche des prix du marché…","Comparaison neuf / reconditionné / occasion…","Calcul de votre estimation…"], backendPrice(corr), ["Application d'une estimation prudente…","Encore quelques secondes…"]);
+  if (!r.ok) return showError(r);
+  if (r.old) return showOld();
+  S.offer = { low:r.low, high:r.high }; showResult();
+}
+function showResult(){
+  const d = S.ident, o = S.offer, et = ETATS[d.etat];
+  const obs = d.observations.map(x=>`<li>${esc(x)}</li>`).join("") + d.defauts.map(x=>`<li class="def">${esc(x)}</li>`).join("");
+  $("#v-result").innerHTML = `
+    <div class="prod"><img src="${allPhotos()[0]?.url||""}" alt=""><div><span class="tag">${CAT[d.cat].ico} ${CAT[d.cat].n}</span><h3>${esc(identName(d))}</h3>${d.variante?`<div class="spec">${esc(d.variante)}</div>`:""}
+      <div class="meta"><span class="pill ${et.c}">${et.n}</span>${d.corrige?`<span class="pill good">Modèle indiqué par vous</span>`:""}</div></div></div>
+    <div class="buy"><small>🏪 Estimation de reprise Affair's</small><strong>${range(o.low,o.high)}</strong><span class="cash">Payé cash en magasin</span>
+      <p>Estimation indicative — le prix définitif sera confirmé en magasin après contrôle du produit.</p></div>
+    ${obs?`<div class="block"><h4>Ce que notre IA a relevé</h4><ul class="obs">${obs}</ul></div>`:""}
+    ${MODE==="demo"?`<div class="tip" style="margin-top:10px"><span>⚠️</span><span><b>Démonstration :</b> résultat fictif.</span></div>`:""}
+    <p class="disc">L'estimation réalisée par notre IA est indicative. Le prix définitif dépendra de l'état réel du produit, de son fonctionnement, de son authenticité et des vérifications effectuées en magasin.</p>
+    <div style="display:grid;gap:8px;margin-top:14px"><button class="btn btn-cash" id="go-store">📍 Choisir mon magasin</button><button class="btn btn-ghost" id="again">🔄 Estimer un autre article</button></div>`;
+  $("#go-store").onclick = () => { renderStores(); show("v-store",4); };
+  $("#again").onclick = startEstimate;
+  show("v-result",3);
+}
+function renderStores(){
+  const d = S.ident, o = S.offer;
+  $("#v-store").innerHTML = `
+    <h2>Choisissez votre magasin</h2><p class="sub2">Nos acheteurs contrôleront votre article et vous paieront cash.</p>
+    <div class="recap"><span><b>${esc(identName(d))}</b><br><span class="small">${ETATS[d.etat].n}</span></span><span class="rp">${range(o.low,o.high)}</span></div>
+    ${STORES.map(s=>`<button class="store" data-store="${s.id}" aria-pressed="${S.store===s.id}"><span class="dep">${s.dep}</span><h3>Affair's ${s.n}</h3><span>${s.adr}, ${s.cp}</span><span class="hrs">${s.hrs}</span></button>`).join("")}
+    <div class="field"><label for="c-prenom">Votre prénom <span style="color:var(--red)">*</span></label><input type="text" id="c-prenom" autocomplete="given-name" placeholder="Obligatoire"></div>
+    <div class="field"><label for="c-tel">Votre téléphone (facultatif)</label><input type="tel" id="c-tel" autocomplete="tel"></div>
+    <p class="err" id="st-err" hidden></p>
+    <div class="sticky-cta"><button class="btn btn-cash btn-full" id="st-ok">Valider ce magasin</button></div>`;
+  $("#c-prenom").value = S.prenom; $("#c-tel").value = S.tel;
+  const refresh = () => { const ok = S.prenom.trim().length >= 2; $("#st-ok").disabled = !(S.store && ok);
+    const e = $("#st-err"); if (S.store && !ok){ e.hidden=false; e.textContent="Indiquez votre prénom pour valider."; } else e.hidden = true; };
+  $("#c-prenom").oninput = e => { S.prenom = e.target.value; refresh(); }; $("#c-tel").oninput = e => S.tel = e.target.value;
+  $("#v-store").querySelectorAll("[data-store]").forEach(b => b.onclick = () => { S.store = b.dataset.store; $("#v-store").querySelectorAll("[data-store]").forEach(x=>x.setAttribute("aria-pressed", x===b)); refresh(); });
+  $("#st-ok").onclick = saveAndFinish; refresh();
+}
+async function saveAndFinish(){
+  if (!S.store || S.prenom.trim().length < 2) return $("#c-prenom").focus();
+  const b = $("#st-ok"); b.disabled = true; b.textContent = "Enregistrement…";
+  const r = await backendSave();
+  if (!r.ok){ b.disabled = false; b.textContent = "Valider ce magasin"; const e=$("#st-err"); e.hidden=false; e.textContent = r.code==="expired" ? "Estimation expirée : recommencez." : "L'enregistrement n'a pas abouti. Vérifiez votre connexion et réessayez."; return; }
+  showDone(r);
+}
+function showDone(r){
+  const s = STORES.find(x=>x.id===S.store), d = S.ident, o = S.offer;
+  const valid = new Date(r.valid).toLocaleDateString("fr-FR",{day:"numeric",month:"long"});
+  const bring = ["Votre article, en état de fonctionnement","Une pièce d'identité en cours de validité (obligatoire)",
+    ...(["telephone","tablette","montre"].includes(d.cat)?["Appareil déverrouillé, compte iCloud / Google déconnecté"]:[]),"Boîte, chargeur et facture si vous les avez"];
+  $("#v-done").innerHTML = `
+    <h2>${r.saved ? "Estimation enregistrée" : "Votre estimation est prête"}</h2><p class="sub2">Présentez ce numéro au service achat d'Affair's ${esc(s.n)}.</p>
+    <div class="ticket"><div class="th"><div class="small">N° d'estimation</div><div class="ref">${r.ref}</div><div class="small">Valable jusqu'au ${valid}</div></div>
+      <dl><dt>Article</dt><dd>${esc([identName(d), d.variante].filter(Boolean).join(" "))}</dd><dt>Client</dt><dd>${esc(S.prenom)}</dd>
+      <dt>Magasin</dt><dd>Affair's ${esc(s.n)}<br><span style="font-weight:400">${esc(s.adr)}, ${esc(s.cp)}</span></dd><dt>Horaires</dt><dd style="font-weight:400">${s.hrs}</dd></dl>
+      <div class="amt"><span>Reprise estimée</span><strong>${range(o.low,o.high)}</strong></div></div>
+    <div class="bring"><h4>À apporter</h4><ul>${bring.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn btn-red" data-url="${mapsUrl(s)}">Itinéraire</button><a class="btn btn-ghost" href="tel:${s.tel.replace(/\s/g,"")}">Appeler</a></div>
+    <button class="btn btn-cash btn-full" id="dn-again" style="margin-top:8px">🔄 Estimer un autre article</button>`;
+  $("#dn-again").onclick = startEstimate;
+  show("v-done",5);
+}
+function showError(r){
+  const copy = {
+    invalid_item:["Article non reconnu",(r.message? r.message+" " : "")+"Essayez une photo nette de l'article entier, à la lumière du jour."],
+    no_price:["Estimation impossible","Nous n'avons pas trouvé de prix de référence fiable. Nos acheteurs l'estimeront gratuitement en magasin."],
+    too_low:["Valeur trop faible","La valeur de cet article est trop faible pour une estimation en ligne. Passez en magasin."],
+    photo_format:["Photo non lisible","Sur iPhone : Réglages › Appareil photo › Formats › « Le plus compatible », ou envoyez une capture d'écran de la photo."],
+    need_model:["Indiquez le modèle","Vos photos ne peuvent pas être analysées ici : indiquez le modèle et l'état de votre article."],
+    ai_off:["Estimation indisponible","L'IA n'est pas disponible pour le moment."],
+    ai_busy:["IA très sollicitée","Patientez quelques secondes puis réessayez."],
+    offline:["Pas de connexion","Vérifiez votre connexion Internet puis réessayez."],
+    rate:["Trop de demandes","Réessayez dans une heure."], expired:["Estimation expirée","Recommencez l'estimation."]
+  }[r.code] || ["L'analyse n'a pas abouti","Un problème temporaire est survenu. Réessayez."];
+  $("#err-title").textContent = copy[0]; $("#err-text").textContent = copy[1] + (r.diag ? ` (${r.diag})` : "");
+  $("#err-retry").hidden = !S.lastAction || ["invalid_item","no_price","too_low","photo_format","need_model","ai_off","expired"].includes(r.code);
+  $("#err-photos").textContent = r.code==="need_model" ? "Indiquer le modèle" : "Modifier mes photos";
+  show("v-error",3);
+}
+$("#err-retry").onclick = () => S.lastAction && S.lastAction();
+$("#err-photos").onclick = () => show("v-photos",1);
+$("#err-restart").onclick = startEstimate;
+$("#old-back").onclick = startEstimate;
+
+renderCats(); renderSlots();
+</script>
+
+</body>
+</html>
