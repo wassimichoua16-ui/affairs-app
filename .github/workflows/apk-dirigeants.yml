@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'dirigeants/**'
+      - 'adresse-serveur.txt'
       - '.github/workflows/apk-dirigeants.yml'
   workflow_dispatch:
 
@@ -18,6 +19,15 @@ jobs:
         working-directory: dirigeants
     steps:
       - uses: actions/checkout@v4
+
+      - name: Adresse du serveur (variable AFFAIRS_API ou fichier adresse-serveur.txt)
+        id: cfg
+        working-directory: .
+        run: |
+          API="${{ vars.AFFAIRS_API }}"
+          if [ -z "$API" ] && [ -f adresse-serveur.txt ]; then API=$(tr -d ' \r\n' < adresse-serveur.txt); fi
+          API="${API%/}"
+          if [ -z "$API" ]; then echo "::warning::Aucune adresse de serveur configurée."; echo "ok=false" >> "$GITHUB_OUTPUT"; else echo "api=$API" >> "$GITHUB_OUTPUT"; echo "ok=true" >> "$GITHUB_OUTPUT"; fi
 
       - uses: actions/setup-node@v4
         with:
@@ -38,11 +48,9 @@ jobs:
       - name: Construire l'application
         run: python3 build.py
 
-      - name: Adresse du serveur d'estimation (facultatif)
-        # Variable du dépôt AFFAIRS_API (Settings › Secrets and variables › Actions › Variables).
-        # Vide = version de démonstration.
-        if: ${{ vars.AFFAIRS_API != '' }}
-        run: echo "window.AFFAIRS_API = \"${{ vars.AFFAIRS_API }}\";" > www/config.js
+      - name: Brancher l'application sur le serveur
+        if: steps.cfg.outputs.ok == 'true'
+        run: echo "window.AFFAIRS_API = \"${{ steps.cfg.outputs.api }}\";" > www/config.js
 
       - name: Préparer le projet Android
         run: |

@@ -4,6 +4,7 @@ on:
   push:
     paths-ignore:
       - 'dirigeants/**'
+      - '.github/workflows/apk-dirigeants.yml'
   workflow_dispatch:
 
 permissions:
@@ -11,26 +12,37 @@ permissions:
 
 jobs:
   apk:
-    # Ne construit l'APK que si l'adresse du serveur est configurée (jamais de version sans IA)
-    if: ${{ vars.AFFAIRS_API != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Adresse du serveur (variable AFFAIRS_API ou fichier adresse-serveur.txt)
+        id: cfg
+        working-directory: .
+        run: |
+          API="${{ vars.AFFAIRS_API }}"
+          if [ -z "$API" ] && [ -f adresse-serveur.txt ]; then API=$(tr -d ' \r\n' < adresse-serveur.txt); fi
+          API="${API%/}"
+          if [ -z "$API" ]; then echo "::warning::Aucune adresse de serveur configurée."; echo "ok=false" >> "$GITHUB_OUTPUT"; else echo "api=$API" >> "$GITHUB_OUTPUT"; echo "ok=true" >> "$GITHUB_OUTPUT"; fi
+
       - uses: actions/setup-node@v4
+        if: steps.cfg.outputs.ok == 'true'
         with:
           node-version: 22
 
       - uses: actions/setup-java@v4
+        if: steps.cfg.outputs.ok == 'true'
         with:
           distribution: temurin
           java-version: 21
 
       - uses: actions/setup-python@v5
+        if: steps.cfg.outputs.ok == 'true'
         with:
           python-version: "3.12"
 
       - name: Ranger les fichiers envoyés à plat
+        if: steps.cfg.outputs.ok == 'true'
         run: |
           mkdir -p src assets
           for f in app.part app.js.part logo.png magasins.json; do if [ -f "$f" ]; then mv "$f" src/; fi; done
@@ -38,43 +50,43 @@ jobs:
           ls src assets
 
       - name: Installer les dépendances
+        if: steps.cfg.outputs.ok == 'true'
         run: npm ci
 
       - name: Construire l'application
+        if: steps.cfg.outputs.ok == 'true'
         run: python3 build.py
 
-      - name: Adresse du serveur d'estimation (obligatoire)
-        # Variable du dépôt AFFAIRS_API (Settings › Secrets and variables › Actions › Variables),
-        # ex. https://affairs-estimation.onrender.com — voir DEPLOIEMENT.txt
-        run: |
-          if [ -z "${{ vars.AFFAIRS_API }}" ]; then
-            echo "::error::Variable AFFAIRS_API manquante : mettez d'abord le serveur en ligne (DEPLOIEMENT.txt)."
-            exit 1
-          fi
-          echo "window.AFFAIRS_API = \"${{ vars.AFFAIRS_API }}\";" > www/config.js
+      - name: Brancher l'application sur le serveur
+        if: steps.cfg.outputs.ok == 'true'
+        run: echo "window.AFFAIRS_API = \"${{ steps.cfg.outputs.api }}\";" > www/config.js
 
       - name: Préparer le projet Android
+        if: steps.cfg.outputs.ok == 'true'
         run: |
           if [ ! -d android ]; then npx cap add android; fi
           npx @capacitor/assets generate --android --iconBackgroundColor '#e30613' --splashBackgroundColor '#ffffff'
           npx cap sync android
 
       - name: Compiler l'APK
+        if: steps.cfg.outputs.ok == 'true'
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
       - name: Renommer
+        if: steps.cfg.outputs.ok == 'true'
         run: cp android/app/build/outputs/apk/debug/app-debug.apk Affairs.apk
 
       - uses: actions/upload-artifact@v4
+        if: steps.cfg.outputs.ok == 'true'
         with:
           name: Affairs-APK
           path: Affairs.apk
 
       - name: Publier le lien de téléchargement direct
-        if: github.ref == 'refs/heads/main'
+        if: steps.cfg.outputs.ok == 'true' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

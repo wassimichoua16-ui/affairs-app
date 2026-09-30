@@ -23,6 +23,9 @@ actuales en Internet en Francia (Claude Sonnet + búsqueda web) y calcula la rec
    El disco guarda las estimaciones aunque el servidor se reinicie.
 
 3) CONECTAR LAS APPS
+   Lo más sencillo: envía la dirección del servidor a Claude en la conversación;
+   él la escribe en adresse-serveur.txt y las dos APK se regeneran conectadas.
+   O bien, tú mismo:
    - GitHub › repositorio affairs-app › Settings › Secrets and variables ›
      Actions › pestaña « Variables » › New repository variable
        Name  : AFFAIRS_API
