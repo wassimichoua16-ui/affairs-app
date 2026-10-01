@@ -201,6 +201,8 @@ ul.clean{margin:0;padding-left:18px;font-size:14px;display:grid;gap:3px}
 </div>
 
 <script>
+/* Compatibilité avec les anciens téléphones Android (WebView sans structuredClone) */
+if (typeof window.structuredClone !== "function") window.structuredClone = v => v === undefined ? v : JSON.parse(JSON.stringify(v));
 /* ================= Configuration ================= */
 const API = (window.AFFAIRS_API || "").replace(/\/$/, "");
 const MODE = API ? "server" : "demo";
@@ -293,10 +295,17 @@ async function api(method, path, body){
 $("#login-mode").textContent = MODE === "demo" ? "Mode démo : n'importe quel mot de passe fonctionne." : "Serveur : " + API;
 $("#login-form").onsubmit = async e => {
   e.preventDefault(); $("#login-err").textContent = "";
-  const j = await api("POST", "/api/gerant/connexion", { mot_de_passe: $("#pwd").value });
-  if (!j.ok){ $("#login-err").textContent = j.message || "Connexion impossible"; return; }
-  TOKEN = j.jeton; ls.set("dir-token", TOKEN); $("#pwd").value = ""; start();
+  const btn = $("#login-form button"); btn.disabled = true; btn.textContent = "Connexion…";
+  try {
+    const j = await api("POST", "/api/gerant/connexion", { mot_de_passe: $("#pwd").value });
+    if (!j.ok){ $("#login-err").textContent = j.code === "offline" ? "Serveur injoignable : vérifiez votre connexion Internet." : (j.message || "Connexion impossible"); return; }
+    TOKEN = j.jeton; ls.set("dir-token", TOKEN); $("#pwd").value = ""; await start();
+  } catch (err) {
+    $("#app").hidden = true; $("#login").hidden = false;
+    $("#login-err").textContent = "Erreur de l'application : " + (err && err.message || err);
+  } finally { btn.disabled = false; btn.textContent = "Se connecter"; }
 };
+window.addEventListener("error", e => { if (!$("#login").hidden) $("#login-err").textContent = "Erreur : " + e.message; });
 function logout(msg){ TOKEN = ""; ls.del("dir-token"); stopPolling(); $("#app").hidden = true; $("#login").hidden = false; $("#login-err").textContent = msg || ""; }
 
 /* ================= Données + temps réel ================= */
